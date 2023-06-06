@@ -81,6 +81,47 @@ def analysis_1_COVID_positive_control(recover_release_visit_occurence, analysis_
     
 
 @transform_pandas(
+    Output(rid="ri.vector.main.execute.168f6353-5f25-42ed-9911-eb039378eb10")
+)
+def analysis_1_COVID_positive_control_1(recover_release_visit_occurence, analysis_1_PASC_case, Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype):
+    # COVID_first_poslab_or_diagnosis_date as index date
+    df1 = recover_release_visit_occurence
+    df2 = Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype
+    df3 = analysis_1_PASC_case.select('person_id')
+    df1 = df1.groupBy('person_id').agg(F.max('visit_start_date').alias('latest_visit_date'))
+
+    df = df2.join(df1, 'person_id', 'left')
+    df = df.withColumn('index_date', F.col('COVID_first_poslab_or_diagnosis_date'))
+    df = df.withColumn('2021oct_index_date', F.lit('2021-10-01'))
+
+    # Make the is_long_COVID_dx_site column
+    df2 = df2.filter(df2.Long_COVID_diagnosis_post_covid_indicator == 1)
+    long_covid_dx_sites = df2.select(F.collect_set('data_partner_id').alias('data_partner_id')).first()['data_partner_id']    
+    df = df.withColumn('is_long_COVID_dx_site', F.when(df.data_partner_id.isin(long_covid_dx_sites), 1).otherwise(0))
+    
+
+    # Select those with at least one visit >= 45 days of index date
+    df = df.filter(F.datediff(F.col('latest_visit_date'), F.col('COVID_first_poslab_or_diagnosis_date')) >= 45)
+
+    # From a site that is reporting U09.9 in their N3C data
+    df = df.filter(df.is_long_COVID_dx_site == 1)
+
+    # At least one visit Oct.1, 2021 or later
+    df = df.filter(F.datediff(F.col('latest_visit_date'), F.col('2021oct_index_date')) >= 0)
+
+    # Age >= 18
+    df = df.filter(df.age_at_covid >= 18)
+
+    # exclude PASC case
+    df = df.join(df3, 'person_id', 'left_anti')
+
+    # Long COVID control label
+    df = df.withColumn('long_covid', F.lit(0))
+
+    return df
+    
+
+@transform_pandas(
     Output(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68"),
     Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c")
 )
