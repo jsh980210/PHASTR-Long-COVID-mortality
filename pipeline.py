@@ -40,7 +40,8 @@ def Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_pheno
     
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.364ef2c6-eeb6-4759-babe-e62045fa3ae8")
+    Output(rid="ri.foundry.main.dataset.7d7a7b20-d395-41e5-9804-f9e8bfa34e4f"),
+    Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c")
 )
 def analysis_2_PASC_case_cohort_2a(Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype):
     
@@ -54,7 +55,8 @@ def analysis_2_PASC_case_cohort_2a(Logic_Liaison_Covid_19_Patient_Summary_Facts_
     
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.95970a65-6859-407c-8218-b9f29af84002")
+    Output(rid="ri.foundry.main.dataset.e3640a26-eac1-43b7-b012-261f6dbbd2f3"),
+    Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c")
 )
 def analysis_2_PASC_case_cohort_2b(Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype):
     
@@ -69,7 +71,7 @@ def analysis_2_PASC_case_cohort_2b(Logic_Liaison_Covid_19_Patient_Summary_Facts_
 
 @transform_pandas(
     Output(rid="ri.vector.main.execute.65008359-a0ba-451f-b5ea-ad2af49bc191"),
-    analysis_2_PASC_case_cohort_2a=Input(rid="ri.vector.main.execute.364ef2c6-eeb6-4759-babe-e62045fa3ae8")
+    analysis_2_PASC_case_cohort_2a=Input(rid="ri.foundry.main.dataset.7d7a7b20-d395-41e5-9804-f9e8bfa34e4f")
 )
 def analysis_2a(analysis_2_PASC_case_cohort_2a, cci_score_covid_positive):
     df = analysis_2_PASC_case_cohort_2a.join(cci_score_covid_positive, 'person_id', 'left')
@@ -262,7 +264,7 @@ def analysis_2a_xgboost_cv_feature_importance(analysis_2a_xgboost_cv):
 
 @transform_pandas(
     Output(rid="ri.vector.main.execute.0027efbc-bc53-48b2-bd5a-a6feb4d078cf"),
-    analysis_2_PASC_case_cohort_2b=Input(rid="ri.vector.main.execute.95970a65-6859-407c-8218-b9f29af84002")
+    analysis_2_PASC_case_cohort_2b=Input(rid="ri.foundry.main.dataset.e3640a26-eac1-43b7-b012-261f6dbbd2f3")
 )
 def analysis_2b(analysis_2_PASC_case_cohort_2b, cci_score_covid_positive):
     df = analysis_2_PASC_case_cohort_2b.join(cci_score_covid_positive, 'person_id', 'left')
