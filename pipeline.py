@@ -453,3 +453,171 @@ def analysis_2b_xgboost_cv_feature_importance(analysis_2b_xgboost_cv):
 
     
 
+@transform_pandas(
+    Output(rid="ri.foundry.main.dataset.3ca69c7a-76bc-4a5f-ab5c-8f94f5709789"),
+    Logic_Liaison_All_patients_summary_facts_table_lds=Input(rid="ri.foundry.main.dataset.80175e0f-69da-41e2-8065-2c9a7d3bc571"),
+    Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_=Input(rid="ri.foundry.main.dataset.75d7da57-7b0e-462c-b41d-c9ef4f756198")
+)
+# [Logic Liaison Template] CCI Score (LDS) (40b7f6fe-9486-4b68-82ad-e8118b47738c): v6
+def cci_score(Logic_Liaison_All_patients_summary_facts_table_lds, Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_):
+
+    #user determined template input
+    #when True - applies index date and calculates CCI score for confirmed covid positive patients before and up to their covid index date 
+    #when False - no index date applied and calculates CCI score for all patients based on indicators noted at any time in their EHR 
+    use_only_confirmed_covid_positive = False
+
+    if use_only_confirmed_covid_positive:
+        df = Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_ \
+            .select('person_id', *[c for c in Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_.columns if '_indicator' in c])
+
+        #calculating CCI components BEFORE and up to covid index
+        MI = F.col('MYOCARDIALINFARCTION_before_or_day_of_covid_indicator') * 1
+        CHF = F.col('CONGESTIVEHEARTFAILURE_before_or_day_of_covid_indicator') * 1
+        PVD = F.col('PERIPHERALVASCULARDISEASE_before_or_day_of_covid_indicator') * 1
+        CVD = F.col('CEREBROVASCULARDISEASE_before_or_day_of_covid_indicator') * 1
+        DEM = F.col('DEMENTIA_before_or_day_of_covid_indicator') * 1
+        CPD = F.col('CHRONICLUNGDISEASE_before_or_day_of_covid_indicator') * 1
+        RD = F.col('RHEUMATOLOGICDISEASE_before_or_day_of_covid_indicator') * 1
+        PEP = F.col('PEPTICULCER_before_or_day_of_covid_indicator') * 1
+        LIV = F.when(F.col('MODERATESEVERELIVERDISEASE_before_or_day_of_covid_indicator')==1, F.col('MODERATESEVERELIVERDISEASE_before_or_day_of_covid_indicator') * 3) \
+            .when(F.col('MODERATESEVERELIVERDISEASE_before_or_day_of_covid_indicator')==0, F.col('MILDLIVERDISEASE_before_or_day_of_covid_indicator') * 1) \
+            .otherwise(0)
+        DIA = F.when(F.col('DIABETESCOMPLICATED_before_or_day_of_covid_indicator')==1, F.col('DIABETESCOMPLICATED_before_or_day_of_covid_indicator') * 2) \
+            .when(F.col('DIABETESCOMPLICATED_before_or_day_of_covid_indicator')==0, F.col('DIABETESUNCOMPLICATED_before_or_day_of_covid_indicator') * 1) \
+            .otherwise(0)
+        HEM = F.col('HEMIPLEGIAORPARAPLEGIA_before_or_day_of_covid_indicator') * 2
+        REN = F.col('KIDNEYDISEASE_before_or_day_of_covid_indicator') * 2
+        #MALIGNANT CANCER concept set covers Leukemia and Lymphoma specified in the Charlson Comorbidity Index calculation
+        CAN = F.when(F.col('METASTATICSOLIDTUMORCANCERS_before_or_day_of_covid_indicator')==1, F.col('METASTATICSOLIDTUMORCANCERS_before_or_day_of_covid_indicator') * 6) \
+            .when(F.col('METASTATICSOLIDTUMORCANCERS_before_or_day_of_covid_indicator')==0, F.col('MALIGNANTCANCER_before_or_day_of_covid_indicator') * 2) \
+            .otherwise(0)
+        HIV = F.col('HIVINFECTION_before_or_day_of_covid_indicator') * 6
+
+        #calculate CCI score for patients, age not included as it is not explicitly included in the reference calculation used and is often already accounted for as a covariate in most studies
+        df = df.withColumn('CCI_score_up_through_index_date', F.lit(MI + CHF + PVD + CVD + DEM + CPD + RD + PEP + LIV + DIA + HEM + REN + CAN + HIV).cast(IntegerType())) \
+            .select('person_id', 'CCI_score_up_through_index_date')
+
+    else:
+        df = Logic_Liaison_All_patients_summary_facts_table_lds \
+            .select('person_id', *[c for c in Logic_Liaison_All_patients_summary_facts_table_lds.columns if '_indicator' in c])
+
+        #calculating CCI components all-time
+        MI = F.col('MYOCARDIALINFARCTION_indicator') * 1
+        CHF = F.col('CONGESTIVEHEARTFAILURE_indicator') * 1
+        PVD = F.col('PERIPHERALVASCULARDISEASE_indicator') * 1
+        CVD = F.col('CEREBROVASCULARDISEASE_indicator') * 1
+        DEM = F.col('DEMENTIA_indicator') * 1
+        CPD = F.col('CHRONICLUNGDISEASE_indicator') * 1
+        RD = F.col('RHEUMATOLOGICDISEASE_indicator') * 1
+        PEP = F.col('PEPTICULCER_indicator') * 1
+        LIV = F.when(F.col('MODERATESEVERELIVERDISEASE_indicator')==1, F.col('MODERATESEVERELIVERDISEASE_indicator') * 3) \
+            .when(F.col('MODERATESEVERELIVERDISEASE_indicator')==0, F.col('MILDLIVERDISEASE_indicator') * 1) \
+            .otherwise(0)
+        DIA = F.when(F.col('DIABETESCOMPLICATED_indicator')==1, F.col('DIABETESCOMPLICATED_indicator') * 2) \
+            .when(F.col('DIABETESCOMPLICATED_indicator')==0, F.col('DIABETESUNCOMPLICATED_indicator') * 1) \
+            .otherwise(0)
+        HEM = F.col('HEMIPLEGIAORPARAPLEGIA_indicator') * 2
+        REN = F.col('KIDNEYDISEASE_indicator') * 2
+        #MALIGNANT CANCER concept set covers Leukemia and Lymphoma specified in the Charlson Comorbidity Index calculation
+        CAN = F.when(F.col('METASTATICSOLIDTUMORCANCERS_indicator')==1, F.col('METASTATICSOLIDTUMORCANCERS_indicator') * 6) \
+            .when(F.col('METASTATICSOLIDTUMORCANCERS_indicator')==0, F.col('MALIGNANTCANCER_indicator') * 2) \
+            .otherwise(0)
+        HIV = F.col('HIVINFECTION_indicator') * 6
+
+        #calculate CCI score for patients, age not included as it is not explicitly included in the reference calculation used and is often already accounted for as a covariate in most studies
+        df = df.withColumn('CCI_score', F.lit(MI + CHF + PVD + CVD + DEM + CPD + RD + PEP + LIV + DIA + HEM + REN + CAN + HIV).cast(IntegerType())) \
+            .select('person_id', 'CCI_score')
+
+    return df
+
+#################################################
+## Global imports and functions included below ##
+#################################################
+
+from pyspark.sql import functions as F
+from pyspark.sql.types import IntegerType
+
+@transform_pandas(
+    Output(rid="ri.foundry.main.dataset.0d64bb7b-0e57-4c26-8c41-18a3b793fc00"),
+    Logic_Liaison_All_patients_summary_facts_table_lds=Input(rid="ri.foundry.main.dataset.80175e0f-69da-41e2-8065-2c9a7d3bc571"),
+    Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_=Input(rid="ri.foundry.main.dataset.75d7da57-7b0e-462c-b41d-c9ef4f756198")
+)
+# [Logic Liaison Template] CCI Score (LDS) (40b7f6fe-9486-4b68-82ad-e8118b47738c): v6
+def cci_score_covid_positive(Logic_Liaison_All_patients_summary_facts_table_lds, Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_):
+
+    #user determined template input
+    #when True - applies index date and calculates CCI score for confirmed covid positive patients before and up to their covid index date 
+    #when False - no index date applied and calculates CCI score for all patients based on indicators noted at any time in their EHR 
+    use_only_confirmed_covid_positive = True
+
+    if use_only_confirmed_covid_positive:
+        df = Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_ \
+            .select('person_id', *[c for c in Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_.columns if '_indicator' in c])
+
+        #calculating CCI components BEFORE and up to covid index
+        MI = F.col('MYOCARDIALINFARCTION_before_or_day_of_covid_indicator') * 1
+        CHF = F.col('CONGESTIVEHEARTFAILURE_before_or_day_of_covid_indicator') * 1
+        PVD = F.col('PERIPHERALVASCULARDISEASE_before_or_day_of_covid_indicator') * 1
+        CVD = F.col('CEREBROVASCULARDISEASE_before_or_day_of_covid_indicator') * 1
+        DEM = F.col('DEMENTIA_before_or_day_of_covid_indicator') * 1
+        CPD = F.col('CHRONICLUNGDISEASE_before_or_day_of_covid_indicator') * 1
+        RD = F.col('RHEUMATOLOGICDISEASE_before_or_day_of_covid_indicator') * 1
+        PEP = F.col('PEPTICULCER_before_or_day_of_covid_indicator') * 1
+        LIV = F.when(F.col('MODERATESEVERELIVERDISEASE_before_or_day_of_covid_indicator')==1, F.col('MODERATESEVERELIVERDISEASE_before_or_day_of_covid_indicator') * 3) \
+            .when(F.col('MODERATESEVERELIVERDISEASE_before_or_day_of_covid_indicator')==0, F.col('MILDLIVERDISEASE_before_or_day_of_covid_indicator') * 1) \
+            .otherwise(0)
+        DIA = F.when(F.col('DIABETESCOMPLICATED_before_or_day_of_covid_indicator')==1, F.col('DIABETESCOMPLICATED_before_or_day_of_covid_indicator') * 2) \
+            .when(F.col('DIABETESCOMPLICATED_before_or_day_of_covid_indicator')==0, F.col('DIABETESUNCOMPLICATED_before_or_day_of_covid_indicator') * 1) \
+            .otherwise(0)
+        HEM = F.col('HEMIPLEGIAORPARAPLEGIA_before_or_day_of_covid_indicator') * 2
+        REN = F.col('KIDNEYDISEASE_before_or_day_of_covid_indicator') * 2
+        #MALIGNANT CANCER concept set covers Leukemia and Lymphoma specified in the Charlson Comorbidity Index calculation
+        CAN = F.when(F.col('METASTATICSOLIDTUMORCANCERS_before_or_day_of_covid_indicator')==1, F.col('METASTATICSOLIDTUMORCANCERS_before_or_day_of_covid_indicator') * 6) \
+            .when(F.col('METASTATICSOLIDTUMORCANCERS_before_or_day_of_covid_indicator')==0, F.col('MALIGNANTCANCER_before_or_day_of_covid_indicator') * 2) \
+            .otherwise(0)
+        HIV = F.col('HIVINFECTION_before_or_day_of_covid_indicator') * 6
+
+        #calculate CCI score for patients, age not included as it is not explicitly included in the reference calculation used and is often already accounted for as a covariate in most studies
+        df = df.withColumn('CCI_score_up_through_index_date', F.lit(MI + CHF + PVD + CVD + DEM + CPD + RD + PEP + LIV + DIA + HEM + REN + CAN + HIV).cast(IntegerType())) \
+            .select('person_id', 'CCI_score_up_through_index_date')
+
+    else:
+        df = Logic_Liaison_All_patients_summary_facts_table_lds \
+            .select('person_id', *[c for c in Logic_Liaison_All_patients_summary_facts_table_lds.columns if '_indicator' in c])
+
+        #calculating CCI components all-time
+        MI = F.col('MYOCARDIALINFARCTION_indicator') * 1
+        CHF = F.col('CONGESTIVEHEARTFAILURE_indicator') * 1
+        PVD = F.col('PERIPHERALVASCULARDISEASE_indicator') * 1
+        CVD = F.col('CEREBROVASCULARDISEASE_indicator') * 1
+        DEM = F.col('DEMENTIA_indicator') * 1
+        CPD = F.col('CHRONICLUNGDISEASE_indicator') * 1
+        RD = F.col('RHEUMATOLOGICDISEASE_indicator') * 1
+        PEP = F.col('PEPTICULCER_indicator') * 1
+        LIV = F.when(F.col('MODERATESEVERELIVERDISEASE_indicator')==1, F.col('MODERATESEVERELIVERDISEASE_indicator') * 3) \
+            .when(F.col('MODERATESEVERELIVERDISEASE_indicator')==0, F.col('MILDLIVERDISEASE_indicator') * 1) \
+            .otherwise(0)
+        DIA = F.when(F.col('DIABETESCOMPLICATED_indicator')==1, F.col('DIABETESCOMPLICATED_indicator') * 2) \
+            .when(F.col('DIABETESCOMPLICATED_indicator')==0, F.col('DIABETESUNCOMPLICATED_indicator') * 1) \
+            .otherwise(0)
+        HEM = F.col('HEMIPLEGIAORPARAPLEGIA_indicator') * 2
+        REN = F.col('KIDNEYDISEASE_indicator') * 2
+        #MALIGNANT CANCER concept set covers Leukemia and Lymphoma specified in the Charlson Comorbidity Index calculation
+        CAN = F.when(F.col('METASTATICSOLIDTUMORCANCERS_indicator')==1, F.col('METASTATICSOLIDTUMORCANCERS_indicator') * 6) \
+            .when(F.col('METASTATICSOLIDTUMORCANCERS_indicator')==0, F.col('MALIGNANTCANCER_indicator') * 2) \
+            .otherwise(0)
+        HIV = F.col('HIVINFECTION_indicator') * 6
+
+        #calculate CCI score for patients, age not included as it is not explicitly included in the reference calculation used and is often already accounted for as a covariate in most studies
+        df = df.withColumn('CCI_score', F.lit(MI + CHF + PVD + CVD + DEM + CPD + RD + PEP + LIV + DIA + HEM + REN + CAN + HIV).cast(IntegerType())) \
+            .select('person_id', 'CCI_score')
+
+    return df
+
+#################################################
+## Global imports and functions included below ##
+#################################################
+
+from pyspark.sql import functions as F
+from pyspark.sql.types import IntegerType
+
