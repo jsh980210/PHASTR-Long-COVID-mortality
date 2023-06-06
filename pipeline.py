@@ -144,6 +144,26 @@ def analysis_1_COVID_positive_control(visit_occurrence, analysis_1_PASC_case, Lo
     
 
 @transform_pandas(
+    Output(rid="ri.vector.main.execute.b678162d-1a96-4513-8c62-60c0429152a7")
+)
+def analysis_1_COVID_positive_control_pre_matching(analysis_1_COVID_positive_control, analysis_1_PASC_case):
+    df1 = analysis_1_COVID_positive_control.select('person_id', 'observation_period_post_covid', 'data_partner_id', 'age_at_covid', 'index_date', 'long_covid')
+    df2 = analysis_1_PASC_case.select('person_id', 'observation_period_post_covid', 'data_partner_id', 'age_at_covid', 'index_date', 'long_covid')
+
+    
+    df1_sites = df1.select(F.collect_set('data_partner_id').alias('data_partner_id')).first()['data_partner_id']    
+    df2_sites = df2.select(F.collect_set('data_partner_id').alias('data_partner_id')).first()['data_partner_id']    
+    df1 = df1.filter(df1.data_partner_id.isin(df2_sites))
+    df2 = df2.filter(df2.data_partner_id.isin(df1_sites))
+    
+    
+    df = df1.union(df2)
+    df = df.withColumn('age_at_covid', df.age_at_covid.cast('int'))
+    df = df.withColumn('2020_index_date', F.lit('2020-01-01'))
+    df = df.withColumn('index_date_numberofdays_from_20200101', F.datediff('index_date', '2020_index_date'))
+    return df
+
+@transform_pandas(
     Output(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68"),
     Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c")
 )
