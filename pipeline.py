@@ -100,7 +100,9 @@ def analysis_1_COVID_negative_control(visit_occurrence, analysis_1_PASC_case, Lo
     
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.46ea156d-a12f-4743-8e75-418b360f89fe")
+    Output(rid="ri.foundry.main.dataset.4bc2a605-ffb8-4a08-b9c2-623fa9730224"),
+    analysis_1_COVID_negative_control=Input(rid="ri.foundry.main.dataset.cabcd0ef-fb38-471c-a325-493a9ca7b458"),
+    analysis_1_PASC_case=Input(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68")
 )
 def analysis_1_COVID_negative_control_pre_matching(analysis_1_COVID_negative_control, analysis_1_PASC_case):
     df1 = analysis_1_COVID_negative_control.select('person_id', 'observation_period', 'data_partner_id', 'age', 'index_date', 'long_covid')
