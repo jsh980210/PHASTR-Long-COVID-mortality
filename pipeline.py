@@ -138,7 +138,7 @@ def analysis_2a_xgboost(analysis_2a):
     f1 = pd.Series({t: f1_score(y_true=y_test, y_pred=y_score>t) for t in ts})
     best_threshold = f1.idxmax()
     print(best_threshold)
-
+    plt.close()
     fig, axes = plt.subplots(ncols=3, figsize=(13, 5))
 
     sns.scatterplot(x='False Positive Rate', y='True Positive Rate', data=roc, s=50, legend=False, ax=axes[0])
