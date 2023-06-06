@@ -40,6 +40,22 @@ def Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_pheno
     
 
 @transform_pandas(
+    Output(rid="ri.vector.main.execute.fc591018-30c7-411c-971f-01be1703086f")
+)
+def analysis_1_PASC_case(Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype):
+    # COVID positive
+    # Now we only have threshold 0.75, and would change the threshold after sensitivity analysis
+    # COVID_first_poslab_or_diagnosis_date as index date
+    df = Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype
+    df = df.withColumn('index_date', F.col('COVID_first_poslab_or_diagnosis_date'))
+    df = df.filter((df.Long_COVID_diagnosis_post_covid_indicator == 1) | (df.Long_COVID_clinic_visit_post_covid_indicator == 1) | (df.LC_u09_computable_phenotype_threshold_75 == 1))
+    df = df.filter(df.age_at_covid >= 18)
+    # Long COVID case label
+    df = df.withColumn('long_covid', F.lit(1))
+    return df
+    
+
+@transform_pandas(
     Output(rid="ri.foundry.main.dataset.7d7a7b20-d395-41e5-9804-f9e8bfa34e4f"),
     Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c")
 )
