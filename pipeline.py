@@ -40,7 +40,8 @@ def Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_pheno
     
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.fc591018-30c7-411c-971f-01be1703086f")
+    Output(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68"),
+    Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c")
 )
 def analysis_1_PASC_case(Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype):
     # COVID positive
