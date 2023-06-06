@@ -765,19 +765,3 @@ def test_no_intersection(analysis_1_COVID_positive_control, analysis_1_PASC_case
     print(result3.count())
     
 
-@transform_pandas(
-    Output(rid="ri.vector.main.execute.921e66b1-d300-4d81-bcf7-b5f2359ec388")
-)
-def test_no_intersection_1(analysis_1_COVID_positive_control, analysis_1_PASC_case, analysis_1_COVID_negative_control):
-    df1 = analysis_1_COVID_positive_control.select('person_id','age_at_covid')
-    df2 = analysis_1_PASC_case.select('person_id', 'first_COVID_ED_only_start_date')
-    df3 = analysis_1_COVID_negative_control.select('person_id', 'state')
-
-    result1 = df1.join(df2, 'person_id', 'inner')
-    result2 = df1.join(df3, 'person_id', 'inner')
-    result3 = df2.join(df3, 'person_id', 'inner')
-    print(result1.count())
-    print(result2.count())
-    print(result3.count())
-    
-
