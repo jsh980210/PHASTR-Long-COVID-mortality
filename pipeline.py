@@ -316,7 +316,7 @@ def analysis_2b_xgboost(analysis_2b):
     y_score = classifier.predict_proba(X_test)[:, 1]
     #print(y_pred)
     y_pred_cat = np.where(y_score >= 0.125, 1, 0)
-
+    plt.close()
     print(roc_auc_score(y_test, y_score))
     print(recall_score(y_test, y_pred_cat))
     print(confusion_matrix(y_test, y_pred_cat))
