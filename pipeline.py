@@ -70,8 +70,9 @@ def analysis_2_PASC_case_cohort_2b(Logic_Liaison_Covid_19_Patient_Summary_Facts_
     
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.65008359-a0ba-451f-b5ea-ad2af49bc191"),
-    analysis_2_PASC_case_cohort_2a=Input(rid="ri.foundry.main.dataset.7d7a7b20-d395-41e5-9804-f9e8bfa34e4f")
+    Output(rid="ri.foundry.main.dataset.dfd52b0d-1b4b-49d1-a420-0f3df44e0f8d"),
+    analysis_2_PASC_case_cohort_2a=Input(rid="ri.foundry.main.dataset.7d7a7b20-d395-41e5-9804-f9e8bfa34e4f"),
+    cci_score_covid_positive=Input(rid="ri.foundry.main.dataset.0d64bb7b-0e57-4c26-8c41-18a3b793fc00")
 )
 def analysis_2a(analysis_2_PASC_case_cohort_2a, cci_score_covid_positive):
     df = analysis_2_PASC_case_cohort_2a.join(cci_score_covid_positive, 'person_id', 'left')
@@ -90,8 +91,8 @@ def analysis_2a(analysis_2_PASC_case_cohort_2a, cci_score_covid_positive):
     
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.c1f45ebd-5dc5-444e-a28a-e6887d05d985"),
-    analysis_2a=Input(rid="ri.vector.main.execute.65008359-a0ba-451f-b5ea-ad2af49bc191")
+    Output(rid="ri.foundry.main.dataset.4db8d51f-f165-43c0-a98f-31971c43c059"),
+    analysis_2a=Input(rid="ri.foundry.main.dataset.dfd52b0d-1b4b-49d1-a420-0f3df44e0f8d")
 )
 def analysis_2a_xgboost(analysis_2a):
     df = analysis_2a.drop(columns = ['race_ethnicity', 'sex'])
@@ -147,8 +148,8 @@ def analysis_2a_xgboost(analysis_2a):
     
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.463afdd2-d86e-47a5-b609-1f70641b88b8"),
-    analysis_2a=Input(rid="ri.vector.main.execute.65008359-a0ba-451f-b5ea-ad2af49bc191")
+    Output(rid="ri.foundry.main.dataset.df6207be-25db-47f6-893e-ae6c8eb96f3f"),
+    analysis_2a=Input(rid="ri.foundry.main.dataset.dfd52b0d-1b4b-49d1-a420-0f3df44e0f8d")
 )
 def analysis_2a_xgboost_cv(analysis_2a):
     df = analysis_2a.drop(columns = ['race_ethnicity', 'sex'])
@@ -238,7 +239,7 @@ def analysis_2a_xgboost_cv(analysis_2a):
 
 @transform_pandas(
     Output(rid="ri.vector.main.execute.b573a346-1982-4e97-8a8c-900989954f0c"),
-    analysis_2a_xgboost_cv=Input(rid="ri.vector.main.execute.463afdd2-d86e-47a5-b609-1f70641b88b8")
+    analysis_2a_xgboost_cv=Input(rid="ri.foundry.main.dataset.df6207be-25db-47f6-893e-ae6c8eb96f3f")
 )
 def analysis_2a_xgboost_cv_feature_importance(analysis_2a_xgboost_cv):
 
@@ -263,8 +264,9 @@ def analysis_2a_xgboost_cv_feature_importance(analysis_2a_xgboost_cv):
     
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.0027efbc-bc53-48b2-bd5a-a6feb4d078cf"),
-    analysis_2_PASC_case_cohort_2b=Input(rid="ri.foundry.main.dataset.e3640a26-eac1-43b7-b012-261f6dbbd2f3")
+    Output(rid="ri.foundry.main.dataset.f251c730-78fb-4044-8c57-96c16e3c2011"),
+    analysis_2_PASC_case_cohort_2b=Input(rid="ri.foundry.main.dataset.e3640a26-eac1-43b7-b012-261f6dbbd2f3"),
+    cci_score_covid_positive=Input(rid="ri.foundry.main.dataset.0d64bb7b-0e57-4c26-8c41-18a3b793fc00")
 )
 def analysis_2b(analysis_2_PASC_case_cohort_2b, cci_score_covid_positive):
     df = analysis_2_PASC_case_cohort_2b.join(cci_score_covid_positive, 'person_id', 'left')
@@ -283,8 +285,8 @@ def analysis_2b(analysis_2_PASC_case_cohort_2b, cci_score_covid_positive):
     
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.32e25c39-d215-4579-91c1-c62ab293273d"),
-    analysis_2b=Input(rid="ri.vector.main.execute.0027efbc-bc53-48b2-bd5a-a6feb4d078cf")
+    Output(rid="ri.foundry.main.dataset.40938b04-d7e0-4669-9b4e-57d4be39e92a"),
+    analysis_2b=Input(rid="ri.foundry.main.dataset.f251c730-78fb-4044-8c57-96c16e3c2011")
 )
 def analysis_2b_xgboost(analysis_2b):
     df = analysis_2b.drop(columns = ['race_ethnicity', 'sex'])
@@ -340,8 +342,8 @@ def analysis_2b_xgboost(analysis_2b):
     
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.3ea41ca9-1492-469b-8d91-2e43e50fef48"),
-    analysis_2b=Input(rid="ri.vector.main.execute.0027efbc-bc53-48b2-bd5a-a6feb4d078cf")
+    Output(rid="ri.foundry.main.dataset.41c8204d-b51b-4689-b2e0-2d9d25962b11"),
+    analysis_2b=Input(rid="ri.foundry.main.dataset.f251c730-78fb-4044-8c57-96c16e3c2011")
 )
 def analysis_2b_xgboost_cv(analysis_2b):
     df = analysis_2b.drop(columns = ['race_ethnicity', 'sex'])
@@ -431,7 +433,7 @@ def analysis_2b_xgboost_cv(analysis_2b):
 
 @transform_pandas(
     Output(rid="ri.vector.main.execute.95724237-cc6c-4966-bb38-684faa9244a7"),
-    analysis_2b_xgboost_cv=Input(rid="ri.vector.main.execute.3ea41ca9-1492-469b-8d91-2e43e50fef48")
+    analysis_2b_xgboost_cv=Input(rid="ri.foundry.main.dataset.41c8204d-b51b-4689-b2e0-2d9d25962b11")
 )
 def analysis_2b_xgboost_cv_feature_importance(analysis_2b_xgboost_cv):
 
