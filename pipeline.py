@@ -1,6 +1,22 @@
 
 
 @transform_pandas(
+    Output(rid="ri.vector.main.execute.3e6fafb8-1c06-45a0-982c-b5d38d450c1d")
+)
+def Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype(Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_, predictions_by_date):
+
+    df1 = Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_
+    df2 = predictions_by_date.select('person_id', 'y_pred_300')
+
+    df = df1.join(df2, 'person_id', 'left')
+    df = df.withColumn('LC_u09_computable_phenotype_threshold_75', (F.when(F.col('y_pred_300') >= 0.75, 1).otherwise(0)))
+
+    df = df.drop('y_pred_300')
+
+    return df
+    
+
+@transform_pandas(
     Output(rid="ri.vector.main.execute.364ef2c6-eeb6-4759-babe-e62045fa3ae8")
 )
 def analysis_2_PASC_case_cohort_2a(Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype):
