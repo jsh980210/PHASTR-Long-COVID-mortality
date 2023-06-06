@@ -747,7 +747,10 @@ from pyspark.sql import functions as F
 from pyspark.sql.types import IntegerType
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.1012c1bb-ccfe-4fdd-9ca8-a982ab0168a9")
+    Output(rid="ri.vector.main.execute.1012c1bb-ccfe-4fdd-9ca8-a982ab0168a9"),
+    analysis_1_COVID_negative_control=Input(rid="ri.foundry.main.dataset.cabcd0ef-fb38-471c-a325-493a9ca7b458"),
+    analysis_1_COVID_positive_control=Input(rid="ri.foundry.main.dataset.0ab2f17b-94f6-4f86-988b-e49c020e9d9f"),
+    analysis_1_PASC_case=Input(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68")
 )
 def test_no_intersection(analysis_1_COVID_positive_control, analysis_1_PASC_case, analysis_1_COVID_negative_control):
     df1 = analysis_1_COVID_positive_control.select('person_id','age_at_covid')
