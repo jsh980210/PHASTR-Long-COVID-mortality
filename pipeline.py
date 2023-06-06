@@ -40,6 +40,62 @@ def Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_pheno
     
 
 @transform_pandas(
+    Output(rid="ri.vector.main.execute.5e102670-ea64-40f2-b68d-5180f70dac5c")
+)
+def analysis_1_COVID_negative_control(recover_release_visit_occurence, analysis_1_PASC_case, Logic_Liaison_All_patients_summary_facts_table_lds, Logic_Liaison_All_patients_fact_day_table_lds):
+    df1 = Logic_Liaison_All_patients_summary_facts_table_lds
+    df2 = Logic_Liaison_All_patients_fact_day_table_lds
+    df3 = recover_release_visit_occurence
+    df4 = analysis_1_PASC_case.select('person_id')
+    df3 = df3.groupBy('person_id').agg(F.max('visit_start_date').alias('latest_visit_date'))
+
+    # index date: latest negative COVID test date
+    df2 = df2.filter(df2.PCR_AG_Neg == 1)
+    df2 = df2.groupBy('person_id').agg(F.max('date').alias('latest_PCR_AG_Neg_date'))
+    
+
+    result = df1.join(df2, 'person_id', 'left')
+    result = result.join(df3, 'person_id', 'left')
+    result = result.withColumn('index_date', F.col('latest_PCR_AG_Neg_date'))
+    
+    # Make the is_long_COVID_dx_site column
+    df1 = df1.filter(df1.LL_Long_COVID_diagnosis_indicator == 1)
+    long_covid_dx_sites = df1.select(F.collect_set('data_partner_id').alias('data_partner_id')).first()['data_partner_id']    
+    result = result.withColumn('is_long_COVID_dx_site', F.when(result.data_partner_id.isin(long_covid_dx_sites), 1).otherwise(0))
+
+    # Make the Oct 2021 index date
+    result = result.withColumn('2021oct_index_date', F.lit("2021-10-01"))
+
+    # From a site that is reporting U09.9 in their N3C data
+    result = result.filter(result.is_long_COVID_dx_site == 1)
+
+    # At least one visit >=45 days after index date
+    result = result.filter(F.datediff(F.col('latest_visit_date'), F.col('latest_PCR_AG_Neg_date')) >= 45)
+
+    # With at least one visit Oct.1, 2021 or later
+    result = result.filter(F.datediff(F.col('latest_visit_date'), F.col('2021oct_index_date')) >= 0)
+
+    # Age >= 18
+    result = result.filter(result.age >= 18)
+
+    # Exclude confirmed COVID patients
+    result = result.filter(result.confirmed_covid_patient == 0)
+
+    # Exclude possible COVID patients
+    result = result.filter(result.possible_covid_patient == 0)
+
+    # exclude PASC case
+    result = result.join(df4, 'person_id', 'left_anti')
+
+    # Long COVID control label
+    result = result.withColumn('long_covid', F.lit(0))
+
+    
+
+    return result
+    
+
+@transform_pandas(
     Output(rid="ri.vector.main.execute.829097c1-b497-4a7d-9f2a-e48b2bc18df0"),
     Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c"),
     analysis_1_PASC_case=Input(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68")
