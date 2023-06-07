@@ -1,10 +1,12 @@
 
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.5a1c5751-71d0-49c5-b661-87fb1ec52ff4")
+    Output(rid="ri.foundry.main.dataset.b29fdc92-4983-44c5-853f-c3117d55cf86"),
+    analysis_1_COVID_negative_control_pre_matching=Input(rid="ri.foundry.main.dataset.4bc2a605-ffb8-4a08-b9c2-623fa9730224")
 )
 analysis_1_COVID_negative_control_matching <- function(analysis_1_COVID_negative_control_pre_matching) {
     library(MatchIt)
+    set.seed(2023)
     # add seed 
     
     df <- analysis_1_COVID_negative_control_pre_matching
