@@ -22,7 +22,9 @@ import math
 from lifelines import KaplanMeierFitter 
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.d57e86ae-f217-4d6f-b0c2-e6c0efb581c9")
+    Output(rid="ri.vector.main.execute.d57e86ae-f217-4d6f-b0c2-e6c0efb581c9"),
+    Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_=Input(rid="ri.foundry.main.dataset.75d7da57-7b0e-462c-b41d-c9ef4f756198"),
+    predictions_by_date=Input(rid="ri.foundry.main.dataset.647f3798-efd2-45ed-9a54-303cfb2c997e")
 )
 def sensitivity_analysis_1(predictions_by_date, Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_):
     # Using pred_300 as the computable phenotype
@@ -55,7 +57,9 @@ def sensitivity_analysis_1(predictions_by_date, Logic_Liaison_Covid_19_Patient_S
     return df3
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.1fda7cdf-629b-43e2-a38e-affea03e65d5")
+    Output(rid="ri.vector.main.execute.1fda7cdf-629b-43e2-a38e-affea03e65d5"),
+    Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_=Input(rid="ri.foundry.main.dataset.75d7da57-7b0e-462c-b41d-c9ef4f756198"),
+    predictions_by_date=Input(rid="ri.foundry.main.dataset.647f3798-efd2-45ed-9a54-303cfb2c997e")
 )
 def sensitivity_analysis_2(predictions_by_date, Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_):
     # Using max of pred_100 through pred_300 as the computable phenotype
