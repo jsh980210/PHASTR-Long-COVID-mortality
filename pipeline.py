@@ -1246,7 +1246,7 @@ def km_curve_analysis_1_PASC_case(analysis_1_PASC_case_matched, death):
     plt.title("Kaplan-Meier curve PASC case")
     plt.ylabel('survival probability')
     plt.xlim([0, 1300])
-    plt.ylim([0.94, 1])
+    plt.ylim([0.9, 1])
     plt.show()
     return df
     
