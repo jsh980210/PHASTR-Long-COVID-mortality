@@ -328,7 +328,8 @@ def analysis_1_cohort(analysis_1_PASC_case_matched, Analysis_1_COVID_positive_co
     
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.ef5bc88b-4253-498e-8ea3-928a0eac5ab1")
+    Output(rid="ri.vector.main.execute.ef5bc88b-4253-498e-8ea3-928a0eac5ab1"),
+    analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f")
 )
 def analysis_1_xgboost(analysis_1_cohort):
     df = analysis_1_cohort
