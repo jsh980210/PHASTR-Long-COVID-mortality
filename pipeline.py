@@ -276,6 +276,51 @@ def analysis_1_PASC_case_matched(analysis_1_PASC_case, analysis_1_COVID_negative
     
 
 @transform_pandas(
+    Output(rid="ri.vector.main.execute.4cb84e91-df33-4fff-9b68-2931d5cda80c")
+)
+def analysis_1_cohort(analysis_1_PASC_case_matched, Analysis_1_COVID_positive_control_matched, analysis_1_COVID_negative_control_matched, cci_score, Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, Logic_Liaison_All_patients_summary_facts_table_lds, cci_score_covid_positive):
+    df1 = analysis_1_PASC_case_matched.select('person_id')
+    df1 = df1.withColumn('subcohort', F.lit(2)) # PASC subcohort
+    df2 = Analysis_1_COVID_positive_control_matched.select('person_id')
+    df2 = df2.withColumn('subcohort', F.lit(1)) # COVID positive non pasc subcohort
+    df3 = analysis_1_COVID_negative_control_matched.select('person_id')
+    df3 = df3.withColumn('subcohort', F.lit(0)) # COVID negative subcohort 
+
+    df4 = Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype.select('person_id', 'BMI_max_observed_or_calculated_before_or_day_of_covid', 'number_of_COVID_vaccine_doses_before_or_day_of_covid', 'COVID_patient_death_indicator').join(cci_score_covid_positive, 'person_id', 'left')
+    df5 = Logic_Liaison_All_patients_summary_facts_table_lds.select('person_id', 'BMI_max_observed_or_calculated', 'total_number_of_COVID_vaccine_doses', 'patient_death_indicator').join(cci_score, 'person_id', 'left')
+
+    df_COVID = (df1.select('person_id', 'subcohort')).union(df2.select('person_id', 'subcohort'))
+    df_COVID = df_COVID.join(df4, 'person_id', 'left')
+    df_non_COVID = df3
+    df_non_COVID = df_non_COVID.join(df5, 'person_id', 'left')
+    
+
+    
+    df_COVID = df_COVID.withColumnRenamed('CCI_score_up_through_index_date', 'CCI') \
+                .withColumnRenamed('BMI_max_observed_or_calculated_before_or_day_of_covid', 'BMI') \
+                .withColumnRenamed('number_of_COVID_vaccine_doses_before_or_day_of_covid', 'number_of_COVID_vaccine_doses') \
+                .withColumnRenamed('COVID_patient_death_indicator', 'death')
+
+    
+
+    df_non_COVID = df_non_COVID.withColumnRenamed('CCI_score', 'CCI') \
+                .withColumnRenamed('BMI_max_observed_or_calculated', 'BMI') \
+                .withColumnRenamed('total_number_of_COVID_vaccine_doses', 'number_of_COVID_vaccine_doses') \
+                .withColumnRenamed('patient_death_indicator', 'death')
+    test = (df_COVID.select('person_id')).join(df_non_COVID.select('person_id'), 'person_id', 'inner')
+    print(test.count())
+
+    result = df_COVID.select('person_id', 'death', 'CCI', 'BMI', 'subcohort', 'number_of_COVID_vaccine_doses').union(df_non_COVID.select('person_id', 'death', 'CCI', 'BMI', 'subcohort', 'number_of_COVID_vaccine_doses'))
+
+    result = result.withColumn('number_of_COVID_vaccine_doses', result.number_of_COVID_vaccine_doses.cast('int'))
+    avg_bmi = np.mean(result.toPandas()['BMI'])
+    #result = result.fillna(0, subset = ['CCI'])
+    result = result.fillna(avg_bmi, subset = ['BMI'])
+
+    return result
+    
+
+@transform_pandas(
     Output(rid="ri.foundry.main.dataset.7d7a7b20-d395-41e5-9804-f9e8bfa34e4f"),
     Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c")
 )
