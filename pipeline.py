@@ -342,7 +342,7 @@ def analysis_1_xgboost(analysis_1_cohort):
     classifier.fit(X_train, y_train)
     y_score = classifier.predict_proba(X_test)[:, 1]
     #print(y_pred)
-    y_pred_cat = np.where(y_score >= 0.0955, 1, 0)
+    y_pred_cat = np.where(y_score >= 0.0017, 1, 0)
 
     print(roc_auc_score(y_test, y_score))
     print(recall_score(y_test, y_pred_cat))
