@@ -2,7 +2,7 @@ from pyspark.sql import functions as F
 from pyspark.sql.functions import when
 import numpy as np
 import pandas as pd
-
+import random
 import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import (roc_curve, roc_auc_score, confusion_matrix, accuracy_score, f1_score, precision_recall_curve, recall_score)
@@ -333,7 +333,7 @@ def analysis_1_cohort(analysis_1_PASC_case_matched, Analysis_1_COVID_positive_co
 )
 def analysis_1_xgboost(analysis_1_cohort):
     df = analysis_1_cohort
-    # seed 
+    random.seed(2023)
     X = df[['CCI', 'BMI', 'subcohort', 'number_of_COVID_vaccine_doses']]
     y = df['death']
 
