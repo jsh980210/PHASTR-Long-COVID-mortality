@@ -328,6 +328,63 @@ def analysis_1_cohort(analysis_1_PASC_case_matched, Analysis_1_COVID_positive_co
     
 
 @transform_pandas(
+    Output(rid="ri.vector.main.execute.ef5bc88b-4253-498e-8ea3-928a0eac5ab1")
+)
+def analysis_1_xgboost(analysis_1_cohort):
+    df = analysis_1_cohort
+    # seed 
+    X = df[['CCI', 'BMI', 'subcohort', 'number_of_COVID_vaccine_doses']]
+    y = df['death']
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state = 42)
+    classifier = XGBClassifier(random_state = 42)
+    classifier.fit(X_train, y_train)
+    y_score = classifier.predict_proba(X_test)[:, 1]
+    #print(y_pred)
+    y_pred_cat = np.where(y_score >= 0.0955, 1, 0)
+
+    print(roc_auc_score(y_test, y_score))
+    print(recall_score(y_test, y_pred_cat))
+    print(confusion_matrix(y_test, y_pred_cat))
+    plot_importance(classifier)
+
+    pred_scores = dict(y_true=y_test, y_score=y_score)
+    cols = ['False Positive Rate', 'True Positive Rate', 'threshold']
+    roc = pd.DataFrame(dict(zip(cols, roc_curve(**pred_scores))))
+
+    precision, recall, ts = precision_recall_curve(y_true=y_test, probas_pred=y_score)
+    pr_curve = pd.DataFrame({'Precision': precision, 'Recall': recall})
+
+    f1 = pd.Series({t: f1_score(y_true=y_test, y_pred=y_score>t) for t in ts})
+    best_threshold = f1.idxmax()
+    print(best_threshold)
+
+    fig, axes = plt.subplots(ncols=3, figsize=(13, 5))
+
+    sns.scatterplot(x='False Positive Rate', y='True Positive Rate', data=roc, s=50, legend=False, ax=axes[0])
+    axes[0].plot('False Positive Rate', 'True Positive Rate', data=roc, lw=1, color='k')
+    axes[0].plot(np.linspace(0,1,100), np.linspace(0,1,100), color='k', ls='--', lw=1)
+    axes[0].fill_between(y1=roc['True Positive Rate'], x=roc['False Positive Rate'], alpha=.3, color='red')
+    axes[0].set_title('Receiver Operating Characteristic')
+
+    sns.scatterplot(x='Recall', y='Precision', data=pr_curve, ax=axes[1])
+    axes[1].set_ylim(0,1)
+    axes[1].set_title('Precision-Recall Curve')
+
+    #print(f1)
+    axes[2].plot(f1)
+    axes[2].set_xlabel('Threshold')
+    axes[2].axvline(best_threshold, lw=1, ls='--', color='k')
+    #axes[2].text(text=f'Max F1 @ {best_threshold:.2f}', x=.60, y=.95, s=5)
+    
+    fig.suptitle(f'roc_auc_score = {round(roc_auc_score(**pred_scores),2)}', fontsize=24)
+    fig.tight_layout()
+    #fig.savefig("roc.png")
+    plt.subplots_adjust(top=.8)
+    plt.show()
+    
+
+@transform_pandas(
     Output(rid="ri.foundry.main.dataset.7d7a7b20-d395-41e5-9804-f9e8bfa34e4f"),
     Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c")
 )
