@@ -22,6 +22,30 @@ import math
 #from lifelines import KaplanMeierFitter 
 
 @transform_pandas(
+    Output(rid="ri.vector.main.execute.edc68d09-273b-4824-856a-e23808f2d29a")
+)
+def Analysis_1_COVID_positive_control_matched(analysis_1_COVID_positive_control_matching, analysis_1_PASC_case_matched):
+    df1 = analysis_1_COVID_positive_control_matching
+    df2 = (analysis_1_PASC_case_matched.select('person_id')).join(df1, 'person_id', 'inner')
+
+    df3 = df1.filter(df1.long_covid == 0).union(df2)
+    
+
+    df4 = df3.groupBy('subclass').agg(F.count('*').alias('count_same_subclass'))
+
+    df5 = df3.join(df4, 'subclass', 'left')
+
+    result = df5.filter(df5.count_same_subclass == 2)
+
+    result = result.filter(result.long_covid == 0)
+
+    
+
+    
+
+    return result
+
+@transform_pandas(
     Output(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c"),
     Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_=Input(rid="ri.foundry.main.dataset.75d7da57-7b0e-462c-b41d-c9ef4f756198"),
     predictions_by_date=Input(rid="ri.foundry.main.dataset.647f3798-efd2-45ed-9a54-303cfb2c997e")
