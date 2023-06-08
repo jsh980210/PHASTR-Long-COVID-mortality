@@ -365,8 +365,8 @@ def analysis_1_logistic_cv(analysis_1_cohort):
     for i, (train, test) in enumerate(cv.split(X, y)):
         classifier.fit(X[train], y[train])
         y_pred = classifier.predict_proba(X[test])
-        feature_importances = pd.DataFrame(classifier.feature_importances_, index = features, columns=[('importance' + str(i))])
-        features_pd = features_pd.join(feature_importances, 'feature', 'inner')
+        #feature_importances = pd.DataFrame(classifier.feature_importances_, index = features, columns=[('importance' + str(i))])
+        #features_pd = features_pd.join(feature_importances, 'feature', 'inner')
 
         viz = plot_roc_curve(classifier, X[test], y[test],
                             name='ROC fold {}'.format(i),
