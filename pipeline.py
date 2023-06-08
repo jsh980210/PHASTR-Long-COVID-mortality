@@ -22,7 +22,9 @@ import math
 #from lifelines import KaplanMeierFitter 
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.edc68d09-273b-4824-856a-e23808f2d29a")
+    Output(rid="ri.foundry.main.dataset.f77735ea-fa94-412c-9b5d-82c314be0418"),
+    analysis_1_COVID_positive_control_matching=Input(rid="ri.foundry.main.dataset.7aa4122a-d05e-4e3a-999a-88e069107fbd"),
+    analysis_1_PASC_case_matched=Input(rid="ri.foundry.main.dataset.1e5e00da-adbf-4c93-8c3d-1a1caf99c4f6")
 )
 def Analysis_1_COVID_positive_control_matched(analysis_1_COVID_positive_control_matching, analysis_1_PASC_case_matched):
     df1 = analysis_1_COVID_positive_control_matching
