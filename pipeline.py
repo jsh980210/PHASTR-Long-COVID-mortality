@@ -206,7 +206,10 @@ def analysis_1_PASC_case(Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_
     
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.ce974d4a-fc3e-495b-95a6-747ac3f92fab")
+    Output(rid="ri.foundry.main.dataset.1e5e00da-adbf-4c93-8c3d-1a1caf99c4f6"),
+    analysis_1_COVID_negative_control_matching=Input(rid="ri.foundry.main.dataset.b29fdc92-4983-44c5-853f-c3117d55cf86"),
+    analysis_1_COVID_positive_control_matching=Input(rid="ri.foundry.main.dataset.7aa4122a-d05e-4e3a-999a-88e069107fbd"),
+    analysis_1_PASC_case=Input(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68")
 )
 def analysis_1_PASC_case_matched(analysis_1_PASC_case, analysis_1_COVID_negative_control_matching, analysis_1_COVID_positive_control_matching):
     df1 = analysis_1_PASC_case
