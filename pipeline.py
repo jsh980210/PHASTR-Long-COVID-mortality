@@ -881,7 +881,10 @@ def test_no_intersection(analysis_1_COVID_positive_control, analysis_1_PASC_case
     
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.25d3185e-6698-48ea-8344-651c53de9c88")
+    Output(rid="ri.vector.main.execute.25d3185e-6698-48ea-8344-651c53de9c88"),
+    Analysis_1_COVID_positive_control_matched=Input(rid="ri.foundry.main.dataset.f77735ea-fa94-412c-9b5d-82c314be0418"),
+    analysis_1_COVID_negative_control_matched=Input(rid="ri.foundry.main.dataset.875ddad6-f9fc-400f-9411-1cab55e908c9"),
+    analysis_1_PASC_case_matched=Input(rid="ri.foundry.main.dataset.1e5e00da-adbf-4c93-8c3d-1a1caf99c4f6")
 )
 def test_no_intersection_1(Analysis_1_COVID_positive_control_matched, analysis_1_PASC_case_matched, analysis_1_COVID_negative_control_matched):
     df1 = Analysis_1_COVID_positive_control_matched.select('person_id')
