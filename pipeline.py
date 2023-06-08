@@ -356,8 +356,8 @@ def analysis_1_xgboost(analysis_1_cohort):
     precision, recall, ts = precision_recall_curve(y_true=y_test, probas_pred=y_score)
     pr_curve = pd.DataFrame({'Precision': precision, 'Recall': recall})
 
-    f1 = pd.Series({t: f1_score(y_true=y_test, y_pred=y_score>t) for t in ts})
-    best_threshold = f1.idxmax()
+    recall_score = pd.Series({t: recall_score(y_true=y_test, y_pred=y_score>t) for t in ts})
+    best_threshold = recall_score.idxmax()
     print(best_threshold)
 
     fig, axes = plt.subplots(ncols=3, figsize=(13, 5))
@@ -373,8 +373,9 @@ def analysis_1_xgboost(analysis_1_cohort):
     axes[1].set_title('Precision-Recall Curve')
 
     #print(f1)
-    axes[2].plot(f1)
+    axes[2].plot(recall_score)
     axes[2].set_xlabel('Threshold')
+    axes[2].set_ylabel('Recall score')
     axes[2].axvline(best_threshold, lw=1, ls='--', color='k')
     #axes[2].text(text=f'Max F1 @ {best_threshold:.2f}', x=.60, y=.95, s=5)
     
