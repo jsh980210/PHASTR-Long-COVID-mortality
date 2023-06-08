@@ -357,10 +357,12 @@ def analysis_1_xgboost(analysis_1_cohort):
     pr_curve = pd.DataFrame({'Precision': precision, 'Recall': recall})
 
     recall_score_series = pd.Series({t: recall_score(y_true=y_test, y_pred=y_score>t) for t in ts})
-    best_threshold = recall_score_series.idxmax()
-    print(best_threshold)
-
-    fig, axes = plt.subplots(ncols=3, figsize=(13, 5))
+    f1_score_series = pd.Series({t: f1_score(y_true=y_test, y_pred=y_score>t) for t in ts})
+    best_threshold_recall = recall_score_series.idxmax()
+    best_threshold_f1 = f1_score_series.idxmax()
+    print("best_recall_threshold: ", best_threshold_recall)
+    print("best_f1_threshold: ", best_threshold_f1)
+    fig, axes = plt.subplots(ncols=4, figsize=(13, 5))
 
     sns.scatterplot(x='False Positive Rate', y='True Positive Rate', data=roc, s=50, legend=False, ax=axes[0])
     axes[0].plot('False Positive Rate', 'True Positive Rate', data=roc, lw=1, color='k')
@@ -372,12 +374,16 @@ def analysis_1_xgboost(analysis_1_cohort):
     axes[1].set_ylim(0,1)
     axes[1].set_title('Precision-Recall Curve')
 
-    #print(f1)
     axes[2].plot(recall_score_series)
     axes[2].set_xlabel('Threshold')
     axes[2].set_ylabel('Recall score')
     axes[2].axvline(best_threshold, lw=1, ls='--', color='k')
     #axes[2].text(text=f'Max F1 @ {best_threshold:.2f}', x=.60, y=.95, s=5)
+
+    axes[3].plot(f1_score_series)
+    axes[3].set_xlabel('Threshold')
+    axes[3].set_ylabel('F1 score')
+    axes[3].axvline(best_threshold, lw=1, ls='--', color='k')
     
     fig.suptitle(f'roc_auc_score = {round(roc_auc_score(**pred_scores),2)}', fontsize=24)
     fig.tight_layout()
