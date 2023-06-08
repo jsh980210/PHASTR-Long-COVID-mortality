@@ -347,7 +347,6 @@ def analysis_1_logistic_py(analysis_1_cohort):
     print(roc_auc_score(y_test, y_score))
     print(recall_score(y_test, y_pred_cat))
     print(confusion_matrix(y_test, y_pred_cat))
-    plot_importance(classifier)
 
     pred_scores = dict(y_true=y_test, y_score=y_score)
     cols = ['False Positive Rate', 'True Positive Rate', 'threshold']
