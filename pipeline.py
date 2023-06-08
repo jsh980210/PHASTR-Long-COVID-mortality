@@ -1252,7 +1252,10 @@ def km_curve_analysis_1_PASC_case(analysis_1_PASC_case_matched, death):
     
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.58e4efac-86c0-41be-9b7a-d1049876a4cf")
+    Output(rid="ri.vector.main.execute.58e4efac-86c0-41be-9b7a-d1049876a4cf"),
+    analysis_1_COVID_negative_control=Input(rid="ri.foundry.main.dataset.cabcd0ef-fb38-471c-a325-493a9ca7b458"),
+    analysis_1_COVID_negative_control_matched=Input(rid="ri.foundry.main.dataset.875ddad6-f9fc-400f-9411-1cab55e908c9"),
+    death=Input(rid="ri.foundry.main.dataset.d8cc2ad4-215e-4b5d-bc80-80ffb3454875")
 )
 def km_curve_analysis_1_covid_negative_control(death, analysis_1_COVID_negative_control_matched, analysis_1_COVID_negative_control):
     df = analysis_1_COVID_negative_control_matched.select('person_id').join(analysis_1_COVID_negative_control, 'person_id', 'left')
