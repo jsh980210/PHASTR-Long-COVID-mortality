@@ -377,13 +377,13 @@ def analysis_1_xgboost(analysis_1_cohort):
     axes[2].plot(recall_score_series)
     axes[2].set_xlabel('Threshold')
     axes[2].set_ylabel('Recall score')
-    axes[2].axvline(best_threshold, lw=1, ls='--', color='k')
+    axes[2].axvline(best_threshold_recall, lw=1, ls='--', color='k')
     #axes[2].text(text=f'Max F1 @ {best_threshold:.2f}', x=.60, y=.95, s=5)
 
     axes[3].plot(f1_score_series)
     axes[3].set_xlabel('Threshold')
     axes[3].set_ylabel('F1 score')
-    axes[3].axvline(best_threshold, lw=1, ls='--', color='k')
+    axes[3].axvline(best_threshold_f1, lw=1, ls='--', color='k')
     
     fig.suptitle(f'roc_auc_score = {round(roc_auc_score(**pred_scores),2)}', fontsize=24)
     fig.tight_layout()
