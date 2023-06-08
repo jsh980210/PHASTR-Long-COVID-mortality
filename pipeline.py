@@ -1225,6 +1225,82 @@ from pyspark.sql import functions as F
 from pyspark.sql.types import IntegerType
 
 @transform_pandas(
+    Output(rid="ri.vector.main.execute.cc9f5b05-987a-485f-89ed-1f3f5a9780ab")
+)
+def km_curve_analysis_1_PASC_case(analysis_1_PASC_case_matched, death):
+    df = analysis_1_PASC_case_matched
+    df1 = death.select('person_id', 'death_date')
+    df = df.join(df1, 'person_id', 'left')
+    df = df.select('person_id', 'COVID_patient_death_indicator', 'death_date', 'index_date')
+    df = df.withColumn('today', F.lit('2023-05-05'))
+    df = df.withColumn('duration', F.when(df.COVID_patient_death_indicator == 1, F.datediff('death_date', 'index_date')).otherwise(F.datediff('today', 'index_date')))
+    df = df.filter(df.duration >= 0)
+
+    df = df.toPandas()
+    kmf = KaplanMeierFitter() 
+    kmf.fit(df['duration'], df['COVID_patient_death_indicator'])
+    #plt.figure(figsize=(8,4))
+    kmf.plot()
+    plt.title("Kaplan-Meier curve PASC case")
+    plt.ylabel('survival probability')
+    plt.xlim([0, 1300])
+    plt.ylim([0.94, 1])
+    plt.show()
+    return df
+    
+
+@transform_pandas(
+    Output(rid="ri.vector.main.execute.58e4efac-86c0-41be-9b7a-d1049876a4cf")
+)
+def km_curve_analysis_1_covid_negative_control(death, analysis_1_COVID_negative_control_matched, analysis_1_COVID_negative_control):
+    df = analysis_1_COVID_negative_control_matched.select('person_id').join(analysis_1_COVID_negative_control, 'person_id', 'left')
+    df1 = death.select('person_id', 'death_date')
+    df = df.join(df1, 'person_id', 'left')
+    df = df.select('person_id', 'patient_death_indicator', 'death_date', 'index_date')
+    df = df.withColumn('today', F.lit('2023-05-05'))
+    df = df.withColumn('duration', F.when(df.patient_death_indicator == 1, F.datediff('death_date', 'index_date')).otherwise(F.datediff('today', 'index_date')))
+    df = df.filter(df.duration >= 0)
+
+    df = df.toPandas()
+    kmf = KaplanMeierFitter() 
+    kmf.fit(df['duration'], df['patient_death_indicator'])
+    #plt.figure(figsize=(8,4))
+    kmf.plot()
+    plt.title("Kaplan-Meier curve COVID negative control")
+    plt.ylabel('survival probability')
+    plt.xlim([0, 1300])
+    plt.ylim([0.94, 1])
+    
+    plt.show()
+    return df
+    
+
+@transform_pandas(
+    Output(rid="ri.vector.main.execute.294745ac-f0e4-49d8-8081-b2a8ccb41e41")
+)
+def km_curve_analysis_1_covid_positive_control(death, Analysis_1_COVID_positive_control_matched, analysis_1_COVID_positive_control):
+    df = Analysis_1_COVID_positive_control_matched.select('person_id').join(analysis_1_COVID_positive_control, 'person_id', 'left')
+    df1 = death.select('person_id', 'death_date')
+    df = df.join(df1, 'person_id', 'left')
+    df = df.select('person_id', 'COVID_patient_death_indicator', 'death_date', 'index_date')
+    df = df.withColumn('today', F.lit('2023-05-05'))
+    df = df.withColumn('duration', F.when(df.COVID_patient_death_indicator == 1, F.datediff('death_date', 'index_date')).otherwise(F.datediff('today', 'index_date')))
+    df = df.filter(df.duration >= 0)
+
+    df = df.toPandas()
+    kmf = KaplanMeierFitter() 
+    kmf.fit(df['duration'], df['COVID_patient_death_indicator'])
+    #plt.figure(figsize=(8,4))
+    kmf.plot()
+    plt.title("Kaplan-Meier curve COVID positive control")
+    plt.ylabel('survival probability')
+    plt.xlim([0, 1300])
+    plt.ylim([0.94, 1])
+    plt.show()
+    return df
+    
+
+@transform_pandas(
     Output(rid="ri.vector.main.execute.1012c1bb-ccfe-4fdd-9ca8-a982ab0168a9"),
     analysis_1_COVID_negative_control=Input(rid="ri.foundry.main.dataset.cabcd0ef-fb38-471c-a325-493a9ca7b458"),
     analysis_1_COVID_positive_control=Input(rid="ri.foundry.main.dataset.0ab2f17b-94f6-4f86-988b-e49c020e9d9f"),
