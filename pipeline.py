@@ -1225,7 +1225,9 @@ from pyspark.sql import functions as F
 from pyspark.sql.types import IntegerType
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.cc9f5b05-987a-485f-89ed-1f3f5a9780ab")
+    Output(rid="ri.vector.main.execute.cc9f5b05-987a-485f-89ed-1f3f5a9780ab"),
+    analysis_1_PASC_case_matched=Input(rid="ri.foundry.main.dataset.1e5e00da-adbf-4c93-8c3d-1a1caf99c4f6"),
+    death=Input(rid="ri.foundry.main.dataset.d8cc2ad4-215e-4b5d-bc80-80ffb3454875")
 )
 def km_curve_analysis_1_PASC_case(analysis_1_PASC_case_matched, death):
     df = analysis_1_PASC_case_matched
