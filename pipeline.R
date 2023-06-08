@@ -28,3 +28,24 @@ analysis_1_COVID_positive_control_matching <- function(analysis_1_COVID_positive
     return (match.data(matching))
 }
 
+@transform_pandas(
+    Output(rid="ri.vector.main.execute.3cf37300-1775-489c-aa28-c2c314b028a2")
+)
+analysis_1_logistic <- function(analysis_1_cohort) {
+    library(broom)
+    # seed 
+    df <- analysis_1_cohort
+    df$subcohort <- as.factor(df$subcohort)
+    df$number_of_COVID_vaccine_doses <- as.factor(df$number_of_COVID_vaccine_doses)
+
+    lr <- glm(death ~ subcohort + number_of_COVID_vaccine_doses + BMI + CCI, data = df, family = binomial)
+
+    print(summary(lr))
+    print(exp(coefficients(lr)))
+    mod_tbl <- broom::tidy(lr, conf.int = TRUE, exponentiate = TRUE)
+
+    return (mod_tbl)
+    # grid search on the threshold to max the recall
+    
+}
+
