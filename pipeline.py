@@ -1346,3 +1346,29 @@ def test_no_intersection_1(Analysis_1_COVID_positive_control_matched, analysis_1
     print(result3.count())
     
 
+@transform_pandas(
+    Output(rid="ri.vector.main.execute.96243607-5a34-4f1a-9800-708a524e9691"),
+    analysis_2b_xgboost_cv=Input(rid="ri.foundry.main.dataset.41c8204d-b51b-4689-b2e0-2d9d25962b11")
+)
+def analysis_2b_xgboost_cv_feature_importance_1(analysis_2b_xgboost_cv):
+
+    df = analysis_2b_xgboost_cv
+    df_features = analysis_2b_xgboost_cv['feature']
+
+    df = df.drop(columns = ['feature'])
+
+    df['mean'] = (df.mean(axis = 1))
+
+    df['features'] = df_features
+
+    df = df.sort_values("mean", ascending = False).head(50)
+    df.index = df["features"]
+    plt.figure(figsize = (7, 14))
+    sns.barplot(x = df["mean"], y = df["features"], palette = sns.color_palette("RdYlBu", df.shape[0]))
+    plt.tight_layout()
+    plt.show()
+
+    return(df)
+
+    
+
