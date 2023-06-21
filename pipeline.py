@@ -639,6 +639,32 @@ def analysis_1_xgboost_cv(analysis_1_cohort):
     
 
 @transform_pandas(
+    Output(rid="ri.vector.main.execute.96243607-5a34-4f1a-9800-708a524e9691"),
+    analysis_1_xgboost_cv=Input(rid="ri.foundry.main.dataset.5b7091d9-5060-4c61-9c00-f12485935292")
+)
+def analysis_1_xgboost_cv_feature_importance(analysis_1_xgboost_cv):
+
+    df = analysis_1_xgboost_cv
+    df_features = analysis_1_xgboost_cv['feature']
+
+    df = df.drop(columns = ['feature'])
+
+    df['mean'] = (df.mean(axis = 1))
+
+    df['features'] = df_features
+
+    df = df.sort_values("mean", ascending = False).head(50)
+    df.index = df["features"]
+    plt.figure(figsize = (7, 14))
+    sns.barplot(x = df["mean"], y = df["features"], palette = sns.color_palette("RdYlBu", df.shape[0]))
+    plt.tight_layout()
+    plt.show()
+
+    return(df)
+
+    
+
+@transform_pandas(
     Output(rid="ri.foundry.main.dataset.7d7a7b20-d395-41e5-9804-f9e8bfa34e4f"),
     Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c")
 )
@@ -1344,31 +1370,5 @@ def test_no_intersection_1(Analysis_1_COVID_positive_control_matched, analysis_1
     print(result1.count())
     print(result2.count())
     print(result3.count())
-    
-
-@transform_pandas(
-    Output(rid="ri.vector.main.execute.96243607-5a34-4f1a-9800-708a524e9691"),
-    analysis_2b_xgboost_cv=Input(rid="ri.foundry.main.dataset.41c8204d-b51b-4689-b2e0-2d9d25962b11")
-)
-def analysis_2b_xgboost_cv_feature_importance_1(analysis_2b_xgboost_cv):
-
-    df = analysis_2b_xgboost_cv
-    df_features = analysis_2b_xgboost_cv['feature']
-
-    df = df.drop(columns = ['feature'])
-
-    df['mean'] = (df.mean(axis = 1))
-
-    df['features'] = df_features
-
-    df = df.sort_values("mean", ascending = False).head(50)
-    df.index = df["features"]
-    plt.figure(figsize = (7, 14))
-    sns.barplot(x = df["mean"], y = df["features"], palette = sns.color_palette("RdYlBu", df.shape[0]))
-    plt.tight_layout()
-    plt.show()
-
-    return(df)
-
     
 
