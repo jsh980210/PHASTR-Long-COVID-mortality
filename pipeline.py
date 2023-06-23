@@ -1396,6 +1396,8 @@ def test_no_intersection(analysis_1_COVID_positive_control, analysis_1_PASC_case
     df1 = analysis_1_COVID_positive_control.select('person_id','age_at_covid')
     df2 = analysis_1_PASC_case.select('person_id', 'first_COVID_ED_only_start_date')
     df3 = analysis_1_COVID_negative_control.select('person_id', 'state')
+    df4 = Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype
+    df5 = Logic_Liaison_All_patients_summary_facts_table_lds
 
     result1 = df1.join(df2, 'person_id', 'inner')
     result2 = df1.join(df3, 'person_id', 'inner')
@@ -1407,7 +1409,9 @@ def test_no_intersection(analysis_1_COVID_positive_control, analysis_1_PASC_case
     
     result = (result2.select('person_id')).join(Logic_Liaison_All_patients_summary_facts_table_lds, 'person_id', 'inner')
 
-    return result
+    test_result = (df4.select('person_id')).join(df5.filter((df5.confirmed_covid_patient == 0) & (df5.possible_covid_patient == 0)), 'person_id', 'inner')
+
+    return test_result
 
     
     
