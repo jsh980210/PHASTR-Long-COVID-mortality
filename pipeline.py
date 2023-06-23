@@ -1400,9 +1400,9 @@ def test_no_intersection(analysis_1_COVID_positive_control, analysis_1_PASC_case
     result2 = df1.join(df3, 'person_id', 'inner')
     result3 = df2.join(df3, 'person_id', 'inner')
 
-    print(len(result1))
-    print(len(result2))
-    print(len(result3))
+    print(result1.count())
+    print(result2.count())
+    print(result3.count())
     
     result = result2.join(Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, 'person_id', 'inner')
 
