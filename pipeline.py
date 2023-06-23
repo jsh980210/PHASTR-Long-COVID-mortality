@@ -151,7 +151,7 @@ def analysis_1_COVID_negative_control(visit_occurrence, analysis_1_PASC_case, Lo
     result = result.join(df4, 'person_id', 'left_anti')
 
     # exclude COVID positive control
-    result = result.join(df5, 'person_id', 'left_anti')
+    #result = result.join(df5, 'person_id', 'left_anti')
 
     # Long COVID control label
     result = result.withColumn('long_covid', F.lit(0))
