@@ -298,6 +298,26 @@ def analysis_1_PASC_case_matched(analysis_1_PASC_case, analysis_1_COVID_negative
     
 
 @transform_pandas(
+    Output(rid="ri.foundry.main.dataset.b993e62e-4d91-4c6b-9f06-cfa0c78a106a"),
+    Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c")
+)
+def analysis_1_PASC_case_test(Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype):
+    # COVID positive
+    # Now we only have threshold 0.75, and would change the threshold after sensitivity analysis
+    # COVID_first_poslab_or_diagnosis_date as index date
+    df = Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype
+    
+
+    #Long COVID 
+    
+    df = df.filter((df.Long_COVID_diagnosis_post_covid_indicator == 1) | (df.Long_COVID_clinic_visit_post_covid_indicator == 1) | (df.LC_u09_computable_phenotype_threshold_75 == 1))
+    df = df.filter(df.age_at_covid >= 18)
+    # Long COVID case label
+    df = df.withColumn('long_covid', F.lit(1))
+    return df
+    
+
+@transform_pandas(
     Output(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f"),
     Analysis_1_COVID_positive_control_matched=Input(rid="ri.foundry.main.dataset.f77735ea-fa94-412c-9b5d-82c314be0418"),
     Logic_Liaison_All_patients_summary_facts_table_lds=Input(rid="ri.foundry.main.dataset.80175e0f-69da-41e2-8065-2c9a7d3bc571"),
@@ -1396,44 +1416,5 @@ def test_no_intersection_1(Analysis_1_COVID_positive_control_matched, analysis_1
     print(result1.count())
     print(result2.count())
     print(result3.count())
-    
-
-@transform_pandas(
-    Output(rid="ri.vector.main.execute.c979d8bc-cc1d-41c1-a1e2-3fe19abc8b08"),
-    Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c"),
-    visit_occurrence=Input(rid="ri.foundry.main.dataset.911d0bb2-c56e-46bd-af4f-8d9611183bb7")
-)
-def analysis_1_PASC_case_1(Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, visit_occurrence):
-    # COVID positive
-    # Now we only have threshold 0.75, and would change the threshold after sensitivity analysis
-    # COVID_first_poslab_or_diagnosis_date as index date
-    df = Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype
-    df1 = visit_occurrence
-    df1 = df1.groupBy('person_id').agg(F.max('visit_start_date').alias('latest_visit_date'))
-    df = df.join(df1, 'person_id', 'left')
-
-    df2 = df.filter(df.Long_COVID_diagnosis_post_covid_indicator == 1)
-    long_covid_dx_sites = df2.select(F.collect_set('data_partner_id').alias('data_partner_id')).first()['data_partner_id']    
-    df = df.withColumn('is_long_COVID_dx_site', F.when(df.data_partner_id.isin(long_covid_dx_sites), 1).otherwise(0))
-    
-    df = df.withColumn('index_date', F.col('COVID_first_poslab_or_diagnosis_date'))
-    df = df.withColumn('2021oct_index_date', F.lit('2021-10-01'))
-    # Select those with at least one visit >= 45 days of index date
-    df = df.filter(F.datediff(F.col('latest_visit_date'), F.col('COVID_first_poslab_or_diagnosis_date')) >= 45)
-
-    # From a site that is reporting U09.9 in their N3C data
-    df = df.filter(df.is_long_COVID_dx_site == 1)
-
-    # At least one visit Oct.1, 2021 or later
-    df = df.filter(F.datediff(F.col('latest_visit_date'), F.col('2021oct_index_date')) >= 0)
-    
-
-    #Long COVID 
-    
-    df = df.filter((df.Long_COVID_diagnosis_post_covid_indicator == 1) | (df.Long_COVID_clinic_visit_post_covid_indicator == 1) | (df.LC_u09_computable_phenotype_threshold_75 == 1))
-    df = df.filter(df.age_at_covid >= 18)
-    # Long COVID case label
-    df = df.withColumn('long_covid', F.lit(1))
-    return df
     
 
