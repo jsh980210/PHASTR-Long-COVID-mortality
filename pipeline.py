@@ -1380,7 +1380,7 @@ def km_curve_analysis_1_covid_positive_control(death, Analysis_1_COVID_positive_
     
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.1012c1bb-ccfe-4fdd-9ca8-a982ab0168a9"),
+    Output(rid="ri.foundry.main.dataset.606ebae8-38c1-461f-96c4-6479a0820d81"),
     analysis_1_COVID_negative_control=Input(rid="ri.foundry.main.dataset.cabcd0ef-fb38-471c-a325-493a9ca7b458"),
     analysis_1_COVID_positive_control=Input(rid="ri.foundry.main.dataset.0ab2f17b-94f6-4f86-988b-e49c020e9d9f"),
     analysis_1_PASC_case=Input(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68")
@@ -1396,6 +1396,8 @@ def test_no_intersection(analysis_1_COVID_positive_control, analysis_1_PASC_case
     print(result1.count())
     print(result2.count())
     print(result3.count())
+
+    return result2
     
 
 @transform_pandas(
