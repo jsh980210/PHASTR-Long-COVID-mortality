@@ -87,6 +87,8 @@ def analysis_1_COVID_negative_control(visit_occurrence, analysis_1_PASC_case, Lo
     result = df1.join(df2, 'person_id', 'left')
     result = result.join(df3, 'person_id', 'left')
     result = result.withColumn('index_date', F.col('latest_PCR_AG_Neg_date'))
+
+    
     
     # Make the is_long_COVID_dx_site column
     df1 = df1.filter(df1.LL_Long_COVID_diagnosis_indicator == 1)
@@ -295,26 +297,6 @@ def analysis_1_PASC_case_matched(analysis_1_PASC_case, analysis_1_COVID_negative
 
     result = (df1.join(df2, 'person_id', 'inner')).join(df3, 'person_id', 'inner')
     return result
-    
-
-@transform_pandas(
-    Output(rid="ri.foundry.main.dataset.b993e62e-4d91-4c6b-9f06-cfa0c78a106a"),
-    Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c")
-)
-def analysis_1_PASC_case_test(Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype):
-    # COVID positive
-    # Now we only have threshold 0.75, and would change the threshold after sensitivity analysis
-    # COVID_first_poslab_or_diagnosis_date as index date
-    df = Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype
-    
-
-    #Long COVID 
-    
-    df = df.filter((df.Long_COVID_diagnosis_post_covid_indicator == 1) | (df.Long_COVID_clinic_visit_post_covid_indicator == 1) | (df.LC_u09_computable_phenotype_threshold_75 == 1))
-    df = df.filter(df.age_at_covid >= 18)
-    # Long COVID case label
-    df = df.withColumn('long_covid', F.lit(1))
-    return df
     
 
 @transform_pandas(
