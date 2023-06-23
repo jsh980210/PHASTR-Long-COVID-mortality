@@ -1402,7 +1402,7 @@ def test_no_intersection(analysis_1_COVID_positive_control, analysis_1_PASC_case
     print(result2.count())
     print(result3.count())
 
-    return result2
+    
     
 
 @transform_pandas(
