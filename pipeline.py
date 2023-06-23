@@ -69,15 +69,17 @@ def Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_pheno
     Output(rid="ri.foundry.main.dataset.cabcd0ef-fb38-471c-a325-493a9ca7b458"),
     Logic_Liaison_All_patients_fact_day_table_lds=Input(rid="ri.foundry.main.dataset.fbc0bab4-32b6-4bad-b8c7-0e0e16e3a3bc"),
     Logic_Liaison_All_patients_summary_facts_table_lds=Input(rid="ri.foundry.main.dataset.80175e0f-69da-41e2-8065-2c9a7d3bc571"),
+    analysis_1_COVID_positive_control=Input(rid="ri.foundry.main.dataset.0ab2f17b-94f6-4f86-988b-e49c020e9d9f"),
     analysis_1_PASC_case=Input(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68"),
     microvisit_to_macrovisit_lds=Input(rid="ri.foundry.main.dataset.5af2c604-51e0-4afa-b1ae-1e5fa2f4b905"),
     visit_occurrence=Input(rid="ri.foundry.main.dataset.911d0bb2-c56e-46bd-af4f-8d9611183bb7")
 )
-def analysis_1_COVID_negative_control(visit_occurrence, analysis_1_PASC_case, Logic_Liaison_All_patients_summary_facts_table_lds, Logic_Liaison_All_patients_fact_day_table_lds, microvisit_to_macrovisit_lds):
+def analysis_1_COVID_negative_control(visit_occurrence, analysis_1_PASC_case, Logic_Liaison_All_patients_summary_facts_table_lds, Logic_Liaison_All_patients_fact_day_table_lds, microvisit_to_macrovisit_lds, analysis_1_COVID_positive_control):
     df1 = Logic_Liaison_All_patients_summary_facts_table_lds
     df2 = Logic_Liaison_All_patients_fact_day_table_lds
     df3 = visit_occurrence
     df4 = analysis_1_PASC_case.select('person_id')
+    df5 = analysis_1_COVID_positive_control.select('person_id')
     df3 = df3.groupBy('person_id').agg(F.max('visit_start_date').alias('latest_visit_date'))
 
     # index date: latest negative COVID test date
@@ -147,6 +149,9 @@ def analysis_1_COVID_negative_control(visit_occurrence, analysis_1_PASC_case, Lo
 
     # exclude PASC case
     result = result.join(df4, 'person_id', 'left_anti')
+
+    # exclude COVID positive control
+    result = result.join(df5, 'person_id', 'left_anti')
 
     # Long COVID control label
     result = result.withColumn('long_covid', F.lit(0))
