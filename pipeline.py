@@ -203,11 +203,7 @@ def analysis_1_COVID_positive_control(visit_occurrence, analysis_1_PASC_case, Lo
     # Select those with at least one visit >= 45 days of index date
     df = df.filter(F.datediff(F.col('latest_visit_date'), F.col('COVID_first_poslab_or_diagnosis_date')) >= 45)
 
-    # From a site that is reporting U09.9 in their N3C data
-    df = df.filter(df.is_long_COVID_dx_site == 1)
-
-    # At least one visit Oct.1, 2021 or later
-    df = df.filter(F.datediff(F.col('latest_visit_date'), F.col('2021oct_index_date')) >= 0)
+    
 
     # Age >= 18
     df = df.filter(df.age_at_covid >= 18)
