@@ -1386,11 +1386,12 @@ def km_curve_analysis_1_covid_positive_control(death, Analysis_1_COVID_positive_
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.606ebae8-38c1-461f-96c4-6479a0820d81"),
+    Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c"),
     analysis_1_COVID_negative_control=Input(rid="ri.foundry.main.dataset.cabcd0ef-fb38-471c-a325-493a9ca7b458"),
     analysis_1_COVID_positive_control=Input(rid="ri.foundry.main.dataset.0ab2f17b-94f6-4f86-988b-e49c020e9d9f"),
     analysis_1_PASC_case=Input(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68")
 )
-def test_no_intersection(analysis_1_COVID_positive_control, analysis_1_PASC_case, analysis_1_COVID_negative_control):
+def test_no_intersection(analysis_1_COVID_positive_control, analysis_1_PASC_case, analysis_1_COVID_negative_control, Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype):
     df1 = analysis_1_COVID_positive_control.select('person_id','age_at_covid')
     df2 = analysis_1_PASC_case.select('person_id', 'first_COVID_ED_only_start_date')
     df3 = analysis_1_COVID_negative_control.select('person_id', 'state')
@@ -1398,9 +1399,14 @@ def test_no_intersection(analysis_1_COVID_positive_control, analysis_1_PASC_case
     result1 = df1.join(df2, 'person_id', 'inner')
     result2 = df1.join(df3, 'person_id', 'inner')
     result3 = df2.join(df3, 'person_id', 'inner')
-    print(result1.count())
-    print(result2.count())
-    print(result3.count())
+
+    print(len(result1))
+    print(len(result2))
+    print(len(result3))
+    
+    result = result2.join(Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, 'person_id', 'inner')
+
+    return result
 
     
     
