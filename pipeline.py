@@ -1385,6 +1385,21 @@ def km_curve_analysis_1_covid_positive_control(death, Analysis_1_COVID_positive_
     
 
 @transform_pandas(
+    Output(rid="ri.foundry.main.dataset.cd59290c-53bd-4a74-b1e2-e7d6c3182562"),
+    Logic_Liaison_All_patients_summary_facts_table_lds=Input(rid="ri.foundry.main.dataset.80175e0f-69da-41e2-8065-2c9a7d3bc571"),
+    Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_=Input(rid="ri.foundry.main.dataset.75d7da57-7b0e-462c-b41d-c9ef4f756198")
+)
+def overlap_test(Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_, Logic_Liaison_All_patients_summary_facts_table_lds):
+    df1 = Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_
+    df2 = Logic_Liaison_All_patients_summary_facts_table_lds
+
+    test_result = (df1.select('person_id')).join(df2.filter((df2.confirmed_covid_patient == 0) & (df2.possible_covid_patient == 0)), 'person_id', 'inner')
+
+    return test_result
+
+    
+
+@transform_pandas(
     Output(rid="ri.foundry.main.dataset.606ebae8-38c1-461f-96c4-6479a0820d81"),
     Logic_Liaison_All_patients_summary_facts_table_lds=Input(rid="ri.foundry.main.dataset.80175e0f-69da-41e2-8065-2c9a7d3bc571"),
     Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c"),
@@ -1433,12 +1448,5 @@ def test_no_intersection_1(Analysis_1_COVID_positive_control_matched, analysis_1
     print(result1.count())
     print(result2.count())
     print(result3.count())
-    
-
-@transform_pandas(
-    Output(rid="ri.vector.main.execute.e7016404-bdb7-49ab-8cbf-091c00598112"),
-    test_no_intersection=Input(rid="ri.foundry.main.dataset.606ebae8-38c1-461f-96c4-6479a0820d81")
-)
-def unnamed(test_no_intersection):
     
 
