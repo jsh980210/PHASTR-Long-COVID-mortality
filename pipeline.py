@@ -1404,7 +1404,7 @@ def test_no_intersection(analysis_1_COVID_positive_control, analysis_1_PASC_case
     print(result2.count())
     print(result3.count())
     
-    result = result2.join(Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, 'person_id', 'inner')
+    result = (result2.select('person_id')).join(Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, 'person_id', 'inner')
 
     return result
 
