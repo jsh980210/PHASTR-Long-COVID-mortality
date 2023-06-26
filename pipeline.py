@@ -163,7 +163,6 @@ def analysis_1_COVID_negative_control(visit_occurrence, analysis_1_PASC_case, Lo
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.875ddad6-f9fc-400f-9411-1cab55e908c9"),
-    analysis_1_COVID_negative_control_matching=Input(rid="ri.foundry.main.dataset.b29fdc92-4983-44c5-853f-c3117d55cf86"),
     analysis_1_PASC_case_matched=Input(rid="ri.foundry.main.dataset.1e5e00da-adbf-4c93-8c3d-1a1caf99c4f6")
 )
 def analysis_1_COVID_negative_control_matched(analysis_1_COVID_negative_control_matching, analysis_1_PASC_case_matched):
@@ -309,7 +308,7 @@ def analysis_1_PASC_case(Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.1e5e00da-adbf-4c93-8c3d-1a1caf99c4f6"),
-    analysis_1_COVID_negative_control_matching=Input(rid="ri.foundry.main.dataset.b29fdc92-4983-44c5-853f-c3117d55cf86"),
+    analysis_1_COVID_negative_control_matching_first_half=Input(rid="ri.foundry.main.dataset.b29fdc92-4983-44c5-853f-c3117d55cf86"),
     analysis_1_COVID_positive_control_matching=Input(rid="ri.foundry.main.dataset.7aa4122a-d05e-4e3a-999a-88e069107fbd"),
     analysis_1_PASC_case=Input(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68")
 )
