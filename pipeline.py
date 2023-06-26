@@ -214,6 +214,32 @@ def analysis_1_COVID_negative_control_pre_matching_first_half(analysis_1_COVID_n
     return df
 
 @transform_pandas(
+    Output(rid="ri.foundry.main.dataset.17e8e712-5129-47f4-b421-b72c8f8a8d83"),
+    analysis_1_COVID_negative_control=Input(rid="ri.foundry.main.dataset.cabcd0ef-fb38-471c-a325-493a9ca7b458"),
+    analysis_1_PASC_case=Input(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68")
+)
+def analysis_1_COVID_negative_control_pre_matching_second_half(analysis_1_COVID_negative_control, analysis_1_PASC_case):
+    df1 = analysis_1_COVID_negative_control.select('person_id', 'observation_period', 'data_partner_id', 'age', 'index_date', 'long_covid')
+    df2 = analysis_1_PASC_case.select('person_id', 'observation_period_post_covid', 'data_partner_id', 'age_at_covid', 'index_date', 'long_covid')
+    df2 = df2.withColumnRenamed('observation_period_post_covid', 'observation_period')
+    df2 = df2.withColumnRenamed('age_at_covid', 'age')
+
+    df1_sites = df1.select(F.collect_set('data_partner_id').alias('data_partner_id')).first()['data_partner_id']    
+    df2_sites = df2.select(F.collect_set('data_partner_id').alias('data_partner_id')).first()['data_partner_id']    
+    df1 = df1.filter(df1.data_partner_id.isin(df2_sites))
+    df2 = df2.filter(df2.data_partner_id.isin(df1_sites))
+    
+    df = df1.union(df2)
+    df = df.withColumn('age', df.age.cast('int'))
+    df = df.withColumn('2020_index_date', F.lit('2020-01-01'))
+    df = df.withColumn('index_date_numberofdays_from_20200101', F.datediff('index_date', '2020_index_date'))
+    df_sites = df.select(F.collect_set('data_partner_id').alias('data_partner_id')).first()['data_partner_id']
+    n_half = len(df_sites) // 2
+    second_half_sites = df_sites[n_half:]
+    df = df.filter(df.data_partner_id.isin(second_half_sites))
+    return df
+
+@transform_pandas(
     Output(rid="ri.foundry.main.dataset.0ab2f17b-94f6-4f86-988b-e49c020e9d9f"),
     Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c"),
     analysis_1_PASC_case=Input(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68"),
@@ -1451,30 +1477,4 @@ def test_no_intersection_1(Analysis_1_COVID_positive_control_matched, analysis_1
     print(result2.count())
     print(result3.count())
     
-
-@transform_pandas(
-    Output(rid="ri.vector.main.execute.17b8c89a-bc04-4b79-be4b-58d30bc9d051"),
-    analysis_1_COVID_negative_control=Input(rid="ri.foundry.main.dataset.cabcd0ef-fb38-471c-a325-493a9ca7b458"),
-    analysis_1_PASC_case=Input(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68")
-)
-def analysis_1_COVID_negative_control_pre_matching_first_half_1(analysis_1_COVID_negative_control, analysis_1_PASC_case):
-    df1 = analysis_1_COVID_negative_control.select('person_id', 'observation_period', 'data_partner_id', 'age', 'index_date', 'long_covid')
-    df2 = analysis_1_PASC_case.select('person_id', 'observation_period_post_covid', 'data_partner_id', 'age_at_covid', 'index_date', 'long_covid')
-    df2 = df2.withColumnRenamed('observation_period_post_covid', 'observation_period')
-    df2 = df2.withColumnRenamed('age_at_covid', 'age')
-
-    df1_sites = df1.select(F.collect_set('data_partner_id').alias('data_partner_id')).first()['data_partner_id']    
-    df2_sites = df2.select(F.collect_set('data_partner_id').alias('data_partner_id')).first()['data_partner_id']    
-    df1 = df1.filter(df1.data_partner_id.isin(df2_sites))
-    df2 = df2.filter(df2.data_partner_id.isin(df1_sites))
-    
-    df = df1.union(df2)
-    df = df.withColumn('age', df.age.cast('int'))
-    df = df.withColumn('2020_index_date', F.lit('2020-01-01'))
-    df = df.withColumn('index_date_numberofdays_from_20200101', F.datediff('index_date', '2020_index_date'))
-    df_sites = df.select(F.collect_set('data_partner_id').alias('data_partner_id')).first()['data_partner_id']
-    n_half = len(df_sites) // 2
-    first_half_sites = df_sites[:n_half]
-    df = df.filter(df.data_partner_id.isin(first_half_sites))
-    return df
 
