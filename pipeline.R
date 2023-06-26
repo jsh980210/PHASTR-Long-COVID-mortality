@@ -2,7 +2,7 @@
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.b29fdc92-4983-44c5-853f-c3117d55cf86"),
-    analysis_1_COVID_negative_control_pre_matching=Input(rid="ri.foundry.main.dataset.4bc2a605-ffb8-4a08-b9c2-623fa9730224")
+    analysis_1_COVID_negative_control_pre_matching_first_half=Input(rid="ri.foundry.main.dataset.4bc2a605-ffb8-4a08-b9c2-623fa9730224")
 )
 analysis_1_COVID_negative_control_matching <- function(analysis_1_COVID_negative_control_pre_matching) {
     library(MatchIt)

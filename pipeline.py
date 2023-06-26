@@ -193,7 +193,7 @@ def analysis_1_COVID_negative_control_matched(analysis_1_COVID_negative_control_
     analysis_1_COVID_negative_control=Input(rid="ri.foundry.main.dataset.cabcd0ef-fb38-471c-a325-493a9ca7b458"),
     analysis_1_PASC_case=Input(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68")
 )
-def analysis_1_COVID_negative_control_pre_matching(analysis_1_COVID_negative_control, analysis_1_PASC_case):
+def analysis_1_COVID_negative_control_pre_matching_first_half(analysis_1_COVID_negative_control, analysis_1_PASC_case):
     df1 = analysis_1_COVID_negative_control.select('person_id', 'observation_period', 'data_partner_id', 'age', 'index_date', 'long_covid')
     df2 = analysis_1_PASC_case.select('person_id', 'observation_period_post_covid', 'data_partner_id', 'age_at_covid', 'index_date', 'long_covid')
     df2 = df2.withColumnRenamed('observation_period_post_covid', 'observation_period')
@@ -208,7 +208,10 @@ def analysis_1_COVID_negative_control_pre_matching(analysis_1_COVID_negative_con
     df = df.withColumn('age', df.age.cast('int'))
     df = df.withColumn('2020_index_date', F.lit('2020-01-01'))
     df = df.withColumn('index_date_numberofdays_from_20200101', F.datediff('index_date', '2020_index_date'))
-    
+    df_sites = df.select(F.collect_set('data_partner_id').alias('data_partner_id')).first()['data_partner_id']
+    n_half = len(df_sites) // 2
+    first_half_sites = df_sites[:n_half]
+    df = df.filter(df.data_partner_id.isin(first_half_sites))
     return df
 
 @transform_pandas(
