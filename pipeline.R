@@ -129,3 +129,18 @@ df_clean_function <- function(df){
 
 }
 
+@transform_pandas(
+    Output(rid="ri.vector.main.execute.f5895bdf-62ea-47ab-905d-37176029e630"),
+    analysis_1_COVID_negative_control_pre_matching_first_half=Input(rid="ri.foundry.main.dataset.4bc2a605-ffb8-4a08-b9c2-623fa9730224")
+)
+analysis_1_COVID_negative_control_matching_first_half_1 <- function(analysis_1_COVID_negative_control_pre_matching_first_half) {
+    library(MatchIt)
+    set.seed(2023)
+    # add seed 
+    
+    df <- analysis_1_COVID_negative_control_pre_matching_first_half
+    matching <- matchit(long_covid ~ data_partner_id + age + observation_period + index_date_numberofdays_from_20200101, data = df, method = 'nearest', exact = 'data_partner_id', caliper=c(age = 10, index_date_numberofdays_from_20200101 = 45, observation_period = 60), std.caliper = c(FALSE, FALSE, FALSE), ratio = 1)
+    
+    return (match.data(matching))
+}
+
