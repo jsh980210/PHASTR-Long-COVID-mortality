@@ -393,12 +393,13 @@ def analysis_1_PASC_case_matched(analysis_1_PASC_case, analysis_1_COVID_positive
     Analysis_1_COVID_positive_control_matched=Input(rid="ri.foundry.main.dataset.f77735ea-fa94-412c-9b5d-82c314be0418"),
     Logic_Liaison_All_patients_summary_facts_table_lds=Input(rid="ri.foundry.main.dataset.80175e0f-69da-41e2-8065-2c9a7d3bc571"),
     Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c"),
+    analysis_1_COVID_negative_control=Input(rid="ri.foundry.main.dataset.cabcd0ef-fb38-471c-a325-493a9ca7b458"),
     analysis_1_COVID_negative_control_matched=Input(rid="ri.foundry.main.dataset.875ddad6-f9fc-400f-9411-1cab55e908c9"),
     analysis_1_PASC_case_matched=Input(rid="ri.foundry.main.dataset.1e5e00da-adbf-4c93-8c3d-1a1caf99c4f6"),
     cci_score=Input(rid="ri.foundry.main.dataset.3ca69c7a-76bc-4a5f-ab5c-8f94f5709789"),
     cci_score_covid_positive=Input(rid="ri.foundry.main.dataset.0d64bb7b-0e57-4c26-8c41-18a3b793fc00")
 )
-def analysis_1_cohort(analysis_1_PASC_case_matched, Analysis_1_COVID_positive_control_matched, analysis_1_COVID_negative_control_matched, cci_score, Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, Logic_Liaison_All_patients_summary_facts_table_lds, cci_score_covid_positive):
+def analysis_1_cohort(analysis_1_PASC_case_matched, Analysis_1_COVID_positive_control_matched, analysis_1_COVID_negative_control_matched, cci_score, Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, Logic_Liaison_All_patients_summary_facts_table_lds, cci_score_covid_positive, analysis_1_COVID_negative_control):
     df1 = analysis_1_PASC_case_matched.select('person_id')
     df1 = df1.withColumn('subcohort', F.lit(2)) # PASC subcohort
     df2 = Analysis_1_COVID_positive_control_matched.select('person_id')
@@ -406,20 +407,24 @@ def analysis_1_cohort(analysis_1_PASC_case_matched, Analysis_1_COVID_positive_co
     df3 = analysis_1_COVID_negative_control_matched.select('person_id')
     df3 = df3.withColumn('subcohort', F.lit(0)) # COVID negative subcohort 
 
-    df4 = Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype.select('person_id', 'BMI_max_observed_or_calculated_before_or_day_of_covid', 'number_of_COVID_vaccine_doses_before_or_day_of_covid', 'COVID_patient_death_indicator').join(cci_score_covid_positive, 'person_id', 'left')
+    df4 = Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype.select('person_id', 'BMI_max_observed_or_calculated_before_or_day_of_covid', 'number_of_COVID_vaccine_doses_before_or_day_of_covid', 'COVID_patient_death_indicator', 'observation_period_before_covid', 'number_of_visits_before_covid').join(cci_score_covid_positive, 'person_id', 'left')
     df5 = Logic_Liaison_All_patients_summary_facts_table_lds.select('person_id', 'BMI_max_observed_or_calculated', 'total_number_of_COVID_vaccine_doses', 'patient_death_indicator').join(cci_score, 'person_id', 'left')
 
+    df6 = analysis_1_COVID_negative_control.select('person_id', 'observation_period_before_index_date', 'number_of_visits_before_index_date')
     df_COVID = (df1.select('person_id', 'subcohort')).union(df2.select('person_id', 'subcohort'))
     df_COVID = df_COVID.join(df4, 'person_id', 'left')
     df_non_COVID = df3
     df_non_COVID = df_non_COVID.join(df5, 'person_id', 'left')
+    df_non_COVID = df_non_COVID.join(df6, 'person_id', 'left')
     
 
     
     df_COVID = df_COVID.withColumnRenamed('CCI_score_up_through_index_date', 'CCI') \
                 .withColumnRenamed('BMI_max_observed_or_calculated_before_or_day_of_covid', 'BMI') \
                 .withColumnRenamed('number_of_COVID_vaccine_doses_before_or_day_of_covid', 'number_of_COVID_vaccine_doses') \
-                .withColumnRenamed('COVID_patient_death_indicator', 'death')
+                .withColumnRenamed('COVID_patient_death_indicator', 'death') \
+                .withColumnRemaned('observation_period_before_covid', 'observation_period_before_index_date') \
+                .withColumnRenamed('number_of_visits_before_covid', 'number_of_visits_before_index_date')
 
     
 
@@ -430,13 +435,13 @@ def analysis_1_cohort(analysis_1_PASC_case_matched, Analysis_1_COVID_positive_co
     test = (df_COVID.select('person_id')).join(df_non_COVID.select('person_id'), 'person_id', 'inner')
     print(test.count())
 
-    result = df_COVID.select('person_id', 'death', 'CCI', 'BMI', 'subcohort', 'number_of_COVID_vaccine_doses').union(df_non_COVID.select('person_id', 'death', 'CCI', 'BMI', 'subcohort', 'number_of_COVID_vaccine_doses'))
+    result = df_COVID.select('person_id', 'death', 'CCI', 'BMI', 'subcohort', 'number_of_COVID_vaccine_doses', 'observation_period_before_index_date', 'number_of_visits_before_index_date').union(df_non_COVID.select('person_id', 'death', 'CCI', 'BMI', 'subcohort', 'number_of_COVID_vaccine_doses', 'observation_period_before_index_date', 'number_of_visits_before_index_date'))
 
     result = result.withColumn('number_of_COVID_vaccine_doses', result.number_of_COVID_vaccine_doses.cast('int'))
     avg_bmi = np.mean(result.toPandas()['BMI'])
     #result = result.fillna(0, subset = ['CCI'])
     result = result.fillna(avg_bmi, subset = ['BMI'])
-
+    result = result.withColumn('number_of_visits_per_month_before_index_date', 30 * F.col('number_of_visits_before_index_date') / F.col('observation_period_before_index_date'))
     return result
     
 
