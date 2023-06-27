@@ -58,7 +58,7 @@ def Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_pheno
     df2 = predictions_by_date.select('person_id', 'y_pred_300')
 
     df = df1.join(df2, 'person_id', 'left')
-    df = df.withColumn('LC_u09_computable_phenotype_threshold_75', (F.when(F.col('y_pred_300') >= 0.75, 1).otherwise(0)))
+    df = df.withColumn('LC_u09_computable_phenotype_threshold_85', (F.when(F.col('y_pred_300') >= 0.85, 1).otherwise(0)))
 
     df = df.drop('y_pred_300')
 
