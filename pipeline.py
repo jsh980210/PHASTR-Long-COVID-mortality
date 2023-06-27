@@ -1479,3 +1479,29 @@ def test_no_intersection_1(Analysis_1_COVID_positive_control_matched, analysis_1
     print(result3.count())
     
 
+@transform_pandas(
+    Output(rid="ri.vector.main.execute.afef8bbc-d418-41fe-b9da-addc063ba498"),
+    analysis_1_PASC_case_matched=Input(rid="ri.foundry.main.dataset.1e5e00da-adbf-4c93-8c3d-1a1caf99c4f6")
+)
+def analysis_1_COVID_negative_control_matched_1(analysis_1_COVID_negative_control_matching, analysis_1_PASC_case_matched):
+    df1 = analysis_1_COVID_negative_control_matching
+    df2 = (analysis_1_PASC_case_matched.select('person_id')).join(df1, 'person_id', 'inner')
+
+    df3 = df1.filter(df1.long_covid == 0).union(df2)
+    
+
+    df4 = df3.groupBy('subclass').agg(F.count('*').alias('count_same_subclass'))
+
+    df5 = df3.join(df4, 'subclass', 'left')
+
+    result = df5.filter(df5.count_same_subclass == 2)
+
+    result = result.filter(result.long_covid == 0)
+
+    
+
+    
+
+    return result
+    
+
