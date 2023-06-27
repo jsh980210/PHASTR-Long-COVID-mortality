@@ -163,27 +163,11 @@ def analysis_1_COVID_negative_control(visit_occurrence, analysis_1_PASC_case, Lo
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.875ddad6-f9fc-400f-9411-1cab55e908c9"),
-    analysis_1_PASC_case_matched=Input(rid="ri.foundry.main.dataset.1e5e00da-adbf-4c93-8c3d-1a1caf99c4f6")
+    analysis_1_COVID_negative_control_matched_first_half=Input(rid="ri.foundry.main.dataset.f3c4ea83-3acf-4d80-8b56-ff88345f7e4b"),
+    analysis_1_COVID_negative_control_matched_second_half=Input(rid="ri.foundry.main.dataset.11961da4-70b0-480e-99b1-1735c94270b2")
 )
-def analysis_1_COVID_negative_control_matched(analysis_1_COVID_negative_control_matching, analysis_1_PASC_case_matched):
-    df1 = analysis_1_COVID_negative_control_matching
-    df2 = (analysis_1_PASC_case_matched.select('person_id')).join(df1, 'person_id', 'inner')
-
-    df3 = df1.filter(df1.long_covid == 0).union(df2)
-    
-
-    df4 = df3.groupBy('subclass').agg(F.count('*').alias('count_same_subclass'))
-
-    df5 = df3.join(df4, 'subclass', 'left')
-
-    result = df5.filter(df5.count_same_subclass == 2)
-
-    result = result.filter(result.long_covid == 0)
-
-    
-
-    
-
+def analysis_1_COVID_negative_control_matched(analysis_1_COVID_negative_control_matched_second_half, analysis_1_COVID_negative_control_matched_first_half):
+    result = analysis_1_COVID_negative_control_matched_first_half.union(analysis_1_COVID_negative_control_matched_second_half)
     return result
     
 
