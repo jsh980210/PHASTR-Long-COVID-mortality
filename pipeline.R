@@ -16,6 +16,21 @@ analysis_1_COVID_negative_control_matching_first_half <- function(analysis_1_COV
 }
 
 @transform_pandas(
+    Output(rid="ri.foundry.main.dataset.726b85fa-b487-4360-b8ab-36a5b61bf153"),
+    analysis_1_COVID_negative_control_pre_matching_second_half=Input(rid="ri.foundry.main.dataset.17e8e712-5129-47f4-b421-b72c8f8a8d83")
+)
+analysis_1_COVID_negative_control_matching_second_half <- function(analysis_1_COVID_negative_control_pre_matching_second_half) {
+    library(MatchIt)
+    set.seed(2023)
+    # add seed 
+    
+    df <- analysis_1_COVID_negative_control_pre_matching_second_half
+    matching <- matchit(long_covid ~ data_partner_id + age + observation_period + index_date_numberofdays_from_20200101, data = df, method = 'nearest', exact = 'data_partner_id', caliper=c(age = 10, index_date_numberofdays_from_20200101 = 45, observation_period = 60), std.caliper = c(FALSE, FALSE, FALSE), ratio = 1)
+    
+    return (match.data(matching))
+}
+
+@transform_pandas(
     Output(rid="ri.foundry.main.dataset.7aa4122a-d05e-4e3a-999a-88e069107fbd"),
     analysis_1_COVID_positive_control_pre_matching=Input(rid="ri.foundry.main.dataset.ed878439-adf1-44c1-b96e-3b45eb3b6a2d")
 )
@@ -127,20 +142,5 @@ df_clean_function <- function(df){
     
     return(df)
 
-}
-
-@transform_pandas(
-    Output(rid="ri.vector.main.execute.f5895bdf-62ea-47ab-905d-37176029e630"),
-    analysis_1_COVID_negative_control_pre_matching_first_half=Input(rid="ri.foundry.main.dataset.4bc2a605-ffb8-4a08-b9c2-623fa9730224")
-)
-analysis_1_COVID_negative_control_matching_first_half_1 <- function(analysis_1_COVID_negative_control_pre_matching_first_half) {
-    library(MatchIt)
-    set.seed(2023)
-    # add seed 
-    
-    df <- analysis_1_COVID_negative_control_pre_matching_first_half
-    matching <- matchit(long_covid ~ data_partner_id + age + observation_period + index_date_numberofdays_from_20200101, data = df, method = 'nearest', exact = 'data_partner_id', caliper=c(age = 10, index_date_numberofdays_from_20200101 = 45, observation_period = 60), std.caliper = c(FALSE, FALSE, FALSE), ratio = 1)
-    
-    return (match.data(matching))
 }
 
