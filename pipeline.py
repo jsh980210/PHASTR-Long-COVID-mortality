@@ -13,8 +13,8 @@ from sklearn.metrics import plot_roc_curve
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-#from xgboost import XGBClassifier
-#from xgboost import plot_importance
+from xgboost import XGBClassifier
+from xgboost import plot_importance
 import matplotlib.pyplot as plt
 import math
 
