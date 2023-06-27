@@ -88,7 +88,7 @@ analysis_1_logistic_evaluation <- function(analysis_1_cohort) {
     
     
 
-    lr <- glm(death ~ subcohort + number_of_COVID_vaccine_doses + BMI + CCI, data = df_train, family = binomial)
+    lr <- glm(death ~ subcohort + number_of_COVID_vaccine_doses + BMI + CCI + number_of_visits_per_month_before_index_date, data = df_train, family = binomial)
 
     print(summary(lr))
     print(exp(coefficients(lr)))
