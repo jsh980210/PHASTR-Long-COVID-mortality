@@ -423,7 +423,7 @@ def analysis_1_cohort(analysis_1_PASC_case_matched, Analysis_1_COVID_positive_co
                 .withColumnRenamed('BMI_max_observed_or_calculated_before_or_day_of_covid', 'BMI') \
                 .withColumnRenamed('number_of_COVID_vaccine_doses_before_or_day_of_covid', 'number_of_COVID_vaccine_doses') \
                 .withColumnRenamed('COVID_patient_death_indicator', 'death') \
-                .withColumnRemaned('observation_period_before_covid', 'observation_period_before_index_date') \
+                .withColumnRenamed('observation_period_before_covid', 'observation_period_before_index_date') \
                 .withColumnRenamed('number_of_visits_before_covid', 'number_of_visits_before_index_date')
 
     
