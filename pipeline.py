@@ -836,6 +836,7 @@ def analysis_2a(analysis_2_PASC_case_cohort_2a, cci_score_covid_positive):
     df = df.withColumn('number_of_visits_per_month_before_covid', 30 * F.col('number_of_visits_before_covid') / F.col('observation_period_before_covid'))
     df = df.withColumn('delta_variant', when((df.COVID_first_poslab_or_diagnosis_date >= '2021-07-01') & (df.COVID_first_poslab_or_diagnosis_date <= '2021-11-30'), 1).otherwise(0))
 
+    df = df.drop('COVID_first_poslab_or_diagnosis_date', 'race_ethnicity', 'sex', 'number_of_visits_before_covid', 'observation_period_before_covid')
     return df
     
 
@@ -844,7 +845,7 @@ def analysis_2a(analysis_2_PASC_case_cohort_2a, cci_score_covid_positive):
     analysis_2a=Input(rid="ri.foundry.main.dataset.dfd52b0d-1b4b-49d1-a420-0f3df44e0f8d")
 )
 def analysis_2a_xgboost(analysis_2a):
-    df = analysis_2a.drop(columns = ['race_ethnicity', 'sex', 'COVID_first_poslab_or_diagnosis_date'])
+    df = analysis_2a.drop(columns = ['race_ethnicity', 'sex'])
     
     y = df['COVID_patient_death_indicator']
     X = df.drop(columns = ['COVID_patient_death_indicator'])
