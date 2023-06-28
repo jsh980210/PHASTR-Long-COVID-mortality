@@ -1100,7 +1100,7 @@ def analysis_2b_xgboost(analysis_2b):
     analysis_2b=Input(rid="ri.foundry.main.dataset.f251c730-78fb-4044-8c57-96c16e3c2011")
 )
 def analysis_2b_xgboost_cv(analysis_2b):
-    df = analysis_2b.drop(columns = ['race_ethnicity', 'sex'])
+    df = analysis_2b
     
     y = df['COVID_patient_death_indicator']
     X = df.drop(columns = ['COVID_patient_death_indicator'])
