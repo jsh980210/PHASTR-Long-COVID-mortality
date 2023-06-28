@@ -844,7 +844,7 @@ def analysis_2a(analysis_2_PASC_case_cohort_2a, cci_score_covid_positive):
     analysis_2a=Input(rid="ri.foundry.main.dataset.dfd52b0d-1b4b-49d1-a420-0f3df44e0f8d")
 )
 def analysis_2a_xgboost(analysis_2a):
-    df = analysis_2a.drop(columns = ['race_ethnicity', 'sex'])
+    df = analysis_2a.drop(columns = ['race_ethnicity', 'sex', 'COVID_first_poslab_or_diagnosis_date'])
     
     y = df['COVID_patient_death_indicator']
     X = df.drop(columns = ['COVID_patient_death_indicator'])
