@@ -844,8 +844,7 @@ def analysis_2a(analysis_2_PASC_case_cohort_2a, cci_score_covid_positive):
     analysis_2a=Input(rid="ri.foundry.main.dataset.dfd52b0d-1b4b-49d1-a420-0f3df44e0f8d")
 )
 def analysis_2a_xgboost(analysis_2a):
-    df = analysis_2a.drop(columns = ['race_ethnicity', 'sex'])
-    
+    df = analysis_2a
     y = df['COVID_patient_death_indicator']
     X = df.drop(columns = ['COVID_patient_death_indicator'])
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state = 42)
