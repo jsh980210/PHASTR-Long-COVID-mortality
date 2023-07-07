@@ -1933,3 +1933,10 @@ def test_no_intersection_1(Analysis_1_COVID_positive_control_matched, analysis_1
     print(result3.count())
     
 
+@transform_pandas(
+    Output(rid="ri.vector.main.execute.c06decad-ec42-4042-92b0-22bf6eb948fa"),
+    analysis_2_PASC_case_cohort_2a=Input(rid="ri.foundry.main.dataset.7d7a7b20-d395-41e5-9804-f9e8bfa34e4f")
+)
+def unnamed(analysis_2_PASC_case_cohort_2a):
+    
+
