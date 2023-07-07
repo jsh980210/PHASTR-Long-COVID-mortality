@@ -278,6 +278,141 @@ def analysis_1_COVID_negative_control_pre_matching_second_half(analysis_1_COVID_
     return df
 
 @transform_pandas(
+    Output(rid="ri.vector.main.execute.4af7d8a8-440f-44cb-af8a-1338d4523aac"),
+    Logic_Liaison_All_patients_summary_facts_table_lds=Input(rid="ri.foundry.main.dataset.80175e0f-69da-41e2-8065-2c9a7d3bc571"),
+    analysis_1_COVID_negative_control_matched=Input(rid="ri.foundry.main.dataset.875ddad6-f9fc-400f-9411-1cab55e908c9")
+)
+def analysis_1_COVID_negative_subcohort_summary_copied(analysis_1_COVID_negative_control_matched, Logic_Liaison_All_patients_summary_facts_table_lds):
+
+    df = (analysis_1_COVID_negative_control_matched.select('person_id')).join(Logic_Liaison_All_patients_summary_facts_table_lds, 'person_id', 'left')
+    df = df.withColumn('islt1_percent', F.when(F.col('age')<1, 1).otherwise(0))
+    df = df.withColumn('_1to4_percent', F.when(F.col('age').between(1,4), 1).otherwise(0))
+    df = df.withColumn('_5to9_percent', F.when(F.col('age').between(5,9), 1).otherwise(0))
+    df = df.withColumn('_10to15_percent', F.when(F.col('age').between(10,15), 1).otherwise(0))
+    df = df.withColumn('_16to20_percent', F.when(F.col('age').between(16,20), 1).otherwise(0))
+    df = df.withColumn('_21to45_percent', F.when(F.col('age').between(21,45), 1).otherwise(0))
+    df = df.withColumn('_46to65_percent', F.when(F.col('age').between(46,65), 1).otherwise(0))
+    df = df.withColumn('gt66_percent', F.when(F.col('age')>66, 1).otherwise(0))
+
+    df = df.withColumn('race_ethnicity_table1', 
+        F.when(F.col('race_ethnicity') == 'White Non-Hispanic', 'Non-Hispanic White')\
+        .when(F.col('race_ethnicity') == 'Black or African American Non-Hispanic', 'Non-Hispanic Black')\
+        .when(F.col('race_ethnicity') == 'Hispanic or Latino Any Race', 'Hispanic')\
+        .when(F.col('race_ethnicity') == 'Asian Non-Hispanic', 'Non-Hispanic Asian')\
+        .when(F.col('race_ethnicity') == 'Unknown', 'Missing/Unknown')\
+        .otherwise('Non-Hispanic Other')    
+    )
+
+    results=pd.DataFrame()
+
+    n_total_patients=df.count()
+
+    #pasc_patients=df.filter(F.col('LC_u09_computable_phenotype_threshold_75')==1)
+    #not_pasc_patients=df.filter(F.col('LC_u09_computable_phenotype_threshold_75')==0)
+    
+    #print('Total patients: {}'.format(n_total_patients))
+
+    #print('Total patients with PASC: {}'.format(pasc_patients.count()))
+    #print('Total patients without PASC: {}'.format(not_pasc_patients.count()))
+
+    #calculate age statistics
+    # print(df.filter(F.col('age').between(1,4)).count())
+    lt1_percent=round((df.filter(F.col('age')<1).count()*100)/n_total_patients)
+    _1to4_percent=round((df.filter(F.col('age').between(1,4)).count()*100)/n_total_patients,2)
+    _5to9_percent=round((df.filter(F.col('age').between(5,9)).count()*100)/n_total_patients,2)
+    _10to15_percent=round((df.filter(F.col('age').between(10,15)).count()*100)/n_total_patients,2)
+    _16to20_percent=round((df.filter(F.col('age').between(16,20)).count()*100)/n_total_patients,2)
+    _21to45_percent=round((df.filter(F.col('age').between(21,45)).count()*100)/n_total_patients,2)
+    _46to65_percent=round((df.filter(F.col('age').between(46,65)).count()*100)/n_total_patients,2)
+    gt66_percent=round((df.filter(F.col('age')>=66).count()*100)/n_total_patients,2)
+    age_missing=round((df.filter(F.col('age').isNull()).count()*100)/n_total_patients,2)
+
+    lt1_count=round((df.filter(F.col('age')<1).count()))
+    _1to4_count=round((df.filter(F.col('age').between(1,4)).count()))
+    _5to9_count=round((df.filter(F.col('age').between(5,9)).count()))
+    _10to15_count=round((df.filter(F.col('age').between(10,15)).count()))
+    _16to20_count=round((df.filter(F.col('age').between(16,20)).count()))
+    _21to45_count=round((df.filter(F.col('age').between(21,45)).count()))
+    _46to65_count=round((df.filter(F.col('age').between(46,65)).count()))
+    gt66_count=round((df.filter(F.col('age')>=66).count()))
+    age_missing_count=round((df.filter(F.col('age').isNull()).count()))
+
+    print("Age less than 1 (in %): {}".format(lt1_percent))
+    print("Age between 1 to 4 (in %): {}".format(_1to4_percent))
+    print("Age between 5 to 9 (in %): {}".format(_5to9_percent))
+    print("Age between 10 to 15 (in %): {}".format(_10to15_percent))
+    print("Age between 16 to 20 (in %): {}".format(_16to20_percent))
+    print("Age between 21 to 45 (in %): {}".format(_21to45_percent))
+    print("Age between 46 to 65 (in %): {}".format(_46to65_percent))
+    print("Age higher than 66 (in %): {}".format(gt66_percent))
+    print("Age missing (in %): {}".format(age_missing))
+
+    result_dict={"1.Age less than 1 (in %)":lt1_percent,
+    "2.Age between 1 to 4 (in %)":_1to4_percent,
+    "3.Age between 5 to 9 (in %)":_5to9_percent,
+    "4.Age between 10 to 15 (in %)":_10to15_percent,
+    "5.Age between 16 to 20 (in %)":_16to20_percent,
+    "6.Age between 21 to 45 (in %)":_21to45_percent,
+    "7.Age between 46 to 65 (in %)":_46to65_percent,
+    "8.Age higher than 66 (in %)":gt66_percent,
+    "9.Age missing (in %)":age_missing}
+
+    result_dict2={"1.Age less than 1 (in %)":lt1_count,
+    "2.Age between 1 to 4 (in %)":_1to4_count,
+    "3.Age between 5 to 9 (in %)":_5to9_count,
+    "4.Age between 10 to 15 (in %)":_10to15_count,
+    "5.Age between 16 to 20 (in %)":_16to20_count,
+    "6.Age between 21 to 45 (in %)":_21to45_count,
+    "7.Age between 46 to 65 (in %)":_46to65_count,
+    "8.Age higher than 66 (in %)":gt66_count,
+    "9.Age missing (in %)":age_missing_count}
+    print('% sum: {}'.format((lt1_percent+_1to4_percent+_5to9_percent+_10to15_percent+_16to20_percent+_21to45_percent+_46to65_percent+gt66_percent+age_missing)))
+
+    df_stats = df.select(
+    F.mean(F.col('age')).alias('mean'),
+    F.stddev(F.col('age')).alias('std')
+    )
+
+    result_dict['mean_age']=df_stats.toPandas()['mean'][0]
+    result_dict['std_age']=df_stats.toPandas()['std'][0]
+
+    print(df_stats.show())
+
+    results['Value_Names']=list(result_dict.keys())
+    results['percent_Values']=list(result_dict.values())
+
+    results2=pd.DataFrame()
+    results2['Value_Names']=list(result_dict2.keys())
+    results2['count_Values']=list(result_dict2.values())
+
+    results=results.merge(results2, on='Value_Names', how='outer')
+
+    df_race_ethnicity=df.groupBy('race_ethnicity_table1').count().orderBy(F.col('count').desc())
+    df_race_ethnicity=df_race_ethnicity.withColumn('percent_of_total', F.round((F.col('count')*100)/n_total_patients, 2))
+    print(df_race_ethnicity.show())
+    pdf_race_ethnicity=df_race_ethnicity.select('race_ethnicity_table1','percent_of_total', 'count').toPandas()
+    pdf_race_ethnicity.columns=['Value_Names','percent_Values','count_Values']
+    pdf_race_ethnicity['Value_Names']=pdf_race_ethnicity['Value_Names'].apply(lambda x: 'Race_Ethnicity_'+str(x))
+    results=pd.concat([results,pdf_race_ethnicity])
+
+    df_sex=df.groupBy('sex').count().orderBy(F.col('count').desc())
+    df_sex=df_sex.withColumn('percent_of_total', F.round((F.col('count')*100)/n_total_patients, 2))
+    print(df_sex.show())
+    pdf_sex=df_sex.select('sex','percent_of_total','count').toPandas()
+    pdf_sex.columns=['Value_Names','percent_Values','count_Values']
+    pdf_sex['Value_Names']=pdf_sex['Value_Names'].apply(lambda x: 'Sex_'+str(x))
+    results=pd.concat([results,pdf_sex])
+
+    # print(results)
+    results['count_percent']=results['count_Values'].astype(str)  + '(' + results['percent_Values'].astype(str)  + '%)'
+    results=results.sort_values('Value_Names')
+
+    sparkDF=spark.createDataFrame(results) 
+
+    return sparkDF
+    
+
+@transform_pandas(
     Output(rid="ri.foundry.main.dataset.0ab2f17b-94f6-4f86-988b-e49c020e9d9f"),
     Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c"),
     analysis_1_PASC_case=Input(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68"),
@@ -340,6 +475,141 @@ def analysis_1_COVID_positive_control_pre_matching(analysis_1_COVID_positive_con
     return df
 
 @transform_pandas(
+    Output(rid="ri.vector.main.execute.6af9f8c6-15ec-4d01-8812-94eacb674245"),
+    Analysis_1_COVID_positive_control_matched=Input(rid="ri.foundry.main.dataset.f77735ea-fa94-412c-9b5d-82c314be0418"),
+    Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c")
+)
+def analysis_1_COVID_positive_subcohort_summary_copied(Analysis_1_COVID_positive_control_matched, Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype):
+
+    df = (Analysis_1_COVID_positive_control_matched.select('person_id')).join(Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, 'person_id', 'left')
+    df = df.withColumn('islt1_percent', F.when(F.col('age_at_covid')<1, 1).otherwise(0))
+    df = df.withColumn('_1to4_percent', F.when(F.col('age_at_covid').between(1,4), 1).otherwise(0))
+    df = df.withColumn('_5to9_percent', F.when(F.col('age_at_covid').between(5,9), 1).otherwise(0))
+    df = df.withColumn('_10to15_percent', F.when(F.col('age_at_covid').between(10,15), 1).otherwise(0))
+    df = df.withColumn('_16to20_percent', F.when(F.col('age_at_covid').between(16,20), 1).otherwise(0))
+    df = df.withColumn('_21to45_percent', F.when(F.col('age_at_covid').between(21,45), 1).otherwise(0))
+    df = df.withColumn('_46to65_percent', F.when(F.col('age_at_covid').between(46,65), 1).otherwise(0))
+    df = df.withColumn('gt66_percent', F.when(F.col('age_at_covid')>66, 1).otherwise(0))
+
+    df = df.withColumn('race_ethnicity_table1', 
+        F.when(F.col('race_ethnicity') == 'White Non-Hispanic', 'Non-Hispanic White')\
+        .when(F.col('race_ethnicity') == 'Black or African American Non-Hispanic', 'Non-Hispanic Black')\
+        .when(F.col('race_ethnicity') == 'Hispanic or Latino Any Race', 'Hispanic')\
+        .when(F.col('race_ethnicity') == 'Asian Non-Hispanic', 'Non-Hispanic Asian')\
+        .when(F.col('race_ethnicity') == 'Unknown', 'Missing/Unknown')\
+        .otherwise('Non-Hispanic Other')    
+    )
+
+    results=pd.DataFrame()
+
+    n_total_patients=df.count()
+
+    #pasc_patients=df.filter(F.col('LC_u09_computable_phenotype_threshold_75')==1)
+    #not_pasc_patients=df.filter(F.col('LC_u09_computable_phenotype_threshold_75')==0)
+    
+    #print('Total patients: {}'.format(n_total_patients))
+
+    #print('Total patients with PASC: {}'.format(pasc_patients.count()))
+    #print('Total patients without PASC: {}'.format(not_pasc_patients.count()))
+
+    #calculate age statistics
+    # print(df.filter(F.col('age_at_covid').between(1,4)).count())
+    lt1_percent=round((df.filter(F.col('age_at_covid')<1).count()*100)/n_total_patients)
+    _1to4_percent=round((df.filter(F.col('age_at_covid').between(1,4)).count()*100)/n_total_patients,2)
+    _5to9_percent=round((df.filter(F.col('age_at_covid').between(5,9)).count()*100)/n_total_patients,2)
+    _10to15_percent=round((df.filter(F.col('age_at_covid').between(10,15)).count()*100)/n_total_patients,2)
+    _16to20_percent=round((df.filter(F.col('age_at_covid').between(16,20)).count()*100)/n_total_patients,2)
+    _21to45_percent=round((df.filter(F.col('age_at_covid').between(21,45)).count()*100)/n_total_patients,2)
+    _46to65_percent=round((df.filter(F.col('age_at_covid').between(46,65)).count()*100)/n_total_patients,2)
+    gt66_percent=round((df.filter(F.col('age_at_covid')>=66).count()*100)/n_total_patients,2)
+    age_missing=round((df.filter(F.col('age_at_covid').isNull()).count()*100)/n_total_patients,2)
+
+    lt1_count=round((df.filter(F.col('age_at_covid')<1).count()))
+    _1to4_count=round((df.filter(F.col('age_at_covid').between(1,4)).count()))
+    _5to9_count=round((df.filter(F.col('age_at_covid').between(5,9)).count()))
+    _10to15_count=round((df.filter(F.col('age_at_covid').between(10,15)).count()))
+    _16to20_count=round((df.filter(F.col('age_at_covid').between(16,20)).count()))
+    _21to45_count=round((df.filter(F.col('age_at_covid').between(21,45)).count()))
+    _46to65_count=round((df.filter(F.col('age_at_covid').between(46,65)).count()))
+    gt66_count=round((df.filter(F.col('age_at_covid')>=66).count()))
+    age_missing_count=round((df.filter(F.col('age_at_covid').isNull()).count()))
+
+    print("Age less than 1 (in %): {}".format(lt1_percent))
+    print("Age between 1 to 4 (in %): {}".format(_1to4_percent))
+    print("Age between 5 to 9 (in %): {}".format(_5to9_percent))
+    print("Age between 10 to 15 (in %): {}".format(_10to15_percent))
+    print("Age between 16 to 20 (in %): {}".format(_16to20_percent))
+    print("Age between 21 to 45 (in %): {}".format(_21to45_percent))
+    print("Age between 46 to 65 (in %): {}".format(_46to65_percent))
+    print("Age higher than 66 (in %): {}".format(gt66_percent))
+    print("Age missing (in %): {}".format(age_missing))
+
+    result_dict={"1.Age less than 1 (in %)":lt1_percent,
+    "2.Age between 1 to 4 (in %)":_1to4_percent,
+    "3.Age between 5 to 9 (in %)":_5to9_percent,
+    "4.Age between 10 to 15 (in %)":_10to15_percent,
+    "5.Age between 16 to 20 (in %)":_16to20_percent,
+    "6.Age between 21 to 45 (in %)":_21to45_percent,
+    "7.Age between 46 to 65 (in %)":_46to65_percent,
+    "8.Age higher than 66 (in %)":gt66_percent,
+    "9.Age missing (in %)":age_missing}
+
+    result_dict2={"1.Age less than 1 (in %)":lt1_count,
+    "2.Age between 1 to 4 (in %)":_1to4_count,
+    "3.Age between 5 to 9 (in %)":_5to9_count,
+    "4.Age between 10 to 15 (in %)":_10to15_count,
+    "5.Age between 16 to 20 (in %)":_16to20_count,
+    "6.Age between 21 to 45 (in %)":_21to45_count,
+    "7.Age between 46 to 65 (in %)":_46to65_count,
+    "8.Age higher than 66 (in %)":gt66_count,
+    "9.Age missing (in %)":age_missing_count}
+    print('% sum: {}'.format((lt1_percent+_1to4_percent+_5to9_percent+_10to15_percent+_16to20_percent+_21to45_percent+_46to65_percent+gt66_percent+age_missing)))
+
+    df_stats = df.select(
+    F.mean(F.col('age_at_covid')).alias('mean'),
+    F.stddev(F.col('age_at_covid')).alias('std')
+    )
+
+    result_dict['mean_age_at_covid']=df_stats.toPandas()['mean'][0]
+    result_dict['std_age_at_covid']=df_stats.toPandas()['std'][0]
+
+    print(df_stats.show())
+
+    results['Value_Names']=list(result_dict.keys())
+    results['percent_Values']=list(result_dict.values())
+
+    results2=pd.DataFrame()
+    results2['Value_Names']=list(result_dict2.keys())
+    results2['count_Values']=list(result_dict2.values())
+
+    results=results.merge(results2, on='Value_Names', how='outer')
+
+    df_race_ethnicity=df.groupBy('race_ethnicity_table1').count().orderBy(F.col('count').desc())
+    df_race_ethnicity=df_race_ethnicity.withColumn('percent_of_total', F.round((F.col('count')*100)/n_total_patients, 2))
+    print(df_race_ethnicity.show())
+    pdf_race_ethnicity=df_race_ethnicity.select('race_ethnicity_table1','percent_of_total', 'count').toPandas()
+    pdf_race_ethnicity.columns=['Value_Names','percent_Values','count_Values']
+    pdf_race_ethnicity['Value_Names']=pdf_race_ethnicity['Value_Names'].apply(lambda x: 'Race_Ethnicity_'+str(x))
+    results=pd.concat([results,pdf_race_ethnicity])
+
+    df_sex=df.groupBy('sex').count().orderBy(F.col('count').desc())
+    df_sex=df_sex.withColumn('percent_of_total', F.round((F.col('count')*100)/n_total_patients, 2))
+    print(df_sex.show())
+    pdf_sex=df_sex.select('sex','percent_of_total','count').toPandas()
+    pdf_sex.columns=['Value_Names','percent_Values','count_Values']
+    pdf_sex['Value_Names']=pdf_sex['Value_Names'].apply(lambda x: 'Sex_'+str(x))
+    results=pd.concat([results,pdf_sex])
+
+    # print(results)
+    results['count_percent']=results['count_Values'].astype(str)  + '(' + results['percent_Values'].astype(str)  + '%)'
+    results=results.sort_values('Value_Names')
+
+    sparkDF=spark.createDataFrame(results) 
+
+    return sparkDF
+    
+
+@transform_pandas(
     Output(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68"),
     Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c"),
     visit_occurrence=Input(rid="ri.foundry.main.dataset.911d0bb2-c56e-46bd-af4f-8d9611183bb7")
@@ -386,6 +656,140 @@ def analysis_1_PASC_case_matched(analysis_1_PASC_case, analysis_1_COVID_positive
 
     result = (df1.join(df2, 'person_id', 'inner')).join(df3, 'person_id', 'inner')
     return result
+    
+
+@transform_pandas(
+    Output(rid="ri.vector.main.execute.bab0893c-1484-4c16-ba88-2d96c530603f"),
+    analysis_1_PASC_case_matched=Input(rid="ri.foundry.main.dataset.1e5e00da-adbf-4c93-8c3d-1a1caf99c4f6")
+)
+def analysis_1_PASC_case_subcohort_summary_copied(analysis_1_PASC_case_matched):
+
+    df = analysis_1_PASC_case_matched
+    df = df.withColumn('islt1_percent', F.when(F.col('age_at_covid')<1, 1).otherwise(0))
+    df = df.withColumn('_1to4_percent', F.when(F.col('age_at_covid').between(1,4), 1).otherwise(0))
+    df = df.withColumn('_5to9_percent', F.when(F.col('age_at_covid').between(5,9), 1).otherwise(0))
+    df = df.withColumn('_10to15_percent', F.when(F.col('age_at_covid').between(10,15), 1).otherwise(0))
+    df = df.withColumn('_16to20_percent', F.when(F.col('age_at_covid').between(16,20), 1).otherwise(0))
+    df = df.withColumn('_21to45_percent', F.when(F.col('age_at_covid').between(21,45), 1).otherwise(0))
+    df = df.withColumn('_46to65_percent', F.when(F.col('age_at_covid').between(46,65), 1).otherwise(0))
+    df = df.withColumn('gt66_percent', F.when(F.col('age_at_covid')>66, 1).otherwise(0))
+
+    df = df.withColumn('race_ethnicity_table1', 
+        F.when(F.col('race_ethnicity') == 'White Non-Hispanic', 'Non-Hispanic White')\
+        .when(F.col('race_ethnicity') == 'Black or African American Non-Hispanic', 'Non-Hispanic Black')\
+        .when(F.col('race_ethnicity') == 'Hispanic or Latino Any Race', 'Hispanic')\
+        .when(F.col('race_ethnicity') == 'Asian Non-Hispanic', 'Non-Hispanic Asian')\
+        .when(F.col('race_ethnicity') == 'Unknown', 'Missing/Unknown')\
+        .otherwise('Non-Hispanic Other')    
+    )
+
+    results=pd.DataFrame()
+
+    n_total_patients=df.count()
+
+    #pasc_patients=df.filter(F.col('LC_u09_computable_phenotype_threshold_75')==1)
+    #not_pasc_patients=df.filter(F.col('LC_u09_computable_phenotype_threshold_75')==0)
+    
+    #print('Total patients: {}'.format(n_total_patients))
+
+    #print('Total patients with PASC: {}'.format(pasc_patients.count()))
+    #print('Total patients without PASC: {}'.format(not_pasc_patients.count()))
+
+    #calculate age statistics
+    # print(df.filter(F.col('age_at_covid').between(1,4)).count())
+    lt1_percent=round((df.filter(F.col('age_at_covid')<1).count()*100)/n_total_patients)
+    _1to4_percent=round((df.filter(F.col('age_at_covid').between(1,4)).count()*100)/n_total_patients,2)
+    _5to9_percent=round((df.filter(F.col('age_at_covid').between(5,9)).count()*100)/n_total_patients,2)
+    _10to15_percent=round((df.filter(F.col('age_at_covid').between(10,15)).count()*100)/n_total_patients,2)
+    _16to20_percent=round((df.filter(F.col('age_at_covid').between(16,20)).count()*100)/n_total_patients,2)
+    _21to45_percent=round((df.filter(F.col('age_at_covid').between(21,45)).count()*100)/n_total_patients,2)
+    _46to65_percent=round((df.filter(F.col('age_at_covid').between(46,65)).count()*100)/n_total_patients,2)
+    gt66_percent=round((df.filter(F.col('age_at_covid')>=66).count()*100)/n_total_patients,2)
+    age_missing=round((df.filter(F.col('age_at_covid').isNull()).count()*100)/n_total_patients,2)
+
+    lt1_count=round((df.filter(F.col('age_at_covid')<1).count()))
+    _1to4_count=round((df.filter(F.col('age_at_covid').between(1,4)).count()))
+    _5to9_count=round((df.filter(F.col('age_at_covid').between(5,9)).count()))
+    _10to15_count=round((df.filter(F.col('age_at_covid').between(10,15)).count()))
+    _16to20_count=round((df.filter(F.col('age_at_covid').between(16,20)).count()))
+    _21to45_count=round((df.filter(F.col('age_at_covid').between(21,45)).count()))
+    _46to65_count=round((df.filter(F.col('age_at_covid').between(46,65)).count()))
+    gt66_count=round((df.filter(F.col('age_at_covid')>=66).count()))
+    age_missing_count=round((df.filter(F.col('age_at_covid').isNull()).count()))
+
+    print("Age less than 1 (in %): {}".format(lt1_percent))
+    print("Age between 1 to 4 (in %): {}".format(_1to4_percent))
+    print("Age between 5 to 9 (in %): {}".format(_5to9_percent))
+    print("Age between 10 to 15 (in %): {}".format(_10to15_percent))
+    print("Age between 16 to 20 (in %): {}".format(_16to20_percent))
+    print("Age between 21 to 45 (in %): {}".format(_21to45_percent))
+    print("Age between 46 to 65 (in %): {}".format(_46to65_percent))
+    print("Age higher than 66 (in %): {}".format(gt66_percent))
+    print("Age missing (in %): {}".format(age_missing))
+
+    result_dict={"1.Age less than 1 (in %)":lt1_percent,
+    "2.Age between 1 to 4 (in %)":_1to4_percent,
+    "3.Age between 5 to 9 (in %)":_5to9_percent,
+    "4.Age between 10 to 15 (in %)":_10to15_percent,
+    "5.Age between 16 to 20 (in %)":_16to20_percent,
+    "6.Age between 21 to 45 (in %)":_21to45_percent,
+    "7.Age between 46 to 65 (in %)":_46to65_percent,
+    "8.Age higher than 66 (in %)":gt66_percent,
+    "9.Age missing (in %)":age_missing}
+
+    result_dict2={"1.Age less than 1 (in %)":lt1_count,
+    "2.Age between 1 to 4 (in %)":_1to4_count,
+    "3.Age between 5 to 9 (in %)":_5to9_count,
+    "4.Age between 10 to 15 (in %)":_10to15_count,
+    "5.Age between 16 to 20 (in %)":_16to20_count,
+    "6.Age between 21 to 45 (in %)":_21to45_count,
+    "7.Age between 46 to 65 (in %)":_46to65_count,
+    "8.Age higher than 66 (in %)":gt66_count,
+    "9.Age missing (in %)":age_missing_count}
+    print('% sum: {}'.format((lt1_percent+_1to4_percent+_5to9_percent+_10to15_percent+_16to20_percent+_21to45_percent+_46to65_percent+gt66_percent+age_missing)))
+
+    df_stats = df.select(
+    F.mean(F.col('age_at_covid')).alias('mean'),
+    F.stddev(F.col('age_at_covid')).alias('std')
+    )
+
+    result_dict['mean_age_at_covid']=df_stats.toPandas()['mean'][0]
+    result_dict['std_age_at_covid']=df_stats.toPandas()['std'][0]
+
+    print(df_stats.show())
+
+    results['Value_Names']=list(result_dict.keys())
+    results['percent_Values']=list(result_dict.values())
+
+    results2=pd.DataFrame()
+    results2['Value_Names']=list(result_dict2.keys())
+    results2['count_Values']=list(result_dict2.values())
+
+    results=results.merge(results2, on='Value_Names', how='outer')
+
+    df_race_ethnicity=df.groupBy('race_ethnicity_table1').count().orderBy(F.col('count').desc())
+    df_race_ethnicity=df_race_ethnicity.withColumn('percent_of_total', F.round((F.col('count')*100)/n_total_patients, 2))
+    print(df_race_ethnicity.show())
+    pdf_race_ethnicity=df_race_ethnicity.select('race_ethnicity_table1','percent_of_total', 'count').toPandas()
+    pdf_race_ethnicity.columns=['Value_Names','percent_Values','count_Values']
+    pdf_race_ethnicity['Value_Names']=pdf_race_ethnicity['Value_Names'].apply(lambda x: 'Race_Ethnicity_'+str(x))
+    results=pd.concat([results,pdf_race_ethnicity])
+
+    df_sex=df.groupBy('sex').count().orderBy(F.col('count').desc())
+    df_sex=df_sex.withColumn('percent_of_total', F.round((F.col('count')*100)/n_total_patients, 2))
+    print(df_sex.show())
+    pdf_sex=df_sex.select('sex','percent_of_total','count').toPandas()
+    pdf_sex.columns=['Value_Names','percent_Values','count_Values']
+    pdf_sex['Value_Names']=pdf_sex['Value_Names'].apply(lambda x: 'Sex_'+str(x))
+    results=pd.concat([results,pdf_sex])
+
+    # print(results)
+    results['count_percent']=results['count_Values'].astype(str)  + '(' + results['percent_Values'].astype(str)  + '%)'
+    results=results.sort_values('Value_Names')
+
+    sparkDF=spark.createDataFrame(results) 
+
+    return sparkDF
     
 
 @transform_pandas(
