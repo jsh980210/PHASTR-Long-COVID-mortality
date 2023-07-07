@@ -278,7 +278,7 @@ def analysis_1_COVID_negative_control_pre_matching_second_half(analysis_1_COVID_
     return df
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.4af7d8a8-440f-44cb-af8a-1338d4523aac"),
+    Output(rid="ri.foundry.main.dataset.5ee31d87-6508-417a-8d64-9101aaacada5"),
     Logic_Liaison_All_patients_summary_facts_table_lds=Input(rid="ri.foundry.main.dataset.80175e0f-69da-41e2-8065-2c9a7d3bc571"),
     analysis_1_COVID_negative_control_matched=Input(rid="ri.foundry.main.dataset.875ddad6-f9fc-400f-9411-1cab55e908c9")
 )
@@ -475,7 +475,7 @@ def analysis_1_COVID_positive_control_pre_matching(analysis_1_COVID_positive_con
     return df
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.6af9f8c6-15ec-4d01-8812-94eacb674245"),
+    Output(rid="ri.foundry.main.dataset.305d1319-f1e1-4518-b9dd-8ae6f80c529e"),
     Analysis_1_COVID_positive_control_matched=Input(rid="ri.foundry.main.dataset.f77735ea-fa94-412c-9b5d-82c314be0418"),
     Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c")
 )
@@ -659,7 +659,7 @@ def analysis_1_PASC_case_matched(analysis_1_PASC_case, analysis_1_COVID_positive
     
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.bab0893c-1484-4c16-ba88-2d96c530603f"),
+    Output(rid="ri.foundry.main.dataset.b4d50ed8-0da3-4044-b3e4-8244befa3afe"),
     analysis_1_PASC_case_matched=Input(rid="ri.foundry.main.dataset.1e5e00da-adbf-4c93-8c3d-1a1caf99c4f6")
 )
 def analysis_1_PASC_case_subcohort_summary_copied(analysis_1_PASC_case_matched):
