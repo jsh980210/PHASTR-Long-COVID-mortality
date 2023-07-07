@@ -687,13 +687,13 @@ def analysis_1_PASC_case_subcohort_summary(analysis_1_PASC_case_matched):
 
     n_total_patients=df.count()
 
-    pasc_patients=df.filter(F.col('LC_u09_computable_phenotype_threshold_75')==1)
-    not_pasc_patients=df.filter(F.col('LC_u09_computable_phenotype_threshold_75')==0)
+    #pasc_patients=df.filter(F.col('LC_u09_computable_phenotype_threshold_75')==1)
+    #not_pasc_patients=df.filter(F.col('LC_u09_computable_phenotype_threshold_75')==0)
     
-    print('Total patients: {}'.format(n_total_patients))
+    #print('Total patients: {}'.format(n_total_patients))
 
-    print('Total patients with PASC: {}'.format(pasc_patients.count()))
-    print('Total patients without PASC: {}'.format(not_pasc_patients.count()))
+    #print('Total patients with PASC: {}'.format(pasc_patients.count()))
+    #print('Total patients without PASC: {}'.format(not_pasc_patients.count()))
 
     #calculate age statistics
     # print(df.filter(F.col('age_at_covid').between(1,4)).count())
