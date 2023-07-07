@@ -1205,7 +1205,7 @@ def analysis_2_PASC_case_cohort_2a(Logic_Liaison_Covid_19_Patient_Summary_Facts_
     
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.5fa3a706-4306-40f4-9573-8bb8acc92a42"),
+    Output(rid="ri.foundry.main.dataset.b16a1ea4-956c-42ec-b040-0ed6ec3834d4"),
     analysis_2_PASC_case_cohort_2a=Input(rid="ri.foundry.main.dataset.7d7a7b20-d395-41e5-9804-f9e8bfa34e4f")
 )
 def analysis_2_PASC_case_cohort_2a_summary_copied(analysis_2_PASC_case_cohort_2a):
