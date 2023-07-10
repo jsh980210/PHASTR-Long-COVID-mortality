@@ -1694,6 +1694,23 @@ def analysis_2a_xgboost_cv_feature_importance(analysis_2a_xgboost_cv):
     
 
 @transform_pandas(
+    Output(rid="ri.vector.main.execute.99139923-f87e-4cd7-a662-bf52cfbd95b8"),
+    analysis_2a_xgboost=Input(rid="ri.foundry.main.dataset.4db8d51f-f165-43c0-a98f-31971c43c059")
+)
+def analysis_2a_xgboost_feature_importance_1(analysis_2a_xgboost):
+
+    df = analysis_2a_xgboost
+    
+    plt.figure(figsize = (7, 14))
+    sns.barplot(x = df["importance"], y = df["index_column"], palette = sns.color_palette("RdYlBu", df.shape[0]))
+    plt.tight_layout()
+    plt.show()
+
+    return(df)
+
+    
+
+@transform_pandas(
     Output(rid="ri.foundry.main.dataset.f251c730-78fb-4044-8c57-96c16e3c2011"),
     analysis_2_PASC_case_cohort_2b=Input(rid="ri.foundry.main.dataset.e3640a26-eac1-43b7-b012-261f6dbbd2f3"),
     cci_score_covid_positive=Input(rid="ri.foundry.main.dataset.0d64bb7b-0e57-4c26-8c41-18a3b793fc00")
@@ -2207,31 +2224,5 @@ def test_no_intersection_1(Analysis_1_COVID_positive_control_matched, analysis_1
     print(result1.count())
     print(result2.count())
     print(result3.count())
-    
-
-@transform_pandas(
-    Output(rid="ri.vector.main.execute.99139923-f87e-4cd7-a662-bf52cfbd95b8"),
-    analysis_2a_xgboost_cv=Input(rid="ri.foundry.main.dataset.df6207be-25db-47f6-893e-ae6c8eb96f3f")
-)
-def analysis_2a_xgboost_cv_feature_importance_1(analysis_2a_xgboost_cv):
-
-    df = analysis_2a_xgboost_cv
-    df_features = analysis_2a_xgboost_cv['feature']
-
-    df = df.drop(columns = ['feature'])
-
-    df['mean'] = (df.mean(axis = 1))
-
-    df['features'] = df_features
-
-    df = df.sort_values("mean", ascending = False).head(50)
-    df.index = df["features"]
-    plt.figure(figsize = (7, 14))
-    sns.barplot(x = df["mean"], y = df["features"], palette = sns.color_palette("RdYlBu", df.shape[0]))
-    plt.tight_layout()
-    plt.show()
-
-    return(df)
-
     
 
