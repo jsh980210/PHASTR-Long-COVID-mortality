@@ -1520,6 +1520,7 @@ def analysis_2a_xgboost(analysis_2a):
     y = df['COVID_patient_death_indicator']
     X = df.drop(columns = ['COVID_patient_death_indicator'])
     features = list(X.columns)
+    
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state = 42)
     classifier = XGBClassifier(random_state = 42)
     classifier.fit(X_train, y_train)
@@ -1566,7 +1567,10 @@ def analysis_2a_xgboost(analysis_2a):
     #fig.savefig("roc.png")
     plt.subplots_adjust(top=.8)
     plt.show()
-    feature_importances = pd.DataFrame(classifier.feature_importances_, index = features)
+    
+    features_pd = pd.DataFrame (features, columns = ['feature'])
+    feature_importances = pd.DataFrame(classifier.feature_importances_, index = features, columns = ['importance'])
+    features_pd = features_pd.join(feature_importances, 'feature', 'inner')
     return feature_importances
 
     
