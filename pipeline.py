@@ -1917,6 +1917,24 @@ def analysis_2b_xgboost_cv_feature_importance(analysis_2b_xgboost_cv):
     
 
 @transform_pandas(
+    Output(rid="ri.vector.main.execute.fd924b33-cb16-42ce-9cb6-4327c10314f3"),
+    analysis_2b_xgboost=Input(rid="ri.foundry.main.dataset.40938b04-d7e0-4669-9b4e-57d4be39e92a")
+)
+def analysis_2b_xgboost_feature_importance(analysis_2b_xgboost):
+
+    df = analysis_2b_xgboost
+    df = df.sort_values("importance", ascending = False).head(50)
+    
+    plt.figure(figsize = (7, 14))
+    sns.barplot(x = df["importance"], y = df["index_column"], palette = sns.color_palette("RdYlBu", df.shape[0]))
+    plt.tight_layout()
+    plt.show()
+
+    return(df)
+
+    
+
+@transform_pandas(
     Output(rid="ri.foundry.main.dataset.3ca69c7a-76bc-4a5f-ab5c-8f94f5709789"),
     Logic_Liaison_All_patients_summary_facts_table_lds=Input(rid="ri.foundry.main.dataset.80175e0f-69da-41e2-8065-2c9a7d3bc571"),
     Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_=Input(rid="ri.foundry.main.dataset.75d7da57-7b0e-462c-b41d-c9ef4f756198")
@@ -2232,23 +2250,5 @@ def test_no_intersection_1(Analysis_1_COVID_positive_control_matched, analysis_1
     print(result1.count())
     print(result2.count())
     print(result3.count())
-    
-
-@transform_pandas(
-    Output(rid="ri.vector.main.execute.fd924b33-cb16-42ce-9cb6-4327c10314f3"),
-    analysis_2a_xgboost=Input(rid="ri.foundry.main.dataset.4db8d51f-f165-43c0-a98f-31971c43c059")
-)
-def analysis_2a_xgboost_feature_importance_1(analysis_2a_xgboost):
-
-    df = analysis_2a_xgboost
-    df = df.sort_values("importance", ascending = False).head(50)
-    
-    plt.figure(figsize = (7, 14))
-    sns.barplot(x = df["importance"], y = df["index_column"], palette = sns.color_palette("RdYlBu", df.shape[0]))
-    plt.tight_layout()
-    plt.show()
-
-    return(df)
-
     
 
