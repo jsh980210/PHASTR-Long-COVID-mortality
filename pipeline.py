@@ -2234,3 +2234,21 @@ def test_no_intersection_1(Analysis_1_COVID_positive_control_matched, analysis_1
     print(result3.count())
     
 
+@transform_pandas(
+    Output(rid="ri.vector.main.execute.fd924b33-cb16-42ce-9cb6-4327c10314f3"),
+    analysis_2a_xgboost=Input(rid="ri.foundry.main.dataset.4db8d51f-f165-43c0-a98f-31971c43c059")
+)
+def analysis_2a_xgboost_feature_importance_1(analysis_2a_xgboost):
+
+    df = analysis_2a_xgboost
+    df = df.sort_values("importance", ascending = False).head(50)
+    
+    plt.figure(figsize = (7, 14))
+    sns.barplot(x = df["importance"], y = df["index_column"], palette = sns.color_palette("RdYlBu", df.shape[0]))
+    plt.tight_layout()
+    plt.show()
+
+    return(df)
+
+    
+
