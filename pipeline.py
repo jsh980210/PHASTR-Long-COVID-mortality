@@ -1568,9 +1568,10 @@ def analysis_2a_xgboost(analysis_2a):
     plt.subplots_adjust(top=.8)
     plt.show()
     
-    features_pd = pd.DataFrame (features, columns = ['feature'])
+    #features_pd = pd.DataFrame (features, columns = ['feature'])
     feature_importances = pd.DataFrame(classifier.feature_importances_, index = features, columns = ['importance'])
-    features_pd = features_pd.join(feature_importances, 'feature', 'inner')
+    #features_pd = features_pd.join(feature_importances, 'feature', 'inner')
+    feature_importances['index_column'] = feature_importances.index
     return feature_importances
 
     
