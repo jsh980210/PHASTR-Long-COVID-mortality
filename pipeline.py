@@ -1565,6 +1565,10 @@ def analysis_2a_xgboost(analysis_2a):
     #fig.savefig("roc.png")
     plt.subplots_adjust(top=.8)
     plt.show()
+    feature_importances = pd.DataFrame(classifier.feature_importances_)
+    return feature_importances
+
+    
     
 
 @transform_pandas(
