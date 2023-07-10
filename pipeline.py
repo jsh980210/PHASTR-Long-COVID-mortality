@@ -1697,7 +1697,7 @@ def analysis_2a_xgboost_cv_feature_importance(analysis_2a_xgboost_cv):
     Output(rid="ri.vector.main.execute.99139923-f87e-4cd7-a662-bf52cfbd95b8"),
     analysis_2a_xgboost=Input(rid="ri.foundry.main.dataset.4db8d51f-f165-43c0-a98f-31971c43c059")
 )
-def analysis_2a_xgboost_feature_importance_1(analysis_2a_xgboost):
+def analysis_2a_xgboost_feature_importance(analysis_2a_xgboost):
 
     df = analysis_2a_xgboost
     df = df.sort_values("importance", ascending = False).head(50)
@@ -1745,6 +1745,7 @@ def analysis_2b_xgboost(analysis_2b):
     
     y = df['COVID_patient_death_indicator']
     X = df.drop(columns = ['COVID_patient_death_indicator'])
+    features = list(X.columns)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state = 42)
     classifier = XGBClassifier(random_state = 42)
     classifier.fit(X_train, y_train)
@@ -1791,6 +1792,12 @@ def analysis_2b_xgboost(analysis_2b):
     #fig.savefig("roc.png")
     plt.subplots_adjust(top=.8)
     plt.show()
+
+    #features_pd = pd.DataFrame (features, columns = ['feature'])
+    feature_importances = pd.DataFrame(classifier.feature_importances_, index = features, columns = ['importance'])
+    #features_pd = features_pd.join(feature_importances, 'feature', 'inner')
+    feature_importances['index_column'] = feature_importances.index
+    return feature_importances
     
 
 @transform_pandas(
