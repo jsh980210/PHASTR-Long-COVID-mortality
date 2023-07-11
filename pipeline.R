@@ -121,7 +121,7 @@ analysis_2b_logistic <- function(analysis_2b) {
     #df$subcohort <- as.factor(df$subcohort)
     #df$number_of_COVID_vaccine_doses <- as.factor(df$number_of_COVID_vaccine_doses)
 
-    lr <- glm(death ~ ., data = df, family = binomial)
+    lr <- glm(COVID_patient_death_indicator ~ ., data = df, family = binomial)
 
     print(summary(lr))
     print(exp(coefficients(lr)))
