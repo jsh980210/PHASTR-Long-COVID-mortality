@@ -202,3 +202,26 @@ df_clean_function <- function(df){
 
 }
 
+@transform_pandas(
+    Output(rid="ri.vector.main.execute.a5a7cd01-0dca-4302-b678-4272ca93d5c0"),
+    analysis_2b=Input(rid="ri.foundry.main.dataset.f251c730-78fb-4044-8c57-96c16e3c2011")
+)
+analysis_2b_logistic_1 <- function(analysis_2b) {
+    library(broom)
+    # seed 
+    set.seed(2023)
+    df <- analysis_2b
+    #df$subcohort <- as.factor(df$subcohort)
+    #df$number_of_COVID_vaccine_doses <- as.factor(df$number_of_COVID_vaccine_doses)
+
+    lr <- glm(COVID_patient_death_indicator ~ ., data = df, family = binomial)
+
+    print(summary(lr))
+    print(exp(coefficients(lr)))
+    mod_tbl <- broom::tidy(lr, conf.int = TRUE, exponentiate = TRUE)
+
+    return (mod_tbl)
+    # grid search on the threshold to max the recall
+    
+}
+
