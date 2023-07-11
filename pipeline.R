@@ -113,7 +113,7 @@ analysis_1_logistic_evaluation <- function(analysis_1_cohort) {
     Output(rid="ri.foundry.main.dataset.2a95bda9-68c8-4669-ae3f-977376ed6e98"),
     analysis_2b=Input(rid="ri.foundry.main.dataset.f251c730-78fb-4044-8c57-96c16e3c2011")
 )
-analysis_2_logistic <- function(analysis_2b) {
+analysis_2b_logistic <- function(analysis_2b) {
     library(broom)
     # seed 
     set.seed(2023)
