@@ -2666,3 +2666,71 @@ def test_no_intersection_1(Analysis_1_COVID_positive_control_matched, analysis_1
     print(result3.count())
     
 
+@transform_pandas(
+    Output(rid="ri.vector.main.execute.2baa7c34-12e9-411c-8a37-8e4eed18ba89"),
+    analysis_2b=Input(rid="ri.foundry.main.dataset.f251c730-78fb-4044-8c57-96c16e3c2011")
+)
+def analysis_2b_logistic_py_1(analysis_2b):
+    df = analysis_2b
+    df = df.fillna(df.mean())
+    random.seed(2023)
+    y = df['COVID_patient_death_indicator']
+    X = df.drop(columns = ['COVID_patient_death_indicator'])
+
+    
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state = 42)
+    classifier = LogisticRegression()
+    classifier.fit(X_train, y_train)
+    y_score = classifier.predict_proba(X_test)[:, 1]
+    #print(y_pred)
+    y_pred_cat = np.where(y_score >= 0.0017, 1, 0)
+
+    print(roc_auc_score(y_test, y_score))
+    print(recall_score(y_test, y_pred_cat))
+    print(confusion_matrix(y_test, y_pred_cat))
+
+    pred_scores = dict(y_true=y_test, y_score=y_score)
+    cols = ['False Positive Rate', 'True Positive Rate', 'threshold']
+    roc = pd.DataFrame(dict(zip(cols, roc_curve(**pred_scores))))
+
+    precision, recall, ts = precision_recall_curve(y_true=y_test, probas_pred=y_score)
+    pr_curve = pd.DataFrame({'Precision': precision, 'Recall': recall})
+
+    recall_score_series = pd.Series({t: recall_score(y_true=y_test, y_pred=y_score>t) for t in ts})
+    f1_score_series = pd.Series({t: f1_score(y_true=y_test, y_pred=y_score>t) for t in ts})
+    best_threshold_recall = recall_score_series.idxmax()
+    best_threshold_f1 = f1_score_series.idxmax()
+    print("best_recall_threshold: ", best_threshold_recall)
+    print("best_f1_threshold: ", best_threshold_f1)
+    plt.close()
+    fig, axes = plt.subplots(ncols=4, figsize=(13, 5))
+
+    sns.scatterplot(x='False Positive Rate', y='True Positive Rate', data=roc, s=50, legend=False, ax=axes[0])
+    axes[0].plot('False Positive Rate', 'True Positive Rate', data=roc, lw=1, color='k')
+    axes[0].plot(np.linspace(0,1,100), np.linspace(0,1,100), color='k', ls='--', lw=1)
+    axes[0].fill_between(y1=roc['True Positive Rate'], x=roc['False Positive Rate'], alpha=.3, color='red')
+    axes[0].set_title('Receiver Operating Characteristic')
+
+    sns.scatterplot(x='Recall', y='Precision', data=pr_curve, ax=axes[1])
+    axes[1].set_ylim(0,1)
+    axes[1].set_title('Precision-Recall Curve')
+
+    axes[2].plot(recall_score_series)
+    axes[2].set_xlabel('Threshold')
+    axes[2].set_ylabel('Recall score')
+    axes[2].axvline(best_threshold_recall, lw=1, ls='--', color='k')
+    #axes[2].text(text=f'Max F1 @ {best_threshold:.2f}', x=.60, y=.95, s=5)
+
+    axes[3].plot(f1_score_series)
+    axes[3].set_xlabel('Threshold')
+    axes[3].set_ylabel('F1 score')
+    axes[3].axvline(best_threshold_f1, lw=1, ls='--', color='k')
+    
+    fig.suptitle(f'roc_auc_score = {round(roc_auc_score(**pred_scores),2)}', fontsize=24)
+    fig.tight_layout()
+    #fig.savefig("roc.png")
+    plt.subplots_adjust(top=.8)
+    plt.show()
+    
+
