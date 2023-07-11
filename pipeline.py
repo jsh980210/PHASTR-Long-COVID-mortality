@@ -1742,7 +1742,7 @@ def analysis_2b(analysis_2_PASC_case_cohort_2b, cci_score_covid_positive):
 )
 def analysis_2b_logistic_py(analysis_2b):
     df = analysis_2b
-    df.fillna(df.mean())
+    df = df.fillna(df.mean())
     random.seed(2023)
     y = df['COVID_patient_death_indicator']
     X = df.drop(columns = ['COVID_patient_death_indicator'])
