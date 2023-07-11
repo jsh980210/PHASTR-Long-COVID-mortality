@@ -169,12 +169,12 @@ df_clean_function <- function(df){
 
 @transform_pandas(
     Output(rid="ri.vector.main.execute.d21dcbb1-51b2-4ba7-9652-07776444b9fa"),
-    analysis_1_logistic=Input(rid="ri.foundry.main.dataset.5be15385-d4c0-4a6a-ba59-c12b29c0541e")
+    analysis_2b_logistic=Input(rid="ri.foundry.main.dataset.2a95bda9-68c8-4669-ae3f-977376ed6e98")
 )
-plot_odds_ratio_1 <- function(analysis_1_logistic) {
+plot_odds_ratio_analysis_2b <- function(analysis_2b_logistic) {
     library(tidyverse)
     library(ggplot2)
-    df <- analysis_1_logistic
+    df <- analysis_2b_logistic
     df <- df_clean_function(df)
     
     par(mfrow = c(1, 1))
