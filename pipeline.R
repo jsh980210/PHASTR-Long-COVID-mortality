@@ -171,10 +171,10 @@ df_clean_function <- function(df){
     Output(rid="ri.vector.main.execute.7bfe20ac-6320-4182-b04d-0d8cc429f005"),
     analysis_2b_logistic_copied=Input(rid="ri.foundry.main.dataset.87fdb781-e7aa-43ac-94f9-9a7496f259d8")
 )
-plot_odds_ratio_analysis_2b_copied <- function(analysis_2b_logistic) {
+plot_odds_ratio_analysis_2b_copied <- function(analysis_2b_logistic_copied) {
     library(tidyverse)
     library(ggplot2)
-    df <- analysis_2b_logistic
+    df <- analysis_2b_logistic_copied
     df <- df_clean_function(df)
     
     par(mfrow = c(1, 1))
