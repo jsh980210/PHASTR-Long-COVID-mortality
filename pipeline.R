@@ -191,13 +191,13 @@ df_clean_function <- function(df){
 }
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.d21dcbb1-51b2-4ba7-9652-07776444b9fa"),
-    analysis_2b_logistic=Input(rid="ri.foundry.main.dataset.2a95bda9-68c8-4669-ae3f-977376ed6e98")
+    Output(rid="ri.vector.main.execute.ed814114-7489-40b6-bf5b-647053bf2d41"),
+    analysis_2a_logistic=Input(rid="ri.foundry.main.dataset.daf8e1f1-735d-49eb-a2ef-c864cb7fb0d9")
 )
-plot_odds_ratio_analysis_2b <- function(analysis_2b_logistic) {
+plot_odds_ratio_analysis_2a <- function(analysis_2a_logistic) {
     library(tidyverse)
     library(ggplot2)
-    df <- analysis_2b_logistic
+    df <- analysis_2a_logistic
     df <- df_clean_function(df)
     
     par(mfrow = c(1, 1))
@@ -226,10 +226,10 @@ df_clean_function <- function(df){
 }
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.ed814114-7489-40b6-bf5b-647053bf2d41"),
+    Output(rid="ri.vector.main.execute.d21dcbb1-51b2-4ba7-9652-07776444b9fa"),
     analysis_2b_logistic=Input(rid="ri.foundry.main.dataset.2a95bda9-68c8-4669-ae3f-977376ed6e98")
 )
-plot_odds_ratio_analysis_2b_1 <- function(analysis_2b_logistic) {
+plot_odds_ratio_analysis_2b <- function(analysis_2b_logistic) {
     library(tidyverse)
     library(ggplot2)
     df <- analysis_2b_logistic
