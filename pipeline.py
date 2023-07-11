@@ -2287,63 +2287,12 @@ import shap
     
 
 @transform_pandas(
-    Output(rid="ri.foundry.main.dataset.606ebae8-38c1-461f-96c4-6479a0820d81"),
-    Logic_Liaison_All_patients_summary_facts_table_lds=Input(rid="ri.foundry.main.dataset.80175e0f-69da-41e2-8065-2c9a7d3bc571"),
-    Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c"),
-    analysis_1_COVID_negative_control=Input(rid="ri.foundry.main.dataset.cabcd0ef-fb38-471c-a325-493a9ca7b458"),
-    analysis_1_COVID_positive_control=Input(rid="ri.foundry.main.dataset.0ab2f17b-94f6-4f86-988b-e49c020e9d9f"),
-    analysis_1_PASC_case=Input(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68")
-)
-def test_no_intersection(analysis_1_COVID_positive_control, analysis_1_PASC_case, analysis_1_COVID_negative_control, Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, Logic_Liaison_All_patients_summary_facts_table_lds):
-    df1 = analysis_1_COVID_positive_control.select('person_id','age_at_covid')
-    df2 = analysis_1_PASC_case.select('person_id', 'first_COVID_ED_only_start_date')
-    df3 = analysis_1_COVID_negative_control.select('person_id', 'state')
-    df4 = Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype
-    df5 = Logic_Liaison_All_patients_summary_facts_table_lds
-
-    result1 = df1.join(df2, 'person_id', 'inner')
-    result2 = df1.join(df3, 'person_id', 'inner')
-    result3 = df2.join(df3, 'person_id', 'inner')
-
-    print(result1.count())
-    print(result2.count())
-    print(result3.count())
-    
-    result = (result2.select('person_id')).join(Logic_Liaison_All_patients_summary_facts_table_lds, 'person_id', 'inner')
-
-    test_result = (df4.select('person_id')).join(df5.filter((df5.confirmed_covid_patient == 0) & (df5.possible_covid_patient == 0)), 'person_id', 'inner')
-
-    return test_result
-
-    
-    
-
-@transform_pandas(
-    Output(rid="ri.vector.main.execute.25d3185e-6698-48ea-8344-651c53de9c88"),
-    Analysis_1_COVID_positive_control_matched=Input(rid="ri.foundry.main.dataset.f77735ea-fa94-412c-9b5d-82c314be0418"),
-    analysis_1_COVID_negative_control_matched=Input(rid="ri.foundry.main.dataset.875ddad6-f9fc-400f-9411-1cab55e908c9"),
-    analysis_1_PASC_case_matched=Input(rid="ri.foundry.main.dataset.1e5e00da-adbf-4c93-8c3d-1a1caf99c4f6")
-)
-def test_no_intersection_1(Analysis_1_COVID_positive_control_matched, analysis_1_PASC_case_matched, analysis_1_COVID_negative_control_matched):
-    df1 = Analysis_1_COVID_positive_control_matched.select('person_id')
-    df2 = analysis_1_PASC_case_matched.select('person_id')
-    df3 = analysis_1_COVID_negative_control_matched.select('person_id')
-
-    result1 = df1.join(df2, 'person_id', 'inner')
-    result2 = df1.join(df3, 'person_id', 'inner')
-    result3 = df2.join(df3, 'person_id', 'inner')
-    print(result1.count())
-    print(result2.count())
-    print(result3.count())
-    
-
-@transform_pandas(
     Output(rid="ri.vector.main.execute.c12d87a1-ff63-46dd-9209-41c64edd9a4c"),
-    analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f")
+    analysis_2b=Input(rid="ri.foundry.main.dataset.f251c730-78fb-4044-8c57-96c16e3c2011")
 )
-def simplified_shap_plot_analysis_1_1(analysis_1_cohort):
+def simplified_shap_plot_analysis_2b(analysis_2b):
 
-    df = analysis_1_cohort
+    df = analysis_2b
     #df = df.toPandas()
 
     n_splits = 5
@@ -2351,8 +2300,8 @@ def simplified_shap_plot_analysis_1_1(analysis_1_cohort):
 
     random.seed(2023)
     
-    X = df[['CCI', 'BMI', 'subcohort', 'number_of_COVID_vaccine_doses', 'number_of_visits_per_month_before_index_date']]
-    y = df['death']
+    y = df['COVID_patient_death_indicator']
+    X = df.drop(columns = ['COVID_patient_death_indicator'])
 
     feature_list = X.columns
 
@@ -2420,5 +2369,56 @@ def simplified_shap_plot_analysis_1_1(analysis_1_cohort):
     return(X_test)
 
 import shap 
+    
+
+@transform_pandas(
+    Output(rid="ri.foundry.main.dataset.606ebae8-38c1-461f-96c4-6479a0820d81"),
+    Logic_Liaison_All_patients_summary_facts_table_lds=Input(rid="ri.foundry.main.dataset.80175e0f-69da-41e2-8065-2c9a7d3bc571"),
+    Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c"),
+    analysis_1_COVID_negative_control=Input(rid="ri.foundry.main.dataset.cabcd0ef-fb38-471c-a325-493a9ca7b458"),
+    analysis_1_COVID_positive_control=Input(rid="ri.foundry.main.dataset.0ab2f17b-94f6-4f86-988b-e49c020e9d9f"),
+    analysis_1_PASC_case=Input(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68")
+)
+def test_no_intersection(analysis_1_COVID_positive_control, analysis_1_PASC_case, analysis_1_COVID_negative_control, Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, Logic_Liaison_All_patients_summary_facts_table_lds):
+    df1 = analysis_1_COVID_positive_control.select('person_id','age_at_covid')
+    df2 = analysis_1_PASC_case.select('person_id', 'first_COVID_ED_only_start_date')
+    df3 = analysis_1_COVID_negative_control.select('person_id', 'state')
+    df4 = Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype
+    df5 = Logic_Liaison_All_patients_summary_facts_table_lds
+
+    result1 = df1.join(df2, 'person_id', 'inner')
+    result2 = df1.join(df3, 'person_id', 'inner')
+    result3 = df2.join(df3, 'person_id', 'inner')
+
+    print(result1.count())
+    print(result2.count())
+    print(result3.count())
+    
+    result = (result2.select('person_id')).join(Logic_Liaison_All_patients_summary_facts_table_lds, 'person_id', 'inner')
+
+    test_result = (df4.select('person_id')).join(df5.filter((df5.confirmed_covid_patient == 0) & (df5.possible_covid_patient == 0)), 'person_id', 'inner')
+
+    return test_result
+
+    
+    
+
+@transform_pandas(
+    Output(rid="ri.vector.main.execute.25d3185e-6698-48ea-8344-651c53de9c88"),
+    Analysis_1_COVID_positive_control_matched=Input(rid="ri.foundry.main.dataset.f77735ea-fa94-412c-9b5d-82c314be0418"),
+    analysis_1_COVID_negative_control_matched=Input(rid="ri.foundry.main.dataset.875ddad6-f9fc-400f-9411-1cab55e908c9"),
+    analysis_1_PASC_case_matched=Input(rid="ri.foundry.main.dataset.1e5e00da-adbf-4c93-8c3d-1a1caf99c4f6")
+)
+def test_no_intersection_1(Analysis_1_COVID_positive_control_matched, analysis_1_PASC_case_matched, analysis_1_COVID_negative_control_matched):
+    df1 = Analysis_1_COVID_positive_control_matched.select('person_id')
+    df2 = analysis_1_PASC_case_matched.select('person_id')
+    df3 = analysis_1_COVID_negative_control_matched.select('person_id')
+
+    result1 = df1.join(df2, 'person_id', 'inner')
+    result2 = df1.join(df3, 'person_id', 'inner')
+    result3 = df2.join(df3, 'person_id', 'inner')
+    print(result1.count())
+    print(result2.count())
+    print(result3.count())
     
 
