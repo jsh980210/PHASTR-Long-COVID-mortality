@@ -1737,6 +1737,97 @@ def analysis_2b(analysis_2_PASC_case_cohort_2b, cci_score_covid_positive):
     
 
 @transform_pandas(
+    Output(rid="ri.foundry.main.dataset.47fbb10f-b2e4-40dd-b595-ae95e9c9a00a"),
+    analysis_2b=Input(rid="ri.foundry.main.dataset.f251c730-78fb-4044-8c57-96c16e3c2011")
+)
+def analysis_2b_logistic_cv(analysis_2b):
+    df = analysis_2b
+    df = df.fillna(df.mean())
+    random.seed(2023)
+    y = df['COVID_patient_death_indicator']
+    X = df.drop(columns = ['COVID_patient_death_indicator'])
+    n_splits = 5
+    n_repeats = 5
+    
+    
+
+    features = list(X.columns)
+    features_pd = pd.DataFrame (features, columns = ['feature'])
+    
+    X = X.to_numpy()
+
+    #Mean AUC of 0.91 +/- 0.02:
+    classifier =  LogisticRegression()
+
+    #cv = StratifiedKFold(n_splits=5)
+    cv = RepeatedStratifiedKFold(n_splits = n_splits, n_repeats = n_repeats, random_state=42)
+
+    tprs = []
+    aucs = []
+
+    # 100 evenly spaced points from 0 to 1
+    mean_fpr = np.linspace(0, 1, 100)
+    plt.close()
+    fig, ax = plt.subplots()
+
+    # Plot the individual ROC curves from the split
+    for i, (train, test) in enumerate(cv.split(X, y)):
+        classifier.fit(X[train], y[train])
+        y_pred = classifier.predict_proba(X[test])
+        #feature_importances = pd.DataFrame(classifier.feature_importances_, index = features, columns=[('importance' + str(i))])
+        #features_pd = features_pd.join(feature_importances, 'feature', 'inner')
+
+        viz = plot_roc_curve(classifier, X[test], y[test],
+                            name='ROC fold {}'.format(i),
+                            label ='_nolegend_',
+                            alpha=0.3, lw=1, ax=ax)
+        
+        # Interpolate the calculated TPR at the evenly spaced points, given the calculated TPR and FPR
+        interp_tpr = np.interp(mean_fpr, viz.fpr, viz.tpr)
+        interp_tpr[0] = 0.0
+        tprs.append(interp_tpr)
+        aucs.append(viz.roc_auc)
+
+    # Plot the random classifier line
+    ax.plot([0, 1], [0, 1], linestyle='--', lw=2, color='r',
+            label='Random Classifier', alpha=.8)
+
+    # Calculate and plot the mean of all the ROC curves from the splits
+    mean_tpr = np.mean(tprs, axis=0)
+    mean_tpr[-1] = 1.0
+    mean_auc = auc(mean_fpr, mean_tpr)
+    std_auc = np.std(aucs)
+
+    # Standard Error = Standard Deviation / SQRT(n)
+    std_err_auc = std_auc / (math.sqrt(len(aucs)))
+
+    # 95% confidence interval = 1.96 * std_err
+    confidence_interval = 1.96 * std_err_auc
+
+    ax.plot(mean_fpr, mean_tpr, color='b',
+            label=r'Mean ROC (AUC = %0.3f $\pm$ %0.3f)' % (mean_auc, std_auc),
+            lw=2, alpha=.8)
+
+    # Plot standard deviation of ROC curves, and fill the space
+    std_tpr = np.std(tprs, axis=0)
+    tprs_upper = np.minimum(mean_tpr + std_tpr, 1)
+    tprs_lower = np.maximum(mean_tpr - std_tpr, 0)
+    ax.fill_between(mean_fpr, tprs_lower, tprs_upper, color='grey', alpha=.2,
+                    label=r'$\pm$ 1 std. dev.')
+
+    ax.set(xlim=[-0.05, 1.05], ylim=[-0.05, 1.05],
+        title= 'ROC Curve:  {}-fold Cross-Validation, {} Repeats'.format(n_splits, n_repeats) )
+    ax.legend(loc="lower right")
+
+    set_output_image_type('svg')
+    plt.rcParams['svg.fonttype'] = 'none'
+    
+    plt.show()
+
+    return features_pd
+    
+
+@transform_pandas(
     Output(rid="ri.vector.main.execute.5f13c988-c29a-4298-9204-3fe4860d1e6a"),
     analysis_2b=Input(rid="ri.foundry.main.dataset.f251c730-78fb-4044-8c57-96c16e3c2011")
 )
@@ -2573,96 +2664,5 @@ def test_no_intersection_1(Analysis_1_COVID_positive_control_matched, analysis_1
     print(result1.count())
     print(result2.count())
     print(result3.count())
-    
-
-@transform_pandas(
-    Output(rid="ri.vector.main.execute.c2ee5bf9-cfdc-4072-83bf-7812f083da62"),
-    analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f")
-)
-def analysis_1_logistic_cv_1(analysis_1_cohort):
-    df = analysis_1_cohort
-    random.seed(2023)
-    
-    X = df[['CCI', 'BMI', 'subcohort', 'number_of_COVID_vaccine_doses', 'number_of_visits_per_month_before_index_date']]
-    y = df['death']
-    n_splits = 5
-    n_repeats = 5
-    
-    
-
-    features = list(X.columns)
-    features_pd = pd.DataFrame (features, columns = ['feature'])
-    
-    X = X.to_numpy()
-
-    #Mean AUC of 0.91 +/- 0.02:
-    classifier =  LogisticRegression()
-
-    #cv = StratifiedKFold(n_splits=5)
-    cv = RepeatedStratifiedKFold(n_splits = n_splits, n_repeats = n_repeats, random_state=42)
-
-    tprs = []
-    aucs = []
-
-    # 100 evenly spaced points from 0 to 1
-    mean_fpr = np.linspace(0, 1, 100)
-    plt.close()
-    fig, ax = plt.subplots()
-
-    # Plot the individual ROC curves from the split
-    for i, (train, test) in enumerate(cv.split(X, y)):
-        classifier.fit(X[train], y[train])
-        y_pred = classifier.predict_proba(X[test])
-        #feature_importances = pd.DataFrame(classifier.feature_importances_, index = features, columns=[('importance' + str(i))])
-        #features_pd = features_pd.join(feature_importances, 'feature', 'inner')
-
-        viz = plot_roc_curve(classifier, X[test], y[test],
-                            name='ROC fold {}'.format(i),
-                            label ='_nolegend_',
-                            alpha=0.3, lw=1, ax=ax)
-        
-        # Interpolate the calculated TPR at the evenly spaced points, given the calculated TPR and FPR
-        interp_tpr = np.interp(mean_fpr, viz.fpr, viz.tpr)
-        interp_tpr[0] = 0.0
-        tprs.append(interp_tpr)
-        aucs.append(viz.roc_auc)
-
-    # Plot the random classifier line
-    ax.plot([0, 1], [0, 1], linestyle='--', lw=2, color='r',
-            label='Random Classifier', alpha=.8)
-
-    # Calculate and plot the mean of all the ROC curves from the splits
-    mean_tpr = np.mean(tprs, axis=0)
-    mean_tpr[-1] = 1.0
-    mean_auc = auc(mean_fpr, mean_tpr)
-    std_auc = np.std(aucs)
-
-    # Standard Error = Standard Deviation / SQRT(n)
-    std_err_auc = std_auc / (math.sqrt(len(aucs)))
-
-    # 95% confidence interval = 1.96 * std_err
-    confidence_interval = 1.96 * std_err_auc
-
-    ax.plot(mean_fpr, mean_tpr, color='b',
-            label=r'Mean ROC (AUC = %0.3f $\pm$ %0.3f)' % (mean_auc, std_auc),
-            lw=2, alpha=.8)
-
-    # Plot standard deviation of ROC curves, and fill the space
-    std_tpr = np.std(tprs, axis=0)
-    tprs_upper = np.minimum(mean_tpr + std_tpr, 1)
-    tprs_lower = np.maximum(mean_tpr - std_tpr, 0)
-    ax.fill_between(mean_fpr, tprs_lower, tprs_upper, color='grey', alpha=.2,
-                    label=r'$\pm$ 1 std. dev.')
-
-    ax.set(xlim=[-0.05, 1.05], ylim=[-0.05, 1.05],
-        title= 'ROC Curve:  {}-fold Cross-Validation, {} Repeats'.format(n_splits, n_repeats) )
-    ax.legend(loc="lower right")
-
-    set_output_image_type('svg')
-    plt.rcParams['svg.fonttype'] = 'none'
-    
-    plt.show()
-
-    return features_pd
     
 
