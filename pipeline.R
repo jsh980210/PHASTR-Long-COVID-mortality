@@ -110,6 +110,29 @@ analysis_1_logistic_evaluation <- function(analysis_1_cohort) {
 }
 
 @transform_pandas(
+    Output(rid="ri.vector.main.execute.1f20cb57-1433-4741-80fb-8bede82c38be"),
+    analysis_2b=Input(rid="ri.foundry.main.dataset.f251c730-78fb-4044-8c57-96c16e3c2011")
+)
+analysis_2b_logistic_copied <- function(analysis_2b) {
+    library(broom)
+    # seed 
+    set.seed(2023)
+    df <- analysis_2b
+    #df$subcohort <- as.factor(df$subcohort)
+    #df$number_of_COVID_vaccine_doses <- as.factor(df$number_of_COVID_vaccine_doses)
+
+    lr <- glm(COVID_patient_death_indicator ~ ., data = df, family = binomial)
+
+    print(summary(lr))
+    print(exp(coefficients(lr)))
+    mod_tbl <- broom::tidy(lr, conf.int = TRUE, exponentiate = TRUE)
+
+    return (mod_tbl)
+    # grid search on the threshold to max the recall
+    
+}
+
+@transform_pandas(
     Output(rid="ri.vector.main.execute.beb33798-6230-4fd5-9b8a-26761eba873a"),
     analysis_1_logistic=Input(rid="ri.foundry.main.dataset.5be15385-d4c0-4a6a-ba59-c12b29c0541e")
 )
@@ -125,6 +148,41 @@ plot_odds_ratio <- function(analysis_1_logistic) {
     SigCols <- c('Non-Significant'="skyblue2", 'Significant'="orange2")
     
     forest_plot1 = ggplot(data=df, aes(y=term, x=estimate, xmin=conf_low, xmax=conf_high, color=Pval_Signif)) + geom_point(size=3) + geom_errorbarh(size=0.85,height=.3) + scale_color_manual(values=SigCols) + labs(title='Outcome: patient death', x='Odds Ratio (OR)', y = 'Variable', color='p-Value Significance') + geom_vline(xintercept=1, color='black', linetype='dashed', alpha=.5) + theme_classic()+theme(text = element_text(size = 20)) + theme(axis.text.x= element_text(size=18))+theme(axis.text.y = element_text(size=18))
+    plot(forest_plot1)
+    
+
+    
+    return(df)
+    
+}
+
+df_clean_function <- function(df){
+
+    df <- df %>%
+        select(-statistic, -std_error) %>%
+        mutate('Pval_Signif'=ifelse(p_value<0.05, "Significant", "Non-Significant"))
+        
+    
+    return(df)
+
+}
+
+@transform_pandas(
+    Output(rid="ri.vector.main.execute.7bfe20ac-6320-4182-b04d-0d8cc429f005"),
+    analysis_2b_logistic_copied=Input(rid="ri.vector.main.execute.1f20cb57-1433-4741-80fb-8bede82c38be")
+)
+plot_odds_ratio_analysis_2b_copied <- function(analysis_2b_logistic) {
+    library(tidyverse)
+    library(ggplot2)
+    df <- analysis_2b_logistic
+    df <- df_clean_function(df)
+    
+    par(mfrow = c(1, 1))
+
+    # Creates color scheme for p value significance
+    SigCols <- c('Non-Significant'="skyblue2", 'Significant'="orange2")
+    
+    forest_plot1 = ggplot(data=df, aes(y=term, x=estimate, xmin=conf_low, xmax=conf_high, color=Pval_Signif)) + geom_point(size=3) + geom_errorbarh(size=0.85,height=.3) + scale_color_manual(values=SigCols) + labs(title='Outcome: patient death', x='Odds Ratio (OR)', y = 'Variable', color='p-Value Significance') + geom_vline(xintercept=1, color='black', linetype='dashed', alpha=.5) + theme_classic()+theme(text = element_text(size = 15)) + theme(axis.text.x= element_text(size=10))+theme(axis.text.y = element_text(size=10))
     plot(forest_plot1)
     
 

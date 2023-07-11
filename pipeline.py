@@ -1707,6 +1707,165 @@ def analysis_2b(analysis_2_PASC_case_cohort_2b, cci_score_covid_positive):
     
 
 @transform_pandas(
+    Output(rid="ri.vector.main.execute.64063f0a-bbdc-4a02-9fc7-7413f5a5e9d4"),
+    analysis_2b=Input(rid="ri.foundry.main.dataset.f251c730-78fb-4044-8c57-96c16e3c2011")
+)
+def analysis_2b_logistic_cv_copied(analysis_2b):
+    df = analysis_2b
+    df = df.fillna(df.mean())
+    random.seed(2023)
+    y = df['COVID_patient_death_indicator']
+    X = df.drop(columns = ['COVID_patient_death_indicator'])
+    n_splits = 5
+    n_repeats = 5
+    
+    
+
+    features = list(X.columns)
+    features_pd = pd.DataFrame (features, columns = ['feature'])
+    
+    X = X.to_numpy()
+
+    #Mean AUC of 0.91 +/- 0.02:
+    classifier =  LogisticRegression()
+
+    #cv = StratifiedKFold(n_splits=5)
+    cv = RepeatedStratifiedKFold(n_splits = n_splits, n_repeats = n_repeats, random_state=42)
+
+    tprs = []
+    aucs = []
+
+    # 100 evenly spaced points from 0 to 1
+    mean_fpr = np.linspace(0, 1, 100)
+    plt.close()
+    fig, ax = plt.subplots()
+
+    # Plot the individual ROC curves from the split
+    for i, (train, test) in enumerate(cv.split(X, y)):
+        classifier.fit(X[train], y[train])
+        y_pred = classifier.predict_proba(X[test])
+        #feature_importances = pd.DataFrame(classifier.feature_importances_, index = features, columns=[('importance' + str(i))])
+        #features_pd = features_pd.join(feature_importances, 'feature', 'inner')
+
+        viz = plot_roc_curve(classifier, X[test], y[test],
+                            name='ROC fold {}'.format(i),
+                            label ='_nolegend_',
+                            alpha=0.3, lw=1, ax=ax)
+        
+        # Interpolate the calculated TPR at the evenly spaced points, given the calculated TPR and FPR
+        interp_tpr = np.interp(mean_fpr, viz.fpr, viz.tpr)
+        interp_tpr[0] = 0.0
+        tprs.append(interp_tpr)
+        aucs.append(viz.roc_auc)
+
+    # Plot the random classifier line
+    ax.plot([0, 1], [0, 1], linestyle='--', lw=2, color='r',
+            label='Random Classifier', alpha=.8)
+
+    # Calculate and plot the mean of all the ROC curves from the splits
+    mean_tpr = np.mean(tprs, axis=0)
+    mean_tpr[-1] = 1.0
+    mean_auc = auc(mean_fpr, mean_tpr)
+    std_auc = np.std(aucs)
+
+    # Standard Error = Standard Deviation / SQRT(n)
+    std_err_auc = std_auc / (math.sqrt(len(aucs)))
+
+    # 95% confidence interval = 1.96 * std_err
+    confidence_interval = 1.96 * std_err_auc
+
+    ax.plot(mean_fpr, mean_tpr, color='b',
+            label=r'Mean ROC (AUC = %0.3f $\pm$ %0.3f)' % (mean_auc, std_auc),
+            lw=2, alpha=.8)
+
+    # Plot standard deviation of ROC curves, and fill the space
+    std_tpr = np.std(tprs, axis=0)
+    tprs_upper = np.minimum(mean_tpr + std_tpr, 1)
+    tprs_lower = np.maximum(mean_tpr - std_tpr, 0)
+    ax.fill_between(mean_fpr, tprs_lower, tprs_upper, color='grey', alpha=.2,
+                    label=r'$\pm$ 1 std. dev.')
+
+    ax.set(xlim=[-0.05, 1.05], ylim=[-0.05, 1.05],
+        title= 'ROC Curve:  {}-fold Cross-Validation, {} Repeats'.format(n_splits, n_repeats) )
+    ax.legend(loc="lower right")
+
+    set_output_image_type('svg')
+    plt.rcParams['svg.fonttype'] = 'none'
+    
+    plt.show()
+
+    return features_pd
+    
+
+@transform_pandas(
+    Output(rid="ri.vector.main.execute.872d94e0-3a74-43d5-813b-ccf25d62a098"),
+    analysis_2b=Input(rid="ri.foundry.main.dataset.f251c730-78fb-4044-8c57-96c16e3c2011")
+)
+def analysis_2b_logistic_py_copied(analysis_2b):
+    df = analysis_2b
+    df = df.fillna(df.mean())
+    random.seed(2023)
+    y = df['COVID_patient_death_indicator']
+    X = df.drop(columns = ['COVID_patient_death_indicator'])
+
+    
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state = 42)
+    classifier = LogisticRegression()
+    classifier.fit(X_train, y_train)
+    y_score = classifier.predict_proba(X_test)[:, 1]
+    #print(y_pred)
+    y_pred_cat = np.where(y_score >= 0.0017, 1, 0)
+
+    print(roc_auc_score(y_test, y_score))
+    print(recall_score(y_test, y_pred_cat))
+    print(confusion_matrix(y_test, y_pred_cat))
+
+    pred_scores = dict(y_true=y_test, y_score=y_score)
+    cols = ['False Positive Rate', 'True Positive Rate', 'threshold']
+    roc = pd.DataFrame(dict(zip(cols, roc_curve(**pred_scores))))
+
+    precision, recall, ts = precision_recall_curve(y_true=y_test, probas_pred=y_score)
+    pr_curve = pd.DataFrame({'Precision': precision, 'Recall': recall})
+
+    recall_score_series = pd.Series({t: recall_score(y_true=y_test, y_pred=y_score>t) for t in ts})
+    f1_score_series = pd.Series({t: f1_score(y_true=y_test, y_pred=y_score>t) for t in ts})
+    best_threshold_recall = recall_score_series.idxmax()
+    best_threshold_f1 = f1_score_series.idxmax()
+    print("best_recall_threshold: ", best_threshold_recall)
+    print("best_f1_threshold: ", best_threshold_f1)
+    plt.close()
+    fig, axes = plt.subplots(ncols=4, figsize=(13, 5))
+
+    sns.scatterplot(x='False Positive Rate', y='True Positive Rate', data=roc, s=50, legend=False, ax=axes[0])
+    axes[0].plot('False Positive Rate', 'True Positive Rate', data=roc, lw=1, color='k')
+    axes[0].plot(np.linspace(0,1,100), np.linspace(0,1,100), color='k', ls='--', lw=1)
+    axes[0].fill_between(y1=roc['True Positive Rate'], x=roc['False Positive Rate'], alpha=.3, color='red')
+    axes[0].set_title('Receiver Operating Characteristic')
+
+    sns.scatterplot(x='Recall', y='Precision', data=pr_curve, ax=axes[1])
+    axes[1].set_ylim(0,1)
+    axes[1].set_title('Precision-Recall Curve')
+
+    axes[2].plot(recall_score_series)
+    axes[2].set_xlabel('Threshold')
+    axes[2].set_ylabel('Recall score')
+    axes[2].axvline(best_threshold_recall, lw=1, ls='--', color='k')
+    #axes[2].text(text=f'Max F1 @ {best_threshold:.2f}', x=.60, y=.95, s=5)
+
+    axes[3].plot(f1_score_series)
+    axes[3].set_xlabel('Threshold')
+    axes[3].set_ylabel('F1 score')
+    axes[3].axvline(best_threshold_f1, lw=1, ls='--', color='k')
+    
+    fig.suptitle(f'roc_auc_score = {round(roc_auc_score(**pred_scores),2)}', fontsize=24)
+    fig.tight_layout()
+    #fig.savefig("roc.png")
+    plt.subplots_adjust(top=.8)
+    plt.show()
+    
+
+@transform_pandas(
     Output(rid="ri.foundry.main.dataset.40938b04-d7e0-4669-9b4e-57d4be39e92a"),
     analysis_2b=Input(rid="ri.foundry.main.dataset.f251c730-78fb-4044-8c57-96c16e3c2011")
 )
@@ -2188,6 +2347,91 @@ def simplified_shap_plot_analysis_1_copied(analysis_1_cohort):
     
     X = df[['CCI', 'BMI', 'subcohort', 'number_of_COVID_vaccine_doses', 'number_of_visits_per_month_before_index_date']]
     y = df['death']
+
+    feature_list = X.columns
+
+    X = X.to_numpy()
+    cv = RepeatedStratifiedKFold(n_splits = n_splits, n_repeats = n_repeats, random_state=42)
+
+    classifier =  XGBClassifier(colsample_bytree=0.1, gamma=0.4, learning_rate=0.09, max_depth=8, min_child_weight=0, n_estimators=100, subsample=0.9, random_state=42)
+
+    list_shap_values = list()
+    list_test_sets = list()
+    for train_index, test_index in cv.split(X, y):
+        X_train, X_test = X[train_index], X[test_index]
+        y_train, y_test = y[train_index], y[test_index]
+        X_train = pd.DataFrame(X_train,columns=feature_list)
+        X_test = pd.DataFrame(X_test,columns=feature_list)
+
+        classifier.fit(X_train, y_train)
+
+        explainer = shap.TreeExplainer(classifier)
+        shap_values = explainer.shap_values(X_test)
+
+        list_shap_values.append(shap_values)
+        list_test_sets.append(test_index)
+
+    test_set = list_test_sets[0]
+    shap_values = np.array(list_shap_values[0])
+    for i in range(1,len(list_test_sets)):
+        test_set = np.concatenate((test_set,list_test_sets[i]),axis=0)
+        shap_values = np.concatenate((shap_values,np.array(list_shap_values[i])))
+   
+    X_test = pd.DataFrame(X[test_set],columns=feature_list)
+
+    def ABS_SHAP(df_shap,df):
+        #import matplotlib as plt
+        # Make a copy of the input data
+        shap_v = pd.DataFrame(df_shap)
+        feature_list = df.columns
+        shap_v.columns = feature_list
+        df_v = df.copy().reset_index().drop('index',axis=1)
+        
+        # Determine the correlation in order to plot with different colors
+        corr_list = list()
+        for i in feature_list:
+            b = np.corrcoef(shap_v[i],df_v[i])[1][0]
+            corr_list.append(b)
+        corr_df = pd.concat([pd.Series(feature_list),pd.Series(corr_list)],axis=1).fillna(0)
+        # Make a data frame. Column 1 is the feature, and Column 2 is the correlation coefficient
+        corr_df.columns  = ['Variable','Corr']
+        corr_df['Sign'] = np.where(corr_df['Corr']>0,'red','blue')
+        
+        # Plot it
+        shap_abs = np.abs(shap_v)
+        k=pd.DataFrame(shap_abs.mean()).reset_index()
+        k.columns = ['Variable','SHAP_abs']
+        k2 = k.merge(corr_df,left_on = 'Variable',right_on='Variable',how='inner')
+        k2 = k2.sort_values(by='SHAP_abs',ascending = True)
+        colorlist = k2['Sign']
+        ax = k2.plot.barh(x='Variable',y='SHAP_abs',color = colorlist, figsize=(30,30),legend=False) # , figsize=(30,30)
+        ax.set_xlabel("SHAP Value (Red = Positive Impact)")
+        #plt.tight_layout()
+        plt.show()
+    
+    ABS_SHAP(shap_values,X_test) 
+
+    return(X_test)
+
+import shap 
+    
+
+@transform_pandas(
+    Output(rid="ri.vector.main.execute.69b604ae-ddab-48f2-9f55-ef5b43df85e4"),
+    analysis_2b=Input(rid="ri.foundry.main.dataset.f251c730-78fb-4044-8c57-96c16e3c2011")
+)
+def simplified_shap_plot_analysis_2b_copied(analysis_2b):
+
+    df = analysis_2b
+    #df = df.toPandas()
+
+    n_splits = 5
+    n_repeats = 5
+
+    random.seed(2023)
+    
+    y = df['COVID_patient_death_indicator']
+    X = df.drop(columns = ['COVID_patient_death_indicator'])
 
     feature_list = X.columns
 
