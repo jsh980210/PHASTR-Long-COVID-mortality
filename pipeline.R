@@ -110,7 +110,7 @@ analysis_1_logistic_evaluation <- function(analysis_1_cohort) {
 }
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.1f20cb57-1433-4741-80fb-8bede82c38be"),
+    Output(rid="ri.foundry.main.dataset.87fdb781-e7aa-43ac-94f9-9a7496f259d8"),
     analysis_2b=Input(rid="ri.foundry.main.dataset.f251c730-78fb-4044-8c57-96c16e3c2011")
 )
 analysis_2b_logistic_copied <- function(analysis_2b) {
@@ -169,7 +169,7 @@ df_clean_function <- function(df){
 
 @transform_pandas(
     Output(rid="ri.vector.main.execute.7bfe20ac-6320-4182-b04d-0d8cc429f005"),
-    analysis_2b_logistic_copied=Input(rid="ri.vector.main.execute.1f20cb57-1433-4741-80fb-8bede82c38be")
+    analysis_2b_logistic_copied=Input(rid="ri.foundry.main.dataset.87fdb781-e7aa-43ac-94f9-9a7496f259d8")
 )
 plot_odds_ratio_analysis_2b_copied <- function(analysis_2b_logistic) {
     library(tidyverse)
