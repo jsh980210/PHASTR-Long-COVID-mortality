@@ -2337,3 +2337,88 @@ def test_no_intersection_1(Analysis_1_COVID_positive_control_matched, analysis_1
     print(result3.count())
     
 
+@transform_pandas(
+    Output(rid="ri.vector.main.execute.c12d87a1-ff63-46dd-9209-41c64edd9a4c"),
+    analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f")
+)
+def simplified_shap_plot_analysis_1_1(analysis_1_cohort):
+
+    df = analysis_1_cohort
+    #df = df.toPandas()
+
+    n_splits = 5
+    n_repeats = 5
+
+    random.seed(2023)
+    
+    X = df[['CCI', 'BMI', 'subcohort', 'number_of_COVID_vaccine_doses', 'number_of_visits_per_month_before_index_date']]
+    y = df['death']
+
+    feature_list = X.columns
+
+    X = X.to_numpy()
+    cv = RepeatedStratifiedKFold(n_splits = n_splits, n_repeats = n_repeats, random_state=42)
+
+    classifier =  XGBClassifier(colsample_bytree=0.1, gamma=0.4, learning_rate=0.09, max_depth=8, min_child_weight=0, n_estimators=100, subsample=0.9, random_state=42)
+
+    list_shap_values = list()
+    list_test_sets = list()
+    for train_index, test_index in cv.split(X, y):
+        X_train, X_test = X[train_index], X[test_index]
+        y_train, y_test = y[train_index], y[test_index]
+        X_train = pd.DataFrame(X_train,columns=feature_list)
+        X_test = pd.DataFrame(X_test,columns=feature_list)
+
+        classifier.fit(X_train, y_train)
+
+        explainer = shap.TreeExplainer(classifier)
+        shap_values = explainer.shap_values(X_test)
+
+        list_shap_values.append(shap_values)
+        list_test_sets.append(test_index)
+
+    test_set = list_test_sets[0]
+    shap_values = np.array(list_shap_values[0])
+    for i in range(1,len(list_test_sets)):
+        test_set = np.concatenate((test_set,list_test_sets[i]),axis=0)
+        shap_values = np.concatenate((shap_values,np.array(list_shap_values[i])))
+   
+    X_test = pd.DataFrame(X[test_set],columns=feature_list)
+
+    def ABS_SHAP(df_shap,df):
+        #import matplotlib as plt
+        # Make a copy of the input data
+        shap_v = pd.DataFrame(df_shap)
+        feature_list = df.columns
+        shap_v.columns = feature_list
+        df_v = df.copy().reset_index().drop('index',axis=1)
+        
+        # Determine the correlation in order to plot with different colors
+        corr_list = list()
+        for i in feature_list:
+            b = np.corrcoef(shap_v[i],df_v[i])[1][0]
+            corr_list.append(b)
+        corr_df = pd.concat([pd.Series(feature_list),pd.Series(corr_list)],axis=1).fillna(0)
+        # Make a data frame. Column 1 is the feature, and Column 2 is the correlation coefficient
+        corr_df.columns  = ['Variable','Corr']
+        corr_df['Sign'] = np.where(corr_df['Corr']>0,'red','blue')
+        
+        # Plot it
+        shap_abs = np.abs(shap_v)
+        k=pd.DataFrame(shap_abs.mean()).reset_index()
+        k.columns = ['Variable','SHAP_abs']
+        k2 = k.merge(corr_df,left_on = 'Variable',right_on='Variable',how='inner')
+        k2 = k2.sort_values(by='SHAP_abs',ascending = True)
+        colorlist = k2['Sign']
+        ax = k2.plot.barh(x='Variable',y='SHAP_abs',color = colorlist, figsize=(30,30),legend=False) # , figsize=(30,30)
+        ax.set_xlabel("SHAP Value (Red = Positive Impact)")
+        #plt.tight_layout()
+        plt.show()
+    
+    ABS_SHAP(shap_values,X_test) 
+
+    return(X_test)
+
+import shap 
+    
+
