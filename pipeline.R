@@ -167,3 +167,38 @@ df_clean_function <- function(df){
 
 }
 
+@transform_pandas(
+    Output(rid="ri.vector.main.execute.d21dcbb1-51b2-4ba7-9652-07776444b9fa"),
+    analysis_1_logistic=Input(rid="ri.foundry.main.dataset.5be15385-d4c0-4a6a-ba59-c12b29c0541e")
+)
+plot_odds_ratio_1 <- function(analysis_1_logistic) {
+    library(tidyverse)
+    library(ggplot2)
+    df <- analysis_1_logistic
+    df <- df_clean_function(df)
+    
+    par(mfrow = c(1, 1))
+
+    # Creates color scheme for p value significance
+    SigCols <- c('Non-Significant'="skyblue2", 'Significant'="orange2")
+    
+    forest_plot1 = ggplot(data=df, aes(y=term, x=estimate, xmin=conf_low, xmax=conf_high, color=Pval_Signif)) + geom_point(size=3) + geom_errorbarh(size=0.85,height=.3) + scale_color_manual(values=SigCols) + labs(title='Outcome: patient death', x='Odds Ratio (OR)', y = 'Variable', color='p-Value Significance') + geom_vline(xintercept=1, color='black', linetype='dashed', alpha=.5) + theme_classic()+theme(text = element_text(size = 20)) + theme(axis.text.x= element_text(size=18))+theme(axis.text.y = element_text(size=18))
+    plot(forest_plot1)
+    
+
+    
+    return(df)
+    
+}
+
+df_clean_function <- function(df){
+
+    df <- df %>%
+        select(-statistic, -std_error) %>%
+        mutate('Pval_Signif'=ifelse(p_value<0.05, "Significant", "Non-Significant"))
+        
+    
+    return(df)
+
+}
+
