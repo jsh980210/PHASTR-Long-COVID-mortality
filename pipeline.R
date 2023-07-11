@@ -110,6 +110,29 @@ analysis_1_logistic_evaluation <- function(analysis_1_cohort) {
 }
 
 @transform_pandas(
+    Output(rid="ri.foundry.main.dataset.daf8e1f1-735d-49eb-a2ef-c864cb7fb0d9"),
+    analysis_2a=Input(rid="ri.foundry.main.dataset.dfd52b0d-1b4b-49d1-a420-0f3df44e0f8d")
+)
+analysis_2a_logistic <- function(analysis_2a) {
+    library(broom)
+    # seed 
+    set.seed(2023)
+    df <- analysis_2a
+    #df$subcohort <- as.factor(df$subcohort)
+    #df$number_of_COVID_vaccine_doses <- as.factor(df$number_of_COVID_vaccine_doses)
+
+    lr <- glm(COVID_patient_death_indicator ~ ., data = df, family = binomial)
+
+    print(summary(lr))
+    print(exp(coefficients(lr)))
+    mod_tbl <- broom::tidy(lr, conf.int = TRUE, exponentiate = TRUE)
+
+    return (mod_tbl)
+    # grid search on the threshold to max the recall
+    
+}
+
+@transform_pandas(
     Output(rid="ri.foundry.main.dataset.2a95bda9-68c8-4669-ae3f-977376ed6e98"),
     analysis_2b=Input(rid="ri.foundry.main.dataset.f251c730-78fb-4044-8c57-96c16e3c2011")
 )
@@ -200,28 +223,5 @@ df_clean_function <- function(df){
     
     return(df)
 
-}
-
-@transform_pandas(
-    Output(rid="ri.vector.main.execute.a5a7cd01-0dca-4302-b678-4272ca93d5c0"),
-    analysis_2b=Input(rid="ri.foundry.main.dataset.f251c730-78fb-4044-8c57-96c16e3c2011")
-)
-analysis_2b_logistic_1 <- function(analysis_2b) {
-    library(broom)
-    # seed 
-    set.seed(2023)
-    df <- analysis_2b
-    #df$subcohort <- as.factor(df$subcohort)
-    #df$number_of_COVID_vaccine_doses <- as.factor(df$number_of_COVID_vaccine_doses)
-
-    lr <- glm(COVID_patient_death_indicator ~ ., data = df, family = binomial)
-
-    print(summary(lr))
-    print(exp(coefficients(lr)))
-    mod_tbl <- broom::tidy(lr, conf.int = TRUE, exponentiate = TRUE)
-
-    return (mod_tbl)
-    # grid search on the threshold to max the recall
-    
 }
 
