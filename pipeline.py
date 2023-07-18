@@ -849,7 +849,7 @@ def analysis_1_cohort(analysis_1_PASC_case_matched, Analysis_1_COVID_positive_co
 
     result = result.withColumn('number_of_COVID_vaccine_doses', result.number_of_COVID_vaccine_doses.cast('int'))
     #avg_bmi = np.mean(result.toPandas()['BMI'])
-    #result = result.fillna(0, subset = ['CCI'])
+    result = result.fillna(0, subset = ['obesity'])
     #result = result.fillna(avg_bmi, subset = ['BMI'])
     result = result.withColumn('number_of_visits_per_month_before_index_date', 30 * F.col('number_of_visits_before_index_date') / F.col('observation_period_before_index_date'))
     avg_number_of_visits_before_index_date = np.mean(result.toPandas()['number_of_visits_per_month_before_index_date'])
