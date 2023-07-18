@@ -821,7 +821,7 @@ def analysis_1_cohort(analysis_1_PASC_case_matched, Analysis_1_COVID_positive_co
     df5 = Logic_Liaison_All_patients_summary_facts_table_lds.select('person_id', 'OBESITY_indicator', 'total_number_of_COVID_vaccine_doses', 'patient_death_indicator').join(cci_score, 'person_id', 'left')
 
     df6 = analysis_1_COVID_negative_control.select('person_id', 'observation_period_before_index_date', 'number_of_visits_before_index_date')
-    df_COVID = (df1.select('person_id', 'subcohort')).union(df2.select('person_id', 'subcohort'))
+    df_COVID = (df1.select('person_id', 'PASC', 'COVID positive control', 'COVID negative control')).union(df2.select('person_id', 'PASC', 'COVID positive control', 'COVID negative control'))
     df_COVID = df_COVID.join(df4, 'person_id', 'left')
     df_non_COVID = df3
     df_non_COVID = df_non_COVID.join(df5, 'person_id', 'left')
