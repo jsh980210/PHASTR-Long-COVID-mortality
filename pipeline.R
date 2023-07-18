@@ -52,10 +52,10 @@ analysis_1_logistic <- function(analysis_1_cohort) {
     # seed 
     set.seed(2023)
     df <- analysis_1_cohort
-    df$subcohort <- as.factor(df$subcohort)
-    df$number_of_COVID_vaccine_doses <- as.factor(df$number_of_COVID_vaccine_doses)
+    #df$subcohort <- as.factor(df$subcohort)
+    #df$number_of_COVID_vaccine_doses <- as.factor(df$number_of_COVID_vaccine_doses)
 
-    lr <- glm(death ~ subcohort + number_of_COVID_vaccine_doses + BMI + CCI + number_of_visits_per_month_before_index_date, data = df, family = binomial)
+    lr <- glm(death ~ PASC + COVID_positive_control + COVID_negative_control + number_of_COVID_vaccine_doses + obesity + CCI + number_of_visits_per_month_before_index_date, data = df, family = binomial)
 
     print(summary(lr))
     print(exp(coefficients(lr)))
