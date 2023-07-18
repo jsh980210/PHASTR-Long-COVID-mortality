@@ -806,22 +806,22 @@ def analysis_1_PASC_case_subcohort_summary(analysis_1_PASC_case_matched):
 def analysis_1_cohort(analysis_1_PASC_case_matched, Analysis_1_COVID_positive_control_matched, analysis_1_COVID_negative_control_matched, cci_score, Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, Logic_Liaison_All_patients_summary_facts_table_lds, cci_score_covid_positive, analysis_1_COVID_negative_control):
     df1 = analysis_1_PASC_case_matched.select('person_id')
     df1 = df1.withColumn('PASC', F.lit(1)) # PASC subcohort
-    df1 = df1.withColumn('COVID positive control', F.lit(0)) # PASC subcohort
-    df1 = df1.withColumn('COVID negative control', F.lit(0)) # PASC subcohort
+    df1 = df1.withColumn('COVID_positive_control', F.lit(0)) # PASC subcohort
+    df1 = df1.withColumn('COVID_negative_control', F.lit(0)) # PASC subcohort
     df2 = Analysis_1_COVID_positive_control_matched.select('person_id')
     df2 = df2.withColumn('PASC', F.lit(0)) # COVID positive non pasc subcohort
-    df2 = df2.withColumn('COVID positive control', F.lit(1)) # COVID positive non pasc subcohort
-    df2 = df2.withColumn('COVID negative control', F.lit(0)) # COVID positive non pasc subcohort
+    df2 = df2.withColumn('COVID_positive_control', F.lit(1)) # COVID positive non pasc subcohort
+    df2 = df2.withColumn('COVID_negative_control', F.lit(0)) # COVID positive non pasc subcohort
     df3 = analysis_1_COVID_negative_control_matched.select('person_id')
     df3 = df3.withColumn('PASC', F.lit(0)) # COVID negative subcohort 
-    df3 = df3.withColumn('COVID positive control', F.lit(0)) # COVID negative subcohort 
-    df3 = df3.withColumn('COVID negative control', F.lit(1)) # COVID negative subcohort 
+    df3 = df3.withColumn('COVID_positive_control', F.lit(0)) # COVID negative subcohort 
+    df3 = df3.withColumn('COVID_negative_control', F.lit(1)) # COVID negative subcohort 
 
     df4 = Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype.select('person_id', 'OBESITY_before_or_day_of_covid_indicator', 'number_of_COVID_vaccine_doses_before_or_day_of_covid', 'COVID_patient_death_indicator', 'observation_period_before_covid', 'number_of_visits_before_covid').join(cci_score_covid_positive, 'person_id', 'left')
     df5 = Logic_Liaison_All_patients_summary_facts_table_lds.select('person_id', 'OBESITY_indicator', 'total_number_of_COVID_vaccine_doses', 'patient_death_indicator').join(cci_score, 'person_id', 'left')
 
     df6 = analysis_1_COVID_negative_control.select('person_id', 'observation_period_before_index_date', 'number_of_visits_before_index_date')
-    df_COVID = (df1.select('person_id', 'PASC', 'COVID positive control', 'COVID negative control')).union(df2.select('person_id', 'PASC', 'COVID positive control', 'COVID negative control'))
+    df_COVID = (df1.select('person_id', 'PASC', 'COVID_positive_control', 'COVID_negative_control')).union(df2.select('person_id', 'PASC', 'COVID_positive_control', 'COVID_negative_control'))
     df_COVID = df_COVID.join(df4, 'person_id', 'left')
     df_non_COVID = df3
     df_non_COVID = df_non_COVID.join(df5, 'person_id', 'left')
@@ -845,7 +845,7 @@ def analysis_1_cohort(analysis_1_PASC_case_matched, Analysis_1_COVID_positive_co
     test = (df_COVID.select('person_id')).join(df_non_COVID.select('person_id'), 'person_id', 'inner')
     print(test.count())
 
-    result = df_COVID.select('person_id', 'death', 'CCI', 'obesity', 'PASC', 'COVID positive control', 'COVID negative control', 'number_of_COVID_vaccine_doses', 'observation_period_before_index_date', 'number_of_visits_before_index_date').union(df_non_COVID.select('person_id', 'death', 'CCI', 'obesity', 'PASC', 'COVID positive control', 'COVID negative control', 'number_of_COVID_vaccine_doses', 'observation_period_before_index_date', 'number_of_visits_before_index_date'))
+    result = df_COVID.select('person_id', 'death', 'CCI', 'obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses', 'observation_period_before_index_date', 'number_of_visits_before_index_date').union(df_non_COVID.select('person_id', 'death', 'CCI', 'obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses', 'observation_period_before_index_date', 'number_of_visits_before_index_date'))
 
     result = result.withColumn('number_of_COVID_vaccine_doses', result.number_of_COVID_vaccine_doses.cast('int'))
     #avg_bmi = np.mean(result.toPandas()['BMI'])
