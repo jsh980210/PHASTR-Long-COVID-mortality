@@ -392,13 +392,14 @@ def analysis_1_COVID_negative_subcohort_summary(analysis_1_COVID_negative_contro
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.0ab2f17b-94f6-4f86-988b-e49c020e9d9f"),
+    PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.d7394fbc-bc61-4bc7-953f-7b6c7b1c07ea"),
     analysis_1_PASC_case=Input(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68"),
     visit_occurrence=Input(rid="ri.foundry.main.dataset.911d0bb2-c56e-46bd-af4f-8d9611183bb7")
 )
-def analysis_1_COVID_positive_control(visit_occurrence, analysis_1_PASC_case, Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype):
+def analysis_1_COVID_positive_control(visit_occurrence, analysis_1_PASC_case, PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype):
     # COVID_first_poslab_or_diagnosis_date as index date
     df1 = visit_occurrence
-    df2 = Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype
+    df2 = PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype
     df3 = analysis_1_PASC_case.select('person_id')
     df1 = df1.groupBy('person_id').agg(F.max('visit_start_date').alias('latest_visit_date'))
 
