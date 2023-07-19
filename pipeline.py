@@ -587,13 +587,14 @@ def analysis_1_COVID_positive_subcohort_summary(Analysis_1_COVID_positive_contro
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68"),
+    PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.d7394fbc-bc61-4bc7-953f-7b6c7b1c07ea"),
     visit_occurrence=Input(rid="ri.foundry.main.dataset.911d0bb2-c56e-46bd-af4f-8d9611183bb7")
 )
-def analysis_1_PASC_case(Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, visit_occurrence):
+def analysis_1_PASC_case(PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, visit_occurrence):
     # COVID positive
     # Now we only have threshold 0.75, and would change the threshold after sensitivity analysis
     # COVID_first_poslab_or_diagnosis_date as index date
-    df = Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype
+    df = PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype
     df1 = visit_occurrence
     df1 = df1.groupBy('person_id').agg(F.max('visit_start_date').alias('latest_visit_date'))
     df = df.join(df1, 'person_id', 'left')
