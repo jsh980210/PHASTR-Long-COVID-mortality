@@ -48,22 +48,6 @@ def Analysis_1_COVID_positive_control_matched(analysis_1_COVID_positive_control_
     return result
 
 @transform_pandas(
-    Output(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c")
-)
-def Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype(Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_, predictions_by_date):
-
-    df1 = Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_
-    df2 = predictions_by_date.select('person_id', 'y_pred_300')
-
-    df = df1.join(df2, 'person_id', 'left')
-    df = df.withColumn('LC_u09_computable_phenotype_threshold_75', (F.when(F.col('y_pred_300') >= 0.75, 1).otherwise(0)))
-
-    df = df.drop('y_pred_300')
-
-    return df
-    
-
-@transform_pandas(
     Output(rid="ri.foundry.main.dataset.cabcd0ef-fb38-471c-a325-493a9ca7b458"),
     analysis_1_COVID_positive_control=Input(rid="ri.foundry.main.dataset.0ab2f17b-94f6-4f86-988b-e49c020e9d9f"),
     analysis_1_PASC_case=Input(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68"),
@@ -408,7 +392,6 @@ def analysis_1_COVID_negative_subcohort_summary(analysis_1_COVID_negative_contro
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.0ab2f17b-94f6-4f86-988b-e49c020e9d9f"),
-    Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c"),
     analysis_1_PASC_case=Input(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68"),
     visit_occurrence=Input(rid="ri.foundry.main.dataset.911d0bb2-c56e-46bd-af4f-8d9611183bb7")
 )
@@ -470,8 +453,7 @@ def analysis_1_COVID_positive_control_pre_matching(analysis_1_COVID_positive_con
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.d353502a-a481-40e5-a449-ba7f098a13a5"),
-    Analysis_1_COVID_positive_control_matched=Input(rid="ri.foundry.main.dataset.f77735ea-fa94-412c-9b5d-82c314be0418"),
-    Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c")
+    Analysis_1_COVID_positive_control_matched=Input(rid="ri.foundry.main.dataset.f77735ea-fa94-412c-9b5d-82c314be0418")
 )
 def analysis_1_COVID_positive_subcohort_summary(Analysis_1_COVID_positive_control_matched, Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype):
 
@@ -605,7 +587,6 @@ def analysis_1_COVID_positive_subcohort_summary(Analysis_1_COVID_positive_contro
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68"),
-    Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c"),
     visit_occurrence=Input(rid="ri.foundry.main.dataset.911d0bb2-c56e-46bd-af4f-8d9611183bb7")
 )
 def analysis_1_PASC_case(Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, visit_occurrence):
@@ -789,7 +770,6 @@ def analysis_1_PASC_case_subcohort_summary(analysis_1_PASC_case_matched):
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f"),
     Analysis_1_COVID_positive_control_matched=Input(rid="ri.foundry.main.dataset.f77735ea-fa94-412c-9b5d-82c314be0418"),
-    Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c"),
     analysis_1_COVID_negative_control=Input(rid="ri.foundry.main.dataset.cabcd0ef-fb38-471c-a325-493a9ca7b458"),
     analysis_1_COVID_negative_control_matched=Input(rid="ri.foundry.main.dataset.875ddad6-f9fc-400f-9411-1cab55e908c9"),
     analysis_1_PASC_case_matched=Input(rid="ri.foundry.main.dataset.1e5e00da-adbf-4c93-8c3d-1a1caf99c4f6")
@@ -1187,8 +1167,7 @@ def analysis_1_xgboost_cv_feature_importance(analysis_1_xgboost_cv):
     
 
 @transform_pandas(
-    Output(rid="ri.foundry.main.dataset.7d7a7b20-d395-41e5-9804-f9e8bfa34e4f"),
-    Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c")
+    Output(rid="ri.foundry.main.dataset.7d7a7b20-d395-41e5-9804-f9e8bfa34e4f")
 )
 def analysis_2_PASC_case_cohort_2a(Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype):
     
@@ -1335,8 +1314,7 @@ def analysis_2_PASC_case_cohort_2a_summary(analysis_2_PASC_case_cohort_2a):
     
 
 @transform_pandas(
-    Output(rid="ri.foundry.main.dataset.e3640a26-eac1-43b7-b012-261f6dbbd2f3"),
-    Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c")
+    Output(rid="ri.foundry.main.dataset.e3640a26-eac1-43b7-b012-261f6dbbd2f3")
 )
 def analysis_2_PASC_case_cohort_2b(Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype):
     
@@ -2588,7 +2566,6 @@ import shap
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.606ebae8-38c1-461f-96c4-6479a0820d81"),
-    Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.4f161901-2489-46e9-b59a-9bbcdec5834c"),
     analysis_1_COVID_negative_control=Input(rid="ri.foundry.main.dataset.cabcd0ef-fb38-471c-a325-493a9ca7b458"),
     analysis_1_COVID_positive_control=Input(rid="ri.foundry.main.dataset.0ab2f17b-94f6-4f86-988b-e49c020e9d9f"),
     analysis_1_PASC_case=Input(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68")
