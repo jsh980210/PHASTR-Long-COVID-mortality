@@ -2571,16 +2571,18 @@ import shap
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.606ebae8-38c1-461f-96c4-6479a0820d81"),
+    PHASTR_Logic_Liaison_All_Patients_Summary_Facts_Table_LDS=Input(rid="ri.foundry.main.dataset.3a7ded9e-44bd-4a19-bafa-60eea217f7b9"),
+    PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.d7394fbc-bc61-4bc7-953f-7b6c7b1c07ea"),
     analysis_1_COVID_negative_control=Input(rid="ri.foundry.main.dataset.cabcd0ef-fb38-471c-a325-493a9ca7b458"),
     analysis_1_COVID_positive_control=Input(rid="ri.foundry.main.dataset.0ab2f17b-94f6-4f86-988b-e49c020e9d9f"),
     analysis_1_PASC_case=Input(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68")
 )
-def test_no_intersection(analysis_1_COVID_positive_control, analysis_1_PASC_case, analysis_1_COVID_negative_control, Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, Logic_Liaison_All_patients_summary_facts_table_lds):
+def test_no_intersection(analysis_1_COVID_positive_control, analysis_1_PASC_case, analysis_1_COVID_negative_control, PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, PHASTR_Logic_Liaison_All_Patients_Summary_Facts_Table_LDS):
     df1 = analysis_1_COVID_positive_control.select('person_id','age_at_covid')
     df2 = analysis_1_PASC_case.select('person_id', 'first_COVID_ED_only_start_date')
     df3 = analysis_1_COVID_negative_control.select('person_id', 'state')
-    df4 = Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype
-    df5 = Logic_Liaison_All_patients_summary_facts_table_lds
+    df4 = PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype
+    df5 = PHASTR_Logic_Liaison_All_Patients_Summary_Facts_Table_LDS
 
     result1 = df1.join(df2, 'person_id', 'inner')
     result2 = df1.join(df3, 'person_id', 'inner')
@@ -2590,7 +2592,7 @@ def test_no_intersection(analysis_1_COVID_positive_control, analysis_1_PASC_case
     print(result2.count())
     print(result3.count())
     
-    result = (result2.select('person_id')).join(Logic_Liaison_All_patients_summary_facts_table_lds, 'person_id', 'inner')
+    result = (result2.select('person_id')).join(PHASTR_Logic_Liaison_All_Patients_Summary_Facts_Table_LDS, 'person_id', 'inner')
 
     test_result = (df4.select('person_id')).join(df5.filter((df5.confirmed_covid_patient == 0) & (df5.possible_covid_patient == 0)), 'person_id', 'inner')
 
