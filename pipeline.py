@@ -17,9 +17,9 @@ from xgboost import XGBClassifier
 from xgboost import plot_importance
 import matplotlib.pyplot as plt
 import math
+import shap
 
-
-from lifelines import KaplanMeierFitter 
+#from lifelines import KaplanMeierFitter 
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.f77735ea-fa94-412c-9b5d-82c314be0418"),
