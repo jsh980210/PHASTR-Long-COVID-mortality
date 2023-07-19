@@ -49,13 +49,16 @@ def Analysis_1_COVID_positive_control_matched(analysis_1_COVID_positive_control_
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.cabcd0ef-fb38-471c-a325-493a9ca7b458"),
+    PHASTR_Logic_Liaison_All_Patients_Summary_Facts_Table_LDS=Input(rid="ri.foundry.main.dataset.3a7ded9e-44bd-4a19-bafa-60eea217f7b9"),
+    PHASTR_Logic_Liaison_All_patients_fact_day_table_lds=Input(rid="ri.foundry.main.dataset.8a105484-54ea-48fa-8f02-72011975923b"),
     analysis_1_COVID_positive_control=Input(rid="ri.foundry.main.dataset.0ab2f17b-94f6-4f86-988b-e49c020e9d9f"),
     analysis_1_PASC_case=Input(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68"),
+    microvisits_to_macrovisits=Input(rid="ri.foundry.main.dataset.89927e78-e712-4dcd-a470-18c1620bd03e"),
     visit_occurrence=Input(rid="ri.foundry.main.dataset.911d0bb2-c56e-46bd-af4f-8d9611183bb7")
 )
-def analysis_1_COVID_negative_control(visit_occurrence, analysis_1_PASC_case, Logic_Liaison_All_patients_summary_facts_table_lds, Logic_Liaison_All_patients_fact_day_table_lds, microvisit_to_macrovisit_lds, analysis_1_COVID_positive_control):
-    df1 = Logic_Liaison_All_patients_summary_facts_table_lds
-    df2 = Logic_Liaison_All_patients_fact_day_table_lds
+def analysis_1_COVID_negative_control(visit_occurrence, analysis_1_PASC_case, PHASTR_Logic_Liaison_All_Patients_Summary_Facts_Table_LDS, PHASTR_Logic_Liaison_All_patients_fact_day_table_lds, microvisits_to_macrovisits, analysis_1_COVID_positive_control):
+    df1 = PHASTR_Logic_Liaison_All_Patients_Summary_Facts_Table_LDS
+    df2 = PHASTR_Logic_Liaison_All_patients_fact_day_table_lds
     df3 = visit_occurrence
     df4 = analysis_1_PASC_case.select('person_id')
     df5 = analysis_1_COVID_positive_control.select('person_id')
@@ -70,7 +73,7 @@ def analysis_1_COVID_negative_control(visit_occurrence, analysis_1_PASC_case, Lo
     result = result.join(df3, 'person_id', 'left')
     result = result.withColumn('index_date', F.col('latest_PCR_AG_Neg_date'))
 
-    visits_df = microvisit_to_macrovisit_lds
+    visits_df = microvisits_to_macrovisits
     hosp_visits = visits_df.where(F.col("macrovisit_start_date").isNotNull()) \
         .orderBy("visit_start_date") \
         .coalesce(1) \
