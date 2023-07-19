@@ -65,7 +65,6 @@ def Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_pheno
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.cabcd0ef-fb38-471c-a325-493a9ca7b458"),
-    Logic_Liaison_All_patients_fact_day_table_lds=Input(rid="ri.foundry.main.dataset.fbc0bab4-32b6-4bad-b8c7-0e0e16e3a3bc"),
     Logic_Liaison_All_patients_summary_facts_table_lds=Input(rid="ri.foundry.main.dataset.80175e0f-69da-41e2-8065-2c9a7d3bc571"),
     analysis_1_COVID_positive_control=Input(rid="ri.foundry.main.dataset.0ab2f17b-94f6-4f86-988b-e49c020e9d9f"),
     analysis_1_PASC_case=Input(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68"),
