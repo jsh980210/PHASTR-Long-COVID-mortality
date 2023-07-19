@@ -2510,21 +2510,6 @@ def km_curve_analysis_1_covid_positive_control(death, Analysis_1_COVID_positive_
     
 
 @transform_pandas(
-    Output(rid="ri.foundry.main.dataset.cd59290c-53bd-4a74-b1e2-e7d6c3182562"),
-    Logic_Liaison_All_patients_summary_facts_table_lds=Input(rid="ri.foundry.main.dataset.80175e0f-69da-41e2-8065-2c9a7d3bc571"),
-    Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_=Input(rid="ri.foundry.main.dataset.75d7da57-7b0e-462c-b41d-c9ef4f756198")
-)
-def overlap_test(Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_, Logic_Liaison_All_patients_summary_facts_table_lds):
-    df1 = Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_
-    df2 = Logic_Liaison_All_patients_summary_facts_table_lds
-
-    test_result = (df1.select('person_id')).join(df2.filter((df2.confirmed_covid_patient == 0) & (df2.possible_covid_patient == 0)), 'person_id', 'inner')
-
-    return test_result
-
-    
-
-@transform_pandas(
     Output(rid="ri.vector.main.execute.987daf6f-2303-4f30-a768-4a32ab3118d7"),
     analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f")
 )
