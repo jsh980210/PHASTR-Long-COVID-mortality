@@ -798,8 +798,7 @@ def analysis_1_PASC_case_subcohort_summary(analysis_1_PASC_case_matched):
     analysis_1_COVID_negative_control=Input(rid="ri.foundry.main.dataset.cabcd0ef-fb38-471c-a325-493a9ca7b458"),
     analysis_1_COVID_negative_control_matched=Input(rid="ri.foundry.main.dataset.875ddad6-f9fc-400f-9411-1cab55e908c9"),
     analysis_1_PASC_case_matched=Input(rid="ri.foundry.main.dataset.1e5e00da-adbf-4c93-8c3d-1a1caf99c4f6"),
-    cci_score=Input(rid="ri.foundry.main.dataset.3ca69c7a-76bc-4a5f-ab5c-8f94f5709789"),
-    cci_score_covid_positive=Input(rid="ri.foundry.main.dataset.0d64bb7b-0e57-4c26-8c41-18a3b793fc00")
+    cci_score=Input(rid="ri.foundry.main.dataset.3ca69c7a-76bc-4a5f-ab5c-8f94f5709789")
 )
 def analysis_1_cohort(analysis_1_PASC_case_matched, Analysis_1_COVID_positive_control_matched, analysis_1_COVID_negative_control_matched, cci_score, Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, Logic_Liaison_All_patients_summary_facts_table_lds, cci_score_covid_positive, analysis_1_COVID_negative_control):
     df1 = analysis_1_PASC_case_matched.select('person_id')
@@ -1491,8 +1490,7 @@ def analysis_2_PASC_case_cohort_2b_summary(analysis_2_PASC_case_cohort_2b):
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.dfd52b0d-1b4b-49d1-a420-0f3df44e0f8d"),
-    analysis_2_PASC_case_cohort_2a=Input(rid="ri.foundry.main.dataset.7d7a7b20-d395-41e5-9804-f9e8bfa34e4f"),
-    cci_score_covid_positive=Input(rid="ri.foundry.main.dataset.0d64bb7b-0e57-4c26-8c41-18a3b793fc00")
+    analysis_2_PASC_case_cohort_2a=Input(rid="ri.foundry.main.dataset.7d7a7b20-d395-41e5-9804-f9e8bfa34e4f")
 )
 def analysis_2a(analysis_2_PASC_case_cohort_2a, cci_score_covid_positive):
     df = analysis_2_PASC_case_cohort_2a.join(cci_score_covid_positive, 'person_id', 'left')
@@ -1876,8 +1874,7 @@ def analysis_2a_xgboost_feature_importance(analysis_2a_xgboost):
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.f251c730-78fb-4044-8c57-96c16e3c2011"),
-    analysis_2_PASC_case_cohort_2b=Input(rid="ri.foundry.main.dataset.e3640a26-eac1-43b7-b012-261f6dbbd2f3"),
-    cci_score_covid_positive=Input(rid="ri.foundry.main.dataset.0d64bb7b-0e57-4c26-8c41-18a3b793fc00")
+    analysis_2_PASC_case_cohort_2b=Input(rid="ri.foundry.main.dataset.e3640a26-eac1-43b7-b012-261f6dbbd2f3")
 )
 def analysis_2b(analysis_2_PASC_case_cohort_2b, cci_score_covid_positive):
     df = analysis_2_PASC_case_cohort_2b.join(cci_score_covid_positive, 'person_id', 'left')
@@ -2268,90 +2265,6 @@ def cci_score(Logic_Liaison_All_patients_summary_facts_table_lds, Logic_Liaison_
     #when True - applies index date and calculates CCI score for confirmed covid positive patients before and up to their covid index date 
     #when False - no index date applied and calculates CCI score for all patients based on indicators noted at any time in their EHR 
     use_only_confirmed_covid_positive = False
-
-    if use_only_confirmed_covid_positive:
-        df = Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_ \
-            .select('person_id', *[c for c in Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_.columns if '_indicator' in c])
-
-        #calculating CCI components BEFORE and up to covid index
-        MI = F.col('MYOCARDIALINFARCTION_before_or_day_of_covid_indicator') * 1
-        CHF = F.col('CONGESTIVEHEARTFAILURE_before_or_day_of_covid_indicator') * 1
-        PVD = F.col('PERIPHERALVASCULARDISEASE_before_or_day_of_covid_indicator') * 1
-        CVD = F.col('CEREBROVASCULARDISEASE_before_or_day_of_covid_indicator') * 1
-        DEM = F.col('DEMENTIA_before_or_day_of_covid_indicator') * 1
-        CPD = F.col('CHRONICLUNGDISEASE_before_or_day_of_covid_indicator') * 1
-        RD = F.col('RHEUMATOLOGICDISEASE_before_or_day_of_covid_indicator') * 1
-        PEP = F.col('PEPTICULCER_before_or_day_of_covid_indicator') * 1
-        LIV = F.when(F.col('MODERATESEVERELIVERDISEASE_before_or_day_of_covid_indicator')==1, F.col('MODERATESEVERELIVERDISEASE_before_or_day_of_covid_indicator') * 3) \
-            .when(F.col('MODERATESEVERELIVERDISEASE_before_or_day_of_covid_indicator')==0, F.col('MILDLIVERDISEASE_before_or_day_of_covid_indicator') * 1) \
-            .otherwise(0)
-        DIA = F.when(F.col('DIABETESCOMPLICATED_before_or_day_of_covid_indicator')==1, F.col('DIABETESCOMPLICATED_before_or_day_of_covid_indicator') * 2) \
-            .when(F.col('DIABETESCOMPLICATED_before_or_day_of_covid_indicator')==0, F.col('DIABETESUNCOMPLICATED_before_or_day_of_covid_indicator') * 1) \
-            .otherwise(0)
-        HEM = F.col('HEMIPLEGIAORPARAPLEGIA_before_or_day_of_covid_indicator') * 2
-        REN = F.col('KIDNEYDISEASE_before_or_day_of_covid_indicator') * 2
-        #MALIGNANT CANCER concept set covers Leukemia and Lymphoma specified in the Charlson Comorbidity Index calculation
-        CAN = F.when(F.col('METASTATICSOLIDTUMORCANCERS_before_or_day_of_covid_indicator')==1, F.col('METASTATICSOLIDTUMORCANCERS_before_or_day_of_covid_indicator') * 6) \
-            .when(F.col('METASTATICSOLIDTUMORCANCERS_before_or_day_of_covid_indicator')==0, F.col('MALIGNANTCANCER_before_or_day_of_covid_indicator') * 2) \
-            .otherwise(0)
-        HIV = F.col('HIVINFECTION_before_or_day_of_covid_indicator') * 6
-
-        #calculate CCI score for patients, age not included as it is not explicitly included in the reference calculation used and is often already accounted for as a covariate in most studies
-        df = df.withColumn('CCI_score_up_through_index_date', F.lit(MI + CHF + PVD + CVD + DEM + CPD + RD + PEP + LIV + DIA + HEM + REN + CAN + HIV).cast(IntegerType())) \
-            .select('person_id', 'CCI_score_up_through_index_date')
-
-    else:
-        df = Logic_Liaison_All_patients_summary_facts_table_lds \
-            .select('person_id', *[c for c in Logic_Liaison_All_patients_summary_facts_table_lds.columns if '_indicator' in c])
-
-        #calculating CCI components all-time
-        MI = F.col('MYOCARDIALINFARCTION_indicator') * 1
-        CHF = F.col('CONGESTIVEHEARTFAILURE_indicator') * 1
-        PVD = F.col('PERIPHERALVASCULARDISEASE_indicator') * 1
-        CVD = F.col('CEREBROVASCULARDISEASE_indicator') * 1
-        DEM = F.col('DEMENTIA_indicator') * 1
-        CPD = F.col('CHRONICLUNGDISEASE_indicator') * 1
-        RD = F.col('RHEUMATOLOGICDISEASE_indicator') * 1
-        PEP = F.col('PEPTICULCER_indicator') * 1
-        LIV = F.when(F.col('MODERATESEVERELIVERDISEASE_indicator')==1, F.col('MODERATESEVERELIVERDISEASE_indicator') * 3) \
-            .when(F.col('MODERATESEVERELIVERDISEASE_indicator')==0, F.col('MILDLIVERDISEASE_indicator') * 1) \
-            .otherwise(0)
-        DIA = F.when(F.col('DIABETESCOMPLICATED_indicator')==1, F.col('DIABETESCOMPLICATED_indicator') * 2) \
-            .when(F.col('DIABETESCOMPLICATED_indicator')==0, F.col('DIABETESUNCOMPLICATED_indicator') * 1) \
-            .otherwise(0)
-        HEM = F.col('HEMIPLEGIAORPARAPLEGIA_indicator') * 2
-        REN = F.col('KIDNEYDISEASE_indicator') * 2
-        #MALIGNANT CANCER concept set covers Leukemia and Lymphoma specified in the Charlson Comorbidity Index calculation
-        CAN = F.when(F.col('METASTATICSOLIDTUMORCANCERS_indicator')==1, F.col('METASTATICSOLIDTUMORCANCERS_indicator') * 6) \
-            .when(F.col('METASTATICSOLIDTUMORCANCERS_indicator')==0, F.col('MALIGNANTCANCER_indicator') * 2) \
-            .otherwise(0)
-        HIV = F.col('HIVINFECTION_indicator') * 6
-
-        #calculate CCI score for patients, age not included as it is not explicitly included in the reference calculation used and is often already accounted for as a covariate in most studies
-        df = df.withColumn('CCI_score', F.lit(MI + CHF + PVD + CVD + DEM + CPD + RD + PEP + LIV + DIA + HEM + REN + CAN + HIV).cast(IntegerType())) \
-            .select('person_id', 'CCI_score')
-
-    return df
-
-#################################################
-## Global imports and functions included below ##
-#################################################
-
-from pyspark.sql import functions as F
-from pyspark.sql.types import IntegerType
-
-@transform_pandas(
-    Output(rid="ri.foundry.main.dataset.0d64bb7b-0e57-4c26-8c41-18a3b793fc00"),
-    Logic_Liaison_All_patients_summary_facts_table_lds=Input(rid="ri.foundry.main.dataset.80175e0f-69da-41e2-8065-2c9a7d3bc571"),
-    Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_=Input(rid="ri.foundry.main.dataset.75d7da57-7b0e-462c-b41d-c9ef4f756198")
-)
-# [Logic Liaison Template] CCI Score (LDS) (40b7f6fe-9486-4b68-82ad-e8118b47738c): v6
-def cci_score_covid_positive(Logic_Liaison_All_patients_summary_facts_table_lds, Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_):
-
-    #user determined template input
-    #when True - applies index date and calculates CCI score for confirmed covid positive patients before and up to their covid index date 
-    #when False - no index date applied and calculates CCI score for all patients based on indicators noted at any time in their EHR 
-    use_only_confirmed_covid_positive = True
 
     if use_only_confirmed_covid_positive:
         df = Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_ \
