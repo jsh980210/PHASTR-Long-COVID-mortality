@@ -2328,7 +2328,7 @@ def simplified_shap_plot_analysis_1(analysis_1_cohort):
 
     random.seed(2023)
     
-    X = df[['CCI', 'BMI', 'subcohort', 'number_of_COVID_vaccine_doses', 'number_of_visits_per_month_before_index_date']]
+    X = df[['CCI', 'obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses', 'number_of_visits_per_month_before_index_date']]
     y = df['death']
 
     feature_list = X.columns
@@ -2381,15 +2381,16 @@ def simplified_shap_plot_analysis_1(analysis_1_cohort):
         corr_df['Sign'] = np.where(corr_df['Corr']>0,'red','blue')
         
         # Plot it
-        shap_abs = np.abs(shap_v)
-        k=pd.DataFrame(shap_abs.mean()).reset_index()
-        k.columns = ['Variable','SHAP_abs']
-        k2 = k.merge(corr_df,left_on = 'Variable',right_on='Variable',how='inner')
-        k2 = k2.sort_values(by='SHAP_abs',ascending = True)
-        colorlist = k2['Sign']
-        ax = k2.plot.barh(x='Variable',y='SHAP_abs',color = colorlist, figsize=(30,30),legend=False) # , figsize=(30,30)
-        ax.set_xlabel("SHAP Value (Red = Positive Impact)")
-        #plt.tight_layout()
+        shap.plots.waterfall(shap_v[0])
+        #shap_abs = np.abs(shap_v)
+        #k=pd.DataFrame(shap_abs.mean()).reset_index()
+        #k.columns = ['Variable','SHAP_abs']
+        #k2 = k.merge(corr_df,left_on = 'Variable',right_on='Variable',how='inner')
+        #k2 = k2.sort_values(by='SHAP_abs',ascending = True)
+        #colorlist = k2['Sign']
+        #ax = k2.plot.barh(x='Variable',y='SHAP_abs',color = colorlist, figsize=(30,30),legend=False) # , figsize=(30,30)
+        #ax.set_xlabel("SHAP Value (Red = Positive Impact)")
+        plt.tight_layout()
         plt.show()
     
     ABS_SHAP(shap_values,X_test) 
