@@ -458,11 +458,12 @@ def analysis_1_COVID_positive_control_pre_matching(analysis_1_COVID_positive_con
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.d353502a-a481-40e5-a449-ba7f098a13a5"),
-    Analysis_1_COVID_positive_control_matched=Input(rid="ri.foundry.main.dataset.f77735ea-fa94-412c-9b5d-82c314be0418")
+    Analysis_1_COVID_positive_control_matched=Input(rid="ri.foundry.main.dataset.f77735ea-fa94-412c-9b5d-82c314be0418"),
+    PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.d7394fbc-bc61-4bc7-953f-7b6c7b1c07ea")
 )
-def analysis_1_COVID_positive_subcohort_summary(Analysis_1_COVID_positive_control_matched, Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype):
+def analysis_1_COVID_positive_subcohort_summary(Analysis_1_COVID_positive_control_matched, PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype):
 
-    df = (Analysis_1_COVID_positive_control_matched.select('person_id')).join(Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, 'person_id', 'left')
+    df = (Analysis_1_COVID_positive_control_matched.select('person_id')).join(PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, 'person_id', 'left')
     df = df.withColumn('islt1_percent', F.when(F.col('age_at_covid')<1, 1).otherwise(0))
     df = df.withColumn('_1to4_percent', F.when(F.col('age_at_covid').between(1,4), 1).otherwise(0))
     df = df.withColumn('_5to9_percent', F.when(F.col('age_at_covid').between(5,9), 1).otherwise(0))
