@@ -261,11 +261,12 @@ def analysis_1_COVID_negative_control_pre_matching_second_half(analysis_1_COVID_
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.cd97cc88-8843-4867-a9ba-116030252692"),
+    PHASTR_Logic_Liaison_All_Patients_Summary_Facts_Table_LDS=Input(rid="ri.foundry.main.dataset.3a7ded9e-44bd-4a19-bafa-60eea217f7b9"),
     analysis_1_COVID_negative_control_matched=Input(rid="ri.foundry.main.dataset.875ddad6-f9fc-400f-9411-1cab55e908c9")
 )
-def analysis_1_COVID_negative_subcohort_summary(analysis_1_COVID_negative_control_matched, Logic_Liaison_All_patients_summary_facts_table_lds):
+def analysis_1_COVID_negative_subcohort_summary(analysis_1_COVID_negative_control_matched, PHASTR_Logic_Liaison_All_Patients_Summary_Facts_Table_LDS):
 
-    df = (analysis_1_COVID_negative_control_matched.select('person_id')).join(Logic_Liaison_All_patients_summary_facts_table_lds, 'person_id', 'left')
+    df = (analysis_1_COVID_negative_control_matched.select('person_id')).join(PHASTR_Logic_Liaison_All_Patients_Summary_Facts_Table_LDS, 'person_id', 'left')
     df = df.withColumn('islt1_percent', F.when(F.col('age')<1, 1).otherwise(0))
     df = df.withColumn('_1to4_percent', F.when(F.col('age').between(1,4), 1).otherwise(0))
     df = df.withColumn('_5to9_percent', F.when(F.col('age').between(5,9), 1).otherwise(0))
