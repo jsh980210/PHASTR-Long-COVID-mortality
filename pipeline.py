@@ -777,11 +777,15 @@ def analysis_1_PASC_case_subcohort_summary(analysis_1_PASC_case_matched):
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f"),
     Analysis_1_COVID_positive_control_matched=Input(rid="ri.foundry.main.dataset.f77735ea-fa94-412c-9b5d-82c314be0418"),
+    PHASTR_Logic_Liaison_All_Patients_Summary_Facts_Table_LDS=Input(rid="ri.foundry.main.dataset.3a7ded9e-44bd-4a19-bafa-60eea217f7b9"),
+    PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.d7394fbc-bc61-4bc7-953f-7b6c7b1c07ea"),
+    PHASTR_cci_COVID_positive=Input(rid="ri.foundry.main.dataset.97f8b596-2e25-4a14-ae8b-1a701acb1b66"),
+    PHASTR_cci_all_patients=Input(rid="ri.foundry.main.dataset.6155c937-d4c0-4a44-8321-289668f09dff"),
     analysis_1_COVID_negative_control=Input(rid="ri.foundry.main.dataset.cabcd0ef-fb38-471c-a325-493a9ca7b458"),
     analysis_1_COVID_negative_control_matched=Input(rid="ri.foundry.main.dataset.875ddad6-f9fc-400f-9411-1cab55e908c9"),
     analysis_1_PASC_case_matched=Input(rid="ri.foundry.main.dataset.1e5e00da-adbf-4c93-8c3d-1a1caf99c4f6")
 )
-def analysis_1_cohort(analysis_1_PASC_case_matched, Analysis_1_COVID_positive_control_matched, analysis_1_COVID_negative_control_matched, cci_score, Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, Logic_Liaison_All_patients_summary_facts_table_lds, cci_score_covid_positive, analysis_1_COVID_negative_control):
+def analysis_1_cohort(analysis_1_PASC_case_matched, Analysis_1_COVID_positive_control_matched, analysis_1_COVID_negative_control_matched, PHASTR_cci_all_patients, PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, PHASTR_Logic_Liaison_All_Patients_Summary_Facts_Table_LDS, PHASTR_cci_COVID_positive, analysis_1_COVID_negative_control):
     df1 = analysis_1_PASC_case_matched.select('person_id')
     df1 = df1.withColumn('PASC', F.lit(1)) # PASC subcohort
     df1 = df1.withColumn('COVID_positive_control', F.lit(0)) # PASC subcohort
@@ -795,8 +799,8 @@ def analysis_1_cohort(analysis_1_PASC_case_matched, Analysis_1_COVID_positive_co
     df3 = df3.withColumn('COVID_positive_control', F.lit(0)) # COVID negative subcohort 
     df3 = df3.withColumn('COVID_negative_control', F.lit(1)) # COVID negative subcohort 
 
-    df4 = Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype.select('person_id', 'OBESITY_before_or_day_of_covid_indicator', 'number_of_COVID_vaccine_doses_before_or_day_of_covid', 'COVID_patient_death_indicator', 'observation_period_before_covid', 'number_of_visits_before_covid').join(cci_score_covid_positive, 'person_id', 'left')
-    df5 = Logic_Liaison_All_patients_summary_facts_table_lds.select('person_id', 'OBESITY_indicator', 'total_number_of_COVID_vaccine_doses', 'patient_death_indicator').join(cci_score, 'person_id', 'left')
+    df4 = PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype.select('person_id', 'OBESITY_before_or_day_of_covid_indicator', 'number_of_COVID_vaccine_doses_before_or_day_of_covid', 'COVID_patient_death_indicator', 'observation_period_before_covid', 'number_of_visits_before_covid').join(PHASTR_cci_COVID_positive, 'person_id', 'left')
+    df5 = PHASTR_Logic_Liaison_All_Patients_Summary_Facts_Table_LDS.select('person_id', 'OBESITY_indicator', 'total_number_of_COVID_vaccine_doses', 'patient_death_indicator').join(PHASTR_cci_all_patients, 'person_id', 'left')
 
     df6 = analysis_1_COVID_negative_control.select('person_id', 'observation_period_before_index_date', 'number_of_visits_before_index_date')
     df_COVID = (df1.select('person_id', 'PASC', 'COVID_positive_control', 'COVID_negative_control')).union(df2.select('person_id', 'PASC', 'COVID_positive_control', 'COVID_negative_control'))
