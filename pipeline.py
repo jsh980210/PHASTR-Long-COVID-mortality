@@ -598,7 +598,7 @@ def analysis_1_COVID_positive_subcohort_summary(Analysis_1_COVID_positive_contro
 )
 def analysis_1_PASC_case(PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, visit_occurrence):
     # COVID positive
-    # Now we only have threshold 0.75, and would change the threshold after sensitivity analysis
+    # Using threshold 0.85
     # COVID_first_poslab_or_diagnosis_date as index date
     df = PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype
     df1 = visit_occurrence
@@ -615,7 +615,7 @@ def analysis_1_PASC_case(PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Tab
    
     #Long COVID 
     
-    df = df.filter((df.Long_COVID_diagnosis_post_covid_indicator == 1) | (df.Long_COVID_clinic_visit_post_covid_indicator == 1) | (df.LC_u09_computable_phenotype_threshold_75 == 1))
+    df = df.filter((df.Long_COVID_diagnosis_post_covid_indicator == 1) | (df.Long_COVID_clinic_visit_post_covid_indicator == 1) | (df.LC_u09_computable_phenotype_threshold_85 == 1))
     df = df.filter(df.age_at_covid >= 18)
     # Long COVID case label
     df = df.withColumn('long_covid', F.lit(1))
