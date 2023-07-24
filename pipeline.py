@@ -1171,7 +1171,7 @@ def analysis_1_xgboost_cv_feature_importance(analysis_1_xgboost_cv):
     df.index = df["features"]
     plt.figure(figsize = (5, 10))
     sns.barplot(x = df["mean"], y = df["features"], palette = sns.color_palette("RdYlBu", df.shape[0]))
-    plt.rcParams.update({'font.size': 30})
+    plt.rcParams.update({'font.size': 22})
     plt.tight_layout()
     plt.show()
 
