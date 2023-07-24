@@ -165,7 +165,7 @@ coxph <- function(coxph_prepare) {
     library("survminer")
 
     df <- coxph_prepare
-    res.cox <- coxph(Surv(duration, death)~PASC, df)
+    res.cox <- coxph(Surv(duration, death)~PASC)
     print(summary(res.cox))
 
     #ggsurvplot(survfit(res.cox), conf.int = TRUE, legend.labs=c("PASC=0", "PASC=1"),
