@@ -2260,7 +2260,7 @@ def coxph_prepare(analysis_1_cohort, death):
     coxph_prepare=Input(rid="ri.foundry.main.dataset.2aee0060-1175-40bf-b9fe-8240d8822553")
 )
 def coxph_python(coxph_prepare):
-    df = coxph_prepare[['CCI', 'obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses', 'number_of_visits_per_month_before_index_date', 'duration', 'death']]
+    df = coxph_prepare[['CCI', 'obesity', 'PASC', 'COVID_positive_control', 'number_of_COVID_vaccine_doses', 'number_of_visits_per_month_before_index_date', 'duration', 'death']]
 
     cph = CoxPHFitter()
     cph.fit(df, duration_col = 'duration', event_col = 'death')
