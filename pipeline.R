@@ -260,11 +260,3 @@ df_clean_function <- function(df){
 
 }
 
-@transform_pandas(
-    Output(rid="ri.vector.main.execute.82eb5c73-879a-4792-8246-80fe71c5b1c5"),
-    analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f")
-)
-unnamed <- function(analysis_1_cohort) {
-    
-}
-
