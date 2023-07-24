@@ -2239,6 +2239,15 @@ def analysis_2b_xgboost_feature_importance(analysis_2b_xgboost):
     
 
 @transform_pandas(
+    Output(rid="ri.vector.main.execute.8a1446ac-5d95-4154-9e09-d7ac9b2a5dba"),
+    analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f")
+)
+def coxph_prepare(analysis_1_cohort):
+    df = analysis_1_cohort
+    df = df
+    
+
+@transform_pandas(
     Output(rid="ri.vector.main.execute.cc9f5b05-987a-485f-89ed-1f3f5a9780ab"),
     analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f"),
     death=Input(rid="ri.foundry.main.dataset.d8cc2ad4-215e-4b5d-bc80-80ffb3454875")
@@ -2260,7 +2269,7 @@ def km_curve_analysis_1_PASC_case(death, analysis_1_cohort):
     kmf.plot()
     plt.title("Kaplan-Meier curve PASC case")
     plt.ylabel('survival probability')
-    plt.xlim([0, 1300])
+    plt.xlim([0, 1500])
     plt.ylim([0.87, 1])
     plt.show()
     return df
@@ -2628,12 +2637,5 @@ def test_no_intersection_1(Analysis_1_COVID_positive_control_matched, analysis_1
     print(result1.count())
     print(result2.count())
     print(result3.count())
-    
-
-@transform_pandas(
-    Output(rid="ri.vector.main.execute.8a1446ac-5d95-4154-9e09-d7ac9b2a5dba"),
-    analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f")
-)
-def unnamed(analysis_1_cohort):
     
 
