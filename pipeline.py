@@ -874,6 +874,7 @@ def analysis_1_logistic_cv(analysis_1_cohort):
     mean_fpr = np.linspace(0, 1, 100)
     plt.close()
     fig, ax = plt.subplots()
+    plt.rcParams.update({'font.size': 10})
 
     # Plot the individual ROC curves from the split
     for i, (train, test) in enumerate(cv.split(X, y)):
@@ -926,7 +927,7 @@ def analysis_1_logistic_cv(analysis_1_cohort):
 
     set_output_image_type('svg')
     plt.rcParams['svg.fonttype'] = 'none'
-    plt.rcParams.update({'font.size': 10})
+    
     plt.tight_layout()
     
     plt.show()
