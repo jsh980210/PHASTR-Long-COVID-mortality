@@ -162,7 +162,7 @@ analysis_2b_logistic <- function(analysis_2b) {
 coxph <- function(coxph_prepare) {
 
     library('survival')
-    #library("survminer")
+    library("survminer")
 
     df <- coxph_prepare
     res.cox <- coxph(formula = Surv(duration, death) ~ PASC, data = df)
