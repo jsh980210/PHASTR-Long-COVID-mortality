@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 import math
 import shap
 
-#from lifelines import KaplanMeierFitter 
+from lifelines import KaplanMeierFitter 
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.f77735ea-fa94-412c-9b5d-82c314be0418"),
@@ -2240,11 +2240,12 @@ def analysis_2b_xgboost_feature_importance(analysis_2b_xgboost):
 
 @transform_pandas(
     Output(rid="ri.vector.main.execute.cc9f5b05-987a-485f-89ed-1f3f5a9780ab"),
-    analysis_1_PASC_case_matched=Input(rid="ri.foundry.main.dataset.1e5e00da-adbf-4c93-8c3d-1a1caf99c4f6"),
+    analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f"),
     death=Input(rid="ri.foundry.main.dataset.d8cc2ad4-215e-4b5d-bc80-80ffb3454875")
 )
-def km_curve_analysis_1_PASC_case(analysis_1_PASC_case_matched, death):
-    df = analysis_1_PASC_case_matched
+def km_curve_analysis_1_PASC_case(death, analysis_1_cohort):
+    df = analysis_1_cohort
+    df = df.filter(df.PASC == 1)
     df1 = death.select('person_id', 'death_date')
     df = df.join(df1, 'person_id', 'left')
     df = df.select('person_id', 'COVID_patient_death_indicator', 'death_date', 'index_date')
@@ -2267,12 +2268,12 @@ def km_curve_analysis_1_PASC_case(analysis_1_PASC_case_matched, death):
 
 @transform_pandas(
     Output(rid="ri.vector.main.execute.58e4efac-86c0-41be-9b7a-d1049876a4cf"),
-    analysis_1_COVID_negative_control=Input(rid="ri.foundry.main.dataset.cabcd0ef-fb38-471c-a325-493a9ca7b458"),
-    analysis_1_COVID_negative_control_matched=Input(rid="ri.foundry.main.dataset.875ddad6-f9fc-400f-9411-1cab55e908c9"),
+    analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f"),
     death=Input(rid="ri.foundry.main.dataset.d8cc2ad4-215e-4b5d-bc80-80ffb3454875")
 )
-def km_curve_analysis_1_covid_negative_control(death, analysis_1_COVID_negative_control_matched, analysis_1_COVID_negative_control):
-    df = analysis_1_COVID_negative_control_matched.select('person_id').join(analysis_1_COVID_negative_control, 'person_id', 'left')
+def km_curve_analysis_1_covid_negative_control(death, analysis_1_cohort):
+    df = analysis_1_cohort
+    df = df.filter(df.COVID_negative_control == 1)
     df1 = death.select('person_id', 'death_date')
     df = df.join(df1, 'person_id', 'left')
     df = df.select('person_id', 'patient_death_indicator', 'death_date', 'index_date')
@@ -2296,12 +2297,12 @@ def km_curve_analysis_1_covid_negative_control(death, analysis_1_COVID_negative_
 
 @transform_pandas(
     Output(rid="ri.vector.main.execute.294745ac-f0e4-49d8-8081-b2a8ccb41e41"),
-    Analysis_1_COVID_positive_control_matched=Input(rid="ri.foundry.main.dataset.f77735ea-fa94-412c-9b5d-82c314be0418"),
-    analysis_1_COVID_positive_control=Input(rid="ri.foundry.main.dataset.0ab2f17b-94f6-4f86-988b-e49c020e9d9f"),
+    analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f"),
     death=Input(rid="ri.foundry.main.dataset.d8cc2ad4-215e-4b5d-bc80-80ffb3454875")
 )
-def km_curve_analysis_1_covid_positive_control(death, Analysis_1_COVID_positive_control_matched, analysis_1_COVID_positive_control):
-    df = Analysis_1_COVID_positive_control_matched.select('person_id').join(analysis_1_COVID_positive_control, 'person_id', 'left')
+def km_curve_analysis_1_covid_positive_control(death, analysis_1_cohort):
+    df = analysis_1_cohort
+    df = df.filter(df.COVID_positive_control == 1)
     df1 = death.select('person_id', 'death_date')
     df = df.join(df1, 'person_id', 'left')
     df = df.select('person_id', 'COVID_patient_death_indicator', 'death_date', 'index_date')
