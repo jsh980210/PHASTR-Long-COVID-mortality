@@ -156,7 +156,7 @@ analysis_2b_logistic <- function(analysis_2b) {
 }
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.c4f9b4a9-4855-4ace-8810-64f9e7e27e78"),
+    Output(rid="ri.foundry.main.dataset.d1c6cfc2-33a9-4f22-99b1-5c1fa193c7bd"),
     coxph_prepare=Input(rid="ri.foundry.main.dataset.2aee0060-1175-40bf-b9fe-8240d8822553")
 )
 coxph <- function(coxph_prepare) {
