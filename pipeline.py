@@ -1854,7 +1854,7 @@ def analysis_2a_xgboost_feature_importance(analysis_2a_xgboost):
     
     plt.figure(figsize = (15, 30))
     sns.barplot(x = df["importance"], y = df["index_column"], palette = sns.color_palette("RdYlBu", df.shape[0]))
-    
+    plt.rcParams.update({'font.size': 22})
     plt.tight_layout()
     plt.show()
 
