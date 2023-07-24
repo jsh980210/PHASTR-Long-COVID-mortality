@@ -2727,7 +2727,7 @@ def waterfall_shap_plot_analysis_1(analysis_1_cohort):
     plt.show()
 
     # Create SHAP waterfall plot (use the SHAP summary_plot function)
-    shap.summary_plot(shap_values, X, plot_type="bar", feature_names=data.feature_names)
+    shap.summary_plot(shap_values, X, plot_type="bar", feature_names=feature_list)
     
 
     
