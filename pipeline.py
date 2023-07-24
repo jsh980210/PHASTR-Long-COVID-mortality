@@ -20,6 +20,7 @@ import math
 import shap
 
 from lifelines import KaplanMeierFitter 
+from lifelines import CoxPHFitter
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.f77735ea-fa94-412c-9b5d-82c314be0418"),
@@ -2255,6 +2256,21 @@ def coxph_prepare(analysis_1_cohort, death):
     
 
 @transform_pandas(
+    Output(rid="ri.vector.main.execute.ef389890-3721-45f7-bcb0-ec2faecce2ae"),
+    coxph_prepare=Input(rid="ri.foundry.main.dataset.2aee0060-1175-40bf-b9fe-8240d8822553")
+)
+def coxph_python(coxph_prepare):
+    df = coxph_prepare[['CCI', 'obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses', 'number_of_visits_per_month_before_index_date', 'duration', 'death']]
+
+    cph = CoxPHFitter()
+    cph.fit(df, duration_col = 'duration', event_col = 'death')
+    cph.print_summary()
+    
+    plt.subplots(figsize = (10, 6))
+    cph.plot()
+    plt.show()
+
+@transform_pandas(
     Output(rid="ri.vector.main.execute.cc9f5b05-987a-485f-89ed-1f3f5a9780ab"),
     analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f"),
     death=Input(rid="ri.foundry.main.dataset.d8cc2ad4-215e-4b5d-bc80-80ffb3454875")
@@ -2644,12 +2660,5 @@ def test_no_intersection_1(Analysis_1_COVID_positive_control_matched, analysis_1
     print(result1.count())
     print(result2.count())
     print(result3.count())
-    
-
-@transform_pandas(
-    Output(rid="ri.vector.main.execute.ef389890-3721-45f7-bcb0-ec2faecce2ae"),
-    analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f")
-)
-def unnamed(analysis_1_cohort):
     
 
