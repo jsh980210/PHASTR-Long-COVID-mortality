@@ -2266,7 +2266,7 @@ def coxph_python(coxph_prepare):
     cph.fit(df, duration_col = 'duration', event_col = 'death')
     cph.print_summary()
     
-    plt.subplots(figsize = (10, 6))
+    plt.figure(figsize=(8,4))
     cph.plot()
     plt.show()
 
