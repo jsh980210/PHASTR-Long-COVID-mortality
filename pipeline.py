@@ -2428,7 +2428,7 @@ def simplified_shap_plot_analysis_1(analysis_1_cohort):
         corr_df['Sign'] = np.where(corr_df['Corr']>0,'red','blue')
         
         # Plot it
-        shap.plots.waterfall(shap_v[0])
+        shap.plots.waterfall(shap_v)
         #shap_abs = np.abs(shap_v)
         #k=pd.DataFrame(shap_abs.mean()).reset_index()
         #k.columns = ['Variable','SHAP_abs']
