@@ -926,6 +926,8 @@ def analysis_1_logistic_cv(analysis_1_cohort):
 
     set_output_image_type('svg')
     plt.rcParams['svg.fonttype'] = 'none'
+    plt.rcParams.update({'font.size': 22})
+    plt.tight_layout()
     
     plt.show()
 
