@@ -1835,7 +1835,7 @@ def analysis_2a_xgboost_cv_feature_importance(analysis_2a_xgboost_cv):
     df.index = df["features"]
     plt.figure(figsize = (15, 30))
     sns.barplot(x = df["mean"], y = df["features"], palette = sns.color_palette("RdYlBu", df.shape[0]))
-    plt.rcParams.update({'font.size': 30})
+    plt.rcParams.update({'font.size': 22})
     plt.tight_layout()
     plt.show()
 
@@ -1852,8 +1852,9 @@ def analysis_2a_xgboost_feature_importance(analysis_2a_xgboost):
     df = analysis_2a_xgboost
     df = df.sort_values("importance", ascending = False).head(50)
     
-    plt.figure(figsize = (7, 14))
+    plt.figure(figsize = (15, 30))
     sns.barplot(x = df["importance"], y = df["index_column"], palette = sns.color_palette("RdYlBu", df.shape[0]))
+    
     plt.tight_layout()
     plt.show()
 
