@@ -161,15 +161,15 @@ analysis_2b_logistic <- function(analysis_2b) {
 )
 coxph <- function(coxph_prepare) {
 
-    library("survival")
-    library("survminer")
+    library('survival')
+    #library("survminer")
 
     df <- coxph_prepare
-    res.cox <- coxph(Surv(duration, death) ~ PASC, data = df)
-    print(summary(res.cox))
+    res.cox <- coxph(Surv(duration, death) ~ PASC, data = df) %>% summary()
+    #print(summary(res.cox))
 
-    ggsurvplot(survfit(res.cox), conf.int = TRUE, legend.labs=c("PASC=0", "PASC=1"),
-           ggtheme = theme_minimal())
+    #ggsurvplot(survfit(res.cox), conf.int = TRUE, legend.labs=c("PASC=0", "PASC=1"),
+           #ggtheme = theme_minimal())
     
 }
 
