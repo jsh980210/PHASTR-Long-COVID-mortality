@@ -159,7 +159,7 @@ analysis_2b_logistic <- function(analysis_2b) {
     Output(rid="ri.foundry.main.dataset.d1c6cfc2-33a9-4f22-99b1-5c1fa193c7bd"),
     coxph_prepare=Input(rid="ri.foundry.main.dataset.2aee0060-1175-40bf-b9fe-8240d8822553")
 )
-coxph <- function(coxph_prepare) {
+coxph_regression <- function(coxph_prepare) {
 
     library('survival')
     library("survminer")
