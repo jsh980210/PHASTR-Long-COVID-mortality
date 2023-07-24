@@ -2239,12 +2239,20 @@ def analysis_2b_xgboost_feature_importance(analysis_2b_xgboost):
     
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.8a1446ac-5d95-4154-9e09-d7ac9b2a5dba"),
-    analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f")
+    Output(rid="ri.foundry.main.dataset.2aee0060-1175-40bf-b9fe-8240d8822553"),
+    analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f"),
+    death=Input(rid="ri.foundry.main.dataset.d8cc2ad4-215e-4b5d-bc80-80ffb3454875")
 )
-def coxph_prepare(analysis_1_cohort):
+def coxph_prepare(analysis_1_cohort, death):
     df = analysis_1_cohort
-    df = df
+    df1 = death.select('person_id', 'death_date')
+    df = df.join(df1, 'person_id', 'left')
+    df = df.select('person_id', 'death', 'death_date', 'index_date')
+    df = df.withColumn('today', F.lit('2023-07-13'))
+    df = df.withColumn('duration', F.when(df.death == 1, F.datediff('death_date', 'index_date')).otherwise(F.datediff('today', 'index_date')))
+    df = df.filter(df.duration >= 0)
+
+    return df
     
 
 @transform_pandas(
