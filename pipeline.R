@@ -165,7 +165,7 @@ coxph <- function(coxph_prepare) {
     library("survminer")
 
     df <- coxph_prepare
-    res.cox <- coxph(Surv(duration, death) ~ PASC + COVID_positive_control + COVID_negative_control + number_of_COVID_vaccine_doses + obesity + CCI + number_of_visits_per_month_before_index_date, data = df)
+    res.cox <- coxph(Surv(duration, death) ~ PASC + COVID_positive_control + COVID_negative_control + number_of_COVID_vaccine_doses + obesity + CCI + number_of_visits_per_month_before_index_date, df)
     print(summary(res.cox))
 
     ggsurvplot(res.cox, conf.int = TRUE, legend.labs=c("PASC=0", "PASC=1"),
