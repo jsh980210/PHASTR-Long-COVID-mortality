@@ -13,13 +13,13 @@ from sklearn.metrics import plot_roc_curve
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-#from xgboost import XGBClassifier
-#from xgboost import plot_importance
+from xgboost import XGBClassifier
+from xgboost import plot_importance
 import matplotlib.pyplot as plt
 import math
-#import shap
+import shap
 
-#from lifelines import KaplanMeierFitter 
+from lifelines import KaplanMeierFitter 
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.f77735ea-fa94-412c-9b5d-82c314be0418"),
@@ -2644,5 +2644,12 @@ def test_no_intersection_1(Analysis_1_COVID_positive_control_matched, analysis_1
     print(result1.count())
     print(result2.count())
     print(result3.count())
+    
+
+@transform_pandas(
+    Output(rid="ri.vector.main.execute.ef389890-3721-45f7-bcb0-ec2faecce2ae"),
+    analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f")
+)
+def unnamed(analysis_1_cohort):
     
 
