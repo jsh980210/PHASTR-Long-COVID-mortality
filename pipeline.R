@@ -168,7 +168,7 @@ coxph_regression <- function(coxph_prepare) {
     res.cox <- coxph(Surv(duration, death) ~ PASC + COVID_positive_control + COVID_negative_control + number_of_COVID_vaccine_doses + obesity + CCI + number_of_visits_per_month_before_index_date, data = df)
     print(summary(res.cox))
 
-    ggsurvplot(survfit(res.cox), color = "#2E9FDF", ggtheme = theme_minimal())
+    ggsurvplot(res.cox, color = "#2E9FDF", ggtheme = theme_minimal())
     return (df)
 }
 
