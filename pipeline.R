@@ -168,8 +168,7 @@ coxph_regression <- function(coxph_prepare) {
     res.cox <- coxph(Surv(duration, death) ~ PASC + COVID_positive_control + COVID_negative_control + number_of_COVID_vaccine_doses + obesity + CCI + number_of_visits_per_month_before_index_date, data = df)
     print(summary(res.cox))
 
-    ggsurvplot(survfit(res.cox), conf.int = TRUE, legend.labs=c("PASC=0", "PASC=1"),
-           ggtheme = theme_minimal())
+    ggsurvplot(survfit(res.cox), ggtheme = theme_minimal())
     return (df)
 }
 
