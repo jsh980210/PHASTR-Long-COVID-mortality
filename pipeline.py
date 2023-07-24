@@ -2449,7 +2449,8 @@ def simplified_shap_plot_analysis_1(analysis_1_cohort):
     
     #return ABS_SHAP(shap_values,X_test) 
 
-    return shap_values
+    shap.summary_plot(shap_values, X_test, plot_type="bar", feature_names=feature_list)
+    #return shap_values
 
     
 
