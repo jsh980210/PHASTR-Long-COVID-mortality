@@ -2247,7 +2247,6 @@ def coxph_prepare(analysis_1_cohort, death):
     df = analysis_1_cohort
     df1 = death.select('person_id', 'death_date')
     df = df.join(df1, 'person_id', 'left')
-    df = df.select('person_id', 'death', 'death_date', 'index_date')
     df = df.withColumn('today', F.lit('2023-07-13'))
     df = df.withColumn('duration', F.when(df.death == 1, F.datediff('death_date', 'index_date')).otherwise(F.datediff('today', 'index_date')))
     df = df.filter(df.duration >= 0)
