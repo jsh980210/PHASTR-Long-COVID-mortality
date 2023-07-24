@@ -2250,7 +2250,7 @@ def coxph_prepare(analysis_1_cohort, death):
     df = df.withColumn('today', F.lit('2023-07-13'))
     df = df.withColumn('duration', F.when(df.death == 1, F.datediff('death_date', 'index_date')).otherwise(F.datediff('today', 'index_date')))
     df = df.filter(df.duration >= 0)
-
+    df = df.withColumn('number_of_visits_before_index_date',df.number_of_visits_before_index_date.cast('int'))
     return df
     
 
