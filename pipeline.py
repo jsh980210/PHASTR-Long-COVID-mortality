@@ -2268,6 +2268,7 @@ def coxph_python(coxph_prepare):
     
     plt.figure(figsize=(8,4))
     cph.plot()
+    plt.tight_layout()
     plt.show()
 
 @transform_pandas(
