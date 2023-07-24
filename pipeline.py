@@ -2368,7 +2368,7 @@ def km_curve_analysis_1_covid_positive_control(death, analysis_1_cohort):
     
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.987daf6f-2303-4f30-a768-4a32ab3118d7"),
+    Output(rid="ri.foundry.main.dataset.858b5fb8-a0a8-4486-8941-690423c1c737"),
     analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f")
 )
 def simplified_shap_plot_analysis_1(analysis_1_cohort):
@@ -2434,7 +2434,7 @@ def simplified_shap_plot_analysis_1(analysis_1_cohort):
         corr_df['Sign'] = np.where(corr_df['Corr']>0,'red','blue')
         
         # Plot it
-        shap.plots.waterfall(shap_v)
+        #shap.plots.waterfall(shap_v)
         #shap_abs = np.abs(shap_v)
         #k=pd.DataFrame(shap_abs.mean()).reset_index()
         #k.columns = ['Variable','SHAP_abs']
@@ -2443,12 +2443,13 @@ def simplified_shap_plot_analysis_1(analysis_1_cohort):
         #colorlist = k2['Sign']
         #ax = k2.plot.barh(x='Variable',y='SHAP_abs',color = colorlist, figsize=(30,30),legend=False) # , figsize=(30,30)
         #ax.set_xlabel("SHAP Value (Red = Positive Impact)")
-        plt.tight_layout()
-        plt.show()
+        #plt.tight_layout()
+        #plt.show()
+        return shap_v
     
-    ABS_SHAP(shap_values,X_test) 
+    return ABS_SHAP(shap_values,X_test) 
 
-    return(X_test)
+    #return(X_test)
 
 import shap 
     
