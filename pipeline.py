@@ -786,15 +786,15 @@ def analysis_1_PASC_case_subcohort_summary(analysis_1_PASC_case_matched):
     analysis_1_PASC_case_matched=Input(rid="ri.foundry.main.dataset.1e5e00da-adbf-4c93-8c3d-1a1caf99c4f6")
 )
 def analysis_1_cohort(analysis_1_PASC_case_matched, Analysis_1_COVID_positive_control_matched, analysis_1_COVID_negative_control_matched, PHASTR_cci_all_patients, PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, PHASTR_Logic_Liaison_All_Patients_Summary_Facts_Table_LDS, PHASTR_cci_COVID_positive, analysis_1_COVID_negative_control):
-    df1 = analysis_1_PASC_case_matched.select('person_id')
+    df1 = analysis_1_PASC_case_matched.select('person_id', 'index_date')
     df1 = df1.withColumn('PASC', F.lit(1)) # PASC subcohort
     df1 = df1.withColumn('COVID_positive_control', F.lit(0)) # PASC subcohort
     df1 = df1.withColumn('COVID_negative_control', F.lit(0)) # PASC subcohort
-    df2 = Analysis_1_COVID_positive_control_matched.select('person_id')
+    df2 = Analysis_1_COVID_positive_control_matched.select('person_id', 'index_date')
     df2 = df2.withColumn('PASC', F.lit(0)) # COVID positive non pasc subcohort
     df2 = df2.withColumn('COVID_positive_control', F.lit(1)) # COVID positive non pasc subcohort
     df2 = df2.withColumn('COVID_negative_control', F.lit(0)) # COVID positive non pasc subcohort
-    df3 = analysis_1_COVID_negative_control_matched.select('person_id')
+    df3 = analysis_1_COVID_negative_control_matched.select('person_id', 'index_date')
     df3 = df3.withColumn('PASC', F.lit(0)) # COVID negative subcohort 
     df3 = df3.withColumn('COVID_positive_control', F.lit(0)) # COVID negative subcohort 
     df3 = df3.withColumn('COVID_negative_control', F.lit(1)) # COVID negative subcohort 
@@ -803,7 +803,7 @@ def analysis_1_cohort(analysis_1_PASC_case_matched, Analysis_1_COVID_positive_co
     df5 = PHASTR_Logic_Liaison_All_Patients_Summary_Facts_Table_LDS.select('person_id', 'OBESITY_indicator', 'total_number_of_COVID_vaccine_doses', 'patient_death_indicator').join(PHASTR_cci_all_patients, 'person_id', 'left')
 
     df6 = analysis_1_COVID_negative_control.select('person_id', 'observation_period_before_index_date', 'number_of_visits_before_index_date')
-    df_COVID = (df1.select('person_id', 'PASC', 'COVID_positive_control', 'COVID_negative_control')).union(df2.select('person_id', 'PASC', 'COVID_positive_control', 'COVID_negative_control'))
+    df_COVID = (df1.select('person_id', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'index_date')).union(df2.select('person_id', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'index_date'))
     df_COVID = df_COVID.join(df4, 'person_id', 'left')
     df_non_COVID = df3
     df_non_COVID = df_non_COVID.join(df5, 'person_id', 'left')
@@ -827,7 +827,7 @@ def analysis_1_cohort(analysis_1_PASC_case_matched, Analysis_1_COVID_positive_co
     test = (df_COVID.select('person_id')).join(df_non_COVID.select('person_id'), 'person_id', 'inner')
     print(test.count())
 
-    result = df_COVID.select('person_id', 'death', 'CCI', 'obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses', 'observation_period_before_index_date', 'number_of_visits_before_index_date').union(df_non_COVID.select('person_id', 'death', 'CCI', 'obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses', 'observation_period_before_index_date', 'number_of_visits_before_index_date'))
+    result = df_COVID.select('person_id', 'death', 'CCI', 'obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses', 'observation_period_before_index_date', 'number_of_visits_before_index_date', 'index_date').union(df_non_COVID.select('person_id', 'death', 'CCI', 'obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses', 'observation_period_before_index_date', 'number_of_visits_before_index_date', 'index_date'))
 
     result = result.withColumn('number_of_COVID_vaccine_doses', result.number_of_COVID_vaccine_doses.cast('int'))
     #avg_bmi = np.mean(result.toPandas()['BMI'])
