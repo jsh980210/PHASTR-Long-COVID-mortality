@@ -2719,7 +2719,7 @@ def waterfall_shap_plot_analysis_1(analysis_1_cohort):
     plt.figure(figsize=(10, 6))
     plt.bar(range(X.shape[1]), mean_importance, yerr=std_importance, align='center', alpha=0.7, capsize=5)
     plt.plot(range(X.shape[1]), cumulative_importance, 'r-')
-    plt.xticks(range(X.shape[1]), data.feature_names, rotation=45, ha='right')
+    plt.xticks(range(X.shape[1]), feature_list, rotation=45, ha='right')
     plt.xlabel('Features')
     plt.ylabel('Feature Importance')
     plt.title('XGBoost Feature Importance Waterfall Plot')
