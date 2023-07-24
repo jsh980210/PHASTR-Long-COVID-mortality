@@ -2529,8 +2529,9 @@ def simplified_shap_plot_analysis_1_two_color(analysis_1_cohort):
         k2 = k.merge(corr_df,left_on = 'Variable',right_on='Variable',how='inner')
         k2 = k2.sort_values(by='SHAP_abs',ascending = True)
         colorlist = k2['Sign']
+        plt.rcParams.update({'font.size': 25})
         ax = k2.plot.barh(x='Variable',y='SHAP_abs',color = colorlist, figsize=(30,30),legend=False) # , figsize=(30,30)
-        plt.rcParams.update({'font.size': 30})
+        
         ax.set_xlabel("SHAP Value (Red = Positive Impact)")
         plt.tight_layout()
         plt.show()
