@@ -13,6 +13,7 @@ from sklearn.metrics import plot_roc_curve
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
+from sklearn.model_selection import KFold
 from xgboost import XGBClassifier
 from xgboost import plot_importance
 import matplotlib.pyplot as plt
@@ -2690,8 +2691,9 @@ def waterfall_shap_plot_analysis_1(analysis_1_cohort):
     #X = X.to_numpy()
     feature_importances = np.zeros((n_splits, X.shape[1]))
     shap_values = []
-
-# Cross-validation loop
+    kf = KFold(n_splits=n_splits, shuffle=True, random_state=42)
+    model = XGBClassifier(colsample_bytree=0.1, gamma=0.4, learning_rate=0.09, max_depth=8, min_child_weight=0, n_estimators=100, subsample=0.9, random_state=42)
+    # Cross-validation loop
     for i, (train_index, test_index) in enumerate(kf.split(X)):
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
