@@ -2415,23 +2415,23 @@ def simplified_shap_plot_analysis_1(analysis_1_cohort):
    
     X_test = pd.DataFrame(X[test_set],columns=feature_list)
 
-    def ABS_SHAP(df_shap,df):
+    #def ABS_SHAP(df_shap,df):
         #import matplotlib as plt
         # Make a copy of the input data
-        shap_v = pd.DataFrame(df_shap)
-        feature_list = df.columns
-        shap_v.columns = feature_list
-        df_v = df.copy().reset_index().drop('index',axis=1)
+        #shap_v = pd.DataFrame(df_shap)
+        #feature_list = df.columns
+        #shap_v.columns = feature_list
+        #df_v = df.copy().reset_index().drop('index',axis=1)
         
         # Determine the correlation in order to plot with different colors
-        corr_list = list()
-        for i in feature_list:
-            b = np.corrcoef(shap_v[i],df_v[i])[1][0]
-            corr_list.append(b)
-        corr_df = pd.concat([pd.Series(feature_list),pd.Series(corr_list)],axis=1).fillna(0)
+        #corr_list = list()
+        #for i in feature_list:
+            #b = np.corrcoef(shap_v[i],df_v[i])[1][0]
+            #corr_list.append(b)
+        #corr_df = pd.concat([pd.Series(feature_list),pd.Series(corr_list)],axis=1).fillna(0)
         # Make a data frame. Column 1 is the feature, and Column 2 is the correlation coefficient
-        corr_df.columns  = ['Variable','Corr']
-        corr_df['Sign'] = np.where(corr_df['Corr']>0,'red','blue')
+        #corr_df.columns  = ['Variable','Corr']
+        #corr_df['Sign'] = np.where(corr_df['Corr']>0,'red','blue')
         
         # Plot it
         #shap.plots.waterfall(shap_v)
@@ -2445,13 +2445,12 @@ def simplified_shap_plot_analysis_1(analysis_1_cohort):
         #ax.set_xlabel("SHAP Value (Red = Positive Impact)")
         #plt.tight_layout()
         #plt.show()
-        return shap_v
+        #return shap_v
     
-    return ABS_SHAP(shap_values,X_test) 
+    #return ABS_SHAP(shap_values,X_test) 
 
-    #return(X_test)
+    return shap_values
 
-import shap 
     
 
 @transform_pandas(
