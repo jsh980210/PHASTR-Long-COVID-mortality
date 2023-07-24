@@ -2688,7 +2688,7 @@ def waterfall_shap_plot_analysis_1(analysis_1_cohort):
 
     feature_list = X.columns
 
-    #X = X.to_numpy()
+    X = X.to_numpy()
     feature_importances = np.zeros((n_splits, X.shape[1]))
     shap_values = []
     kf = KFold(n_splits=n_splits, shuffle=True, random_state=42)
