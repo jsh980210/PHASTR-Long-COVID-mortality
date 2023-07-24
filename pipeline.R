@@ -170,7 +170,7 @@ coxph <- function(coxph_prepare) {
 
     #ggsurvplot(survfit(res.cox), conf.int = TRUE, legend.labs=c("PASC=0", "PASC=1"),
            #ggtheme = theme_minimal())
-    return df
+    return (df)
 }
 
 @transform_pandas(
