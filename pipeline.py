@@ -13,13 +13,13 @@ from sklearn.metrics import plot_roc_curve
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-from xgboost import XGBClassifier
-from xgboost import plot_importance
+#from xgboost import XGBClassifier
+#from xgboost import plot_importance
 import matplotlib.pyplot as plt
 import math
-import shap
+#import shap
 
-from lifelines import KaplanMeierFitter 
+#from lifelines import KaplanMeierFitter 
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.f77735ea-fa94-412c-9b5d-82c314be0418"),
