@@ -2449,9 +2449,9 @@ def simplified_shap_plot_analysis_1(analysis_1_cohort):
     
     #return ABS_SHAP(shap_values,X_test)
     plt.close()
-    plt.figure(figsize = (20, 6))
+    #plt.figure(figsize = (20, 6))
     plt.rcParams.update({'font.size': 10})
-    shap.summary_plot(shap_values, X_test)
+    shap.summary_plot(shap_values, X_test, plot_size=[15,8])
     plt.tight_layout()
     plt.show()
     #return shap_values
