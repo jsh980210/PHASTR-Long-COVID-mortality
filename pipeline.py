@@ -1927,7 +1927,7 @@ def analysis_2b_logistic_cv(analysis_2b):
 
     # 100 evenly spaced points from 0 to 1
     mean_fpr = np.linspace(0, 1, 100)
-    plt.close()
+    #plt.close()
     fig, ax = plt.subplots()
 
     # Plot the individual ROC curves from the split
