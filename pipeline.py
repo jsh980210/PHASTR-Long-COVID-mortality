@@ -2025,6 +2025,7 @@ def analysis_2b_logistic_py(analysis_2b):
     print("best_recall_threshold: ", best_threshold_recall)
     print("best_f1_threshold: ", best_threshold_f1)
     plt.close()
+    plt.rcParams.update({'font.size': 10})
     fig, axes = plt.subplots(ncols=4, figsize=(13, 5))
 
     sns.scatterplot(x='False Positive Rate', y='True Positive Rate', data=roc, s=50, legend=False, ax=axes[0])
