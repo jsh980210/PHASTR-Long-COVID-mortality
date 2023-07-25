@@ -1765,6 +1765,7 @@ def analysis_2a_xgboost_cv(analysis_2a):
     # 100 evenly spaced points from 0 to 1
     mean_fpr = np.linspace(0, 1, 100)
     plt.close()
+    plt.rcParams.update({'font.size': 10})
     fig, ax = plt.subplots()
 
     # Plot the individual ROC curves from the split
