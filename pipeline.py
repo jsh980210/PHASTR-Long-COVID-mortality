@@ -621,6 +621,7 @@ def analysis_1_PASC_case(PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Tab
     df = df.filter(df.age_at_covid >= 18)
     # Long COVID case label
     df = df.withColumn('long_covid', F.lit(1))
+    df = df.withColumn('number_of_visits_per_month_before_index_date', 30 * F.col('number_of_visits_before_index_date') / F.col('observation_period_before_index_date'))
     return df
     
 
