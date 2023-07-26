@@ -2785,7 +2785,7 @@ def test_no_intersection_1(Analysis_1_COVID_positive_control_matched, analysis_1
 )
 def unnamed(analysis_1_cohort):
     df = analysis_1_cohort
-    df = df.withColumn("log_value_visit_per_month", F.log10(F.col("number_of_visits_per_month_before_index_date")))
+    df = df.withColumn("log_value_visit_per_month", F.log(F.col("number_of_visits_per_month_before_index_date")))
     return df
     
 
