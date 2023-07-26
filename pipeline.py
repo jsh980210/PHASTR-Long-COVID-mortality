@@ -2780,6 +2780,13 @@ def test_no_intersection_1(Analysis_1_COVID_positive_control_matched, analysis_1
     
 
 @transform_pandas(
+    Output(rid="ri.vector.main.execute.2e58bc7e-5f67-4d24-8727-9be50356174d"),
+    analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f")
+)
+def unnamed(analysis_1_cohort):
+    
+
+@transform_pandas(
     Output(rid="ri.vector.main.execute.7de4ea26-a1d6-4a2c-900e-6643e678634f"),
     analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f")
 )
