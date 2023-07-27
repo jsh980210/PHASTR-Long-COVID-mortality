@@ -446,8 +446,8 @@ def analysis_1_COVID_positive_control(visit_occurrence, analysis_1_PASC_case, PH
     analysis_1_PASC_case=Input(rid="ri.foundry.main.dataset.42e7f154-baae-479c-aa65-f8ad830f7c68")
 )
 def analysis_1_COVID_positive_control_pre_matching(analysis_1_COVID_positive_control, analysis_1_PASC_case):
-    df1 = analysis_1_COVID_positive_control.select('person_id', 'observation_period_post_covid', 'data_partner_id', 'age_at_covid', 'index_date', 'long_covid')
-    df2 = analysis_1_PASC_case.select('person_id', 'observation_period_post_covid', 'data_partner_id', 'age_at_covid', 'index_date', 'long_covid')
+    df1 = analysis_1_COVID_positive_control.select('person_id', 'observation_period_post_covid', 'data_partner_id', 'age_at_covid', 'index_date', 'long_covid', 'log_number_of_visits_per_month_before_index_date')
+    df2 = analysis_1_PASC_case.select('person_id', 'observation_period_post_covid', 'data_partner_id', 'age_at_covid', 'index_date', 'long_covid', 'log_number_of_visits_per_month_before_index_date')
 
     
     df1_sites = df1.select(F.collect_set('data_partner_id').alias('data_partner_id')).first()['data_partner_id']    
