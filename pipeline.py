@@ -67,13 +67,80 @@ def analysis_1_COVID_negative_control(visit_occurrence, analysis_1_PASC_case, PH
     df3 = df3.groupBy('person_id').agg(F.max('visit_start_date').alias('latest_visit_date'))
 
     # index date: latest negative COVID test date
-    df2 = df2.filter(df2.PCR_AG_Neg == 1)
-    df2 = df2.groupBy('person_id').agg(F.max('date').alias('latest_PCR_AG_Neg_date'))
+    #df2 = df2.filter(df2.PCR_AG_Neg == 1)
+    #df2 = df2.groupBy('person_id').agg(F.max('date').alias('latest_PCR_AG_Neg_date'))
     
 
-    result = df1.join(df2, 'person_id', 'left')
+    result = df1
     result = result.join(df3, 'person_id', 'left')
+    result = result.withColumn('index_date', F.col('latest_PCR_AG_Neg_date'))
+
+    visits_df = microvisits_to_macrovisits
+    hosp_visits = visits_df.where(F.col("macrovisit_start_date").isNotNull()) \
+        .orderBy("visit_start_date") \
+        .coalesce(1) \
+        .dropDuplicates(["person_id", "macrovisit_start_date"]) #hospital
+    non_hosp_visits = visits_df.where(F.col("macrovisit_start_date").isNull()) \
+        .dropDuplicates(["person_id", "visit_start_date"]) #non-hospital
+    visits_df = hosp_visits.union(non_hosp_visits) #join the two
+
+    """
+    join in earliest index date value and use to calculate datediff between lab and visit 
+    if positive then date is before the PCR/AG+ date
+    if negative then date is after the PCR/AG+ date
+    """
+    visits_df = visits_df \
+        .join(result.select('person_id','index_date','shift_date_yn','max_num_shift_days'), 'person_id', 'inner') \
+        .withColumn('earliest_index_minus_visit_start_date', F.datediff('index_date','visit_start_date'))
+
+    #counts for visits before
+    visits_before = visits_df.where(F.col('earliest_index_minus_visit_start_date') > 0) \
+        .groupBy("person_id") \
+        .count() \
+        .select("person_id", F.col('count').alias('number_of_visits_before_index_date')) 
+    #obs period in days before, where earliest_index_minus_visit_start_date = 0 means the pt_max_visit_date is the index date
+    observation_before = visits_df.where(F.col('earliest_index_minus_visit_start_date') >= 0) \
+        .groupby('person_id').agg(
+        F.max('visit_start_date').alias('pt_max_visit_date'),
+        F.min('visit_start_date').alias('pt_min_visit_date')) \
+        .withColumn('observation_period_before_index_date', F.datediff('pt_max_visit_date', 'pt_min_visit_date')) \
+        .select('person_id', 'observation_period_before_index_date')
     
+    result = result.join(visits_before, 'person_id', 'left')
+    result = result.join(observation_before, 'person_id', 'left')
+
+    # Make the is_long_COVID_dx_site column
+    df1 = df1.filter(df1.LL_Long_COVID_diagnosis_indicator == 1)
+    long_covid_dx_sites = df1.select(F.collect_set('data_partner_id').alias('data_partner_id')).first()['data_partner_id']    
+    result = result.withColumn('is_long_COVID_dx_site', F.when(result.data_partner_id.isin(long_covid_dx_sites), 1).otherwise(0))
+
+    # Make the Oct 2021 index date
+    result = result.withColumn('2021oct_index_date', F.lit("2021-10-01"))
+
+    # At least one visit >=45 days after index date
+    result = result.filter(F.datediff(F.col('latest_visit_date'), F.col('latest_PCR_AG_Neg_date')) >= 45)
+
+   
+
+    # Age >= 18
+    result = result.filter(result.age >= 18)
+
+    # Exclude confirmed COVID patients
+    result = result.filter(result.confirmed_covid_patient == 0)
+
+    # Exclude possible COVID patients
+    result = result.filter(result.possible_covid_patient == 0)
+
+    # exclude PASC case
+    result = result.join(df4, 'person_id', 'left_anti')
+
+    # exclude COVID positive control
+    #result = result.join(df5, 'person_id', 'left_anti')
+
+    # Long COVID control label
+    result = result.withColumn('long_covid', F.lit(0))
+    result = result.withColumn('number_of_visits_per_month_before_index_date', 30 * F.col('number_of_visits_before_index_date') / F.col('observation_period_before_index_date'))
+    result = result.withColumn('log_number_of_visits_per_month_before_index_date', F.log(F.col('number_of_visits_per_month_before_index_date')))
     
 
     return result
