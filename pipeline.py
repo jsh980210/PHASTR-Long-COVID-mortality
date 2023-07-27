@@ -142,7 +142,7 @@ def analysis_1_COVID_negative_control(visit_occurrence, analysis_1_PASC_case, PH
     result = result.withColumn('number_of_visits_per_month_before_index_date', 30 * F.col('number_of_visits_before_index_date') / F.col('observation_period_before_index_date'))
     result = result.withColumn('log_number_of_visits_per_month_before_index_date', F.log(F.col('number_of_visits_per_month_before_index_date')))
     
-
+    result = result.fillna(0, subset = 'log_number_of_visits_per_month_before_index_date')
     return result
     
 
