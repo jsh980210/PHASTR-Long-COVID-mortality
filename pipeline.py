@@ -73,8 +73,6 @@ def analysis_1_COVID_negative_control(visit_occurrence, analysis_1_PASC_case, PH
 
     result = df1.join(df2, 'person_id', 'left')
     result = result.join(df3, 'person_id', 'left')
-    result = result.withColumn('index_date', F.col('latest_PCR_AG_Neg_date'))
-
     
     
 
