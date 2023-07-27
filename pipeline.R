@@ -10,7 +10,7 @@ analysis_1_COVID_negative_control_matching_first_half <- function(analysis_1_COV
     # add seed 
     
     df <- analysis_1_COVID_negative_control_pre_matching_first_half
-    matching <- matchit(long_covid ~ data_partner_id + age + observation_period + index_date_numberofdays_from_20200101, data = df, method = 'nearest', exact = 'data_partner_id', caliper=c(age = 10, index_date_numberofdays_from_20200101 = 45, observation_period = 60), std.caliper = c(FALSE, FALSE, FALSE), ratio = 1)
+    matching <- matchit(long_covid ~ data_partner_id + age + log_number_of_visits_per_month_before_index_date + index_date_numberofdays_from_20200101, data = df, method = 'nearest', exact = 'data_partner_id', caliper=c(age = 10, index_date_numberofdays_from_20200101 = 45, log_number_of_visits_per_month_before_index_date = 1), std.caliper = c(FALSE, FALSE, FALSE), ratio = 1)
     
     return (match.data(matching))
 }
