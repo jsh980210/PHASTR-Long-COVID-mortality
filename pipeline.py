@@ -434,6 +434,9 @@ def analysis_1_COVID_positive_control(visit_occurrence, analysis_1_PASC_case, PH
     # Long COVID control label
     df = df.withColumn('long_covid', F.lit(0))
 
+    df = df.withColumn('number_of_visits_per_month_before_index_date', 30 * F.col('number_of_visits_before_covid') / F.col('observation_period_before_covid'))
+    df = df.withColumn('log_number_of_visits_per_month_before_index_date', F.log(F.col('number_of_visits_per_month_before_index_date')))
+
     return df
     
 
