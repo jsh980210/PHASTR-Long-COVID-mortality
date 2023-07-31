@@ -2280,6 +2280,7 @@ def corr_plot(analysis_1_cohort):
     #sns.heatmap(mat, cmap = 'coolwarm', mask = mask, ax = ax, annot = True, fmt = '.0g', square = True)
     #ax.set_title('Correlation Matrix Heatmap')
     #plt.show()
+    plt.close()
     f = plt.figure(figsize=(30, 30))
     plt.matshow(df.corr(), fignum=f.number)
     plt.xticks(range(df.select_dtypes(['number']).shape[1]), df.select_dtypes(['number']).columns, fontsize=25, rotation=45)
