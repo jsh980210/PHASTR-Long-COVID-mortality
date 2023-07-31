@@ -67,49 +67,6 @@ analysis_1_logistic <- function(analysis_1_cohort) {
 }
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.d9bd4008-8d22-4f8e-ab34-43dbae8dc1b4"),
-    analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f")
-)
-analysis_1_logistic_evaluation <- function(analysis_1_cohort) {
-    library(broom)
-    library(caret)
-    library(pROC)
-    df <- analysis_1_cohort
-    df$subcohort <- as.factor(df$subcohort)
-    df$number_of_COVID_vaccine_doses <- as.factor(df$number_of_COVID_vaccine_doses)
-
-    set.seed(2023)
-    sample <- sample(c(TRUE, FALSE), nrow(df), replace=TRUE, prob=c(0.8, 0.2))
-
-    df_train  <- df[sample, ]
-    df_test   <- df[!sample, ]
-    
-    
-    
-    
-
-    lr <- glm(death ~ subcohort + number_of_COVID_vaccine_doses + BMI + CCI + number_of_visits_per_month_before_index_date, data = df_train, family = binomial)
-
-    print(summary(lr))
-    print(exp(coefficients(lr)))
-    mod_tbl <- broom::tidy(lr, conf.int = TRUE, exponentiate = TRUE)
-
-    y_pred_prob <- predict(lr, df_test, type = "response")
-    y_pred_cat <- rep(0, length(y_pred_prob))
-    y_pred_cat[y_pred_prob >=0.1] = 1
-    
-    
-    #print(y_pred_cat)
-    print(confusionMatrix(factor(y_pred_cat), factor(df_test$death), positive = '1'))
-   # print(recall(factor(y_pred_cat), factor(df_test$death)))
-
-    roc_lr <- roc(df_test$death, y_pred_prob)
-    plot(roc_lr, col = "red", main = "ROC Logistic Regression")
-    return (mod_tbl)
-    
-}
-
-@transform_pandas(
     Output(rid="ri.foundry.main.dataset.daf8e1f1-735d-49eb-a2ef-c864cb7fb0d9"),
     analysis_2a=Input(rid="ri.foundry.main.dataset.dfd52b0d-1b4b-49d1-a420-0f3df44e0f8d")
 )
