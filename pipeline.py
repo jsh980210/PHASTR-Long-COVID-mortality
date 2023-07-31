@@ -2272,11 +2272,12 @@ def corr_plot(analysis_1_cohort):
     
     f = plt.figure(figsize=(19, 15))
     plt.matshow(df.corr(), fignum=f.number)
-    plt.xticks(range(df.select_dtypes(['number']).shape[1]), df.select_dtypes(['number']).columns, fontsize=14, rotation=45)
-    plt.yticks(range(df.select_dtypes(['number']).shape[1]), df.select_dtypes(['number']).columns, fontsize=14)
-    cb = plt.colorbar()
-    cb.ax.tick_params(labelsize=14)
-    plt.title('Correlation Matrix', fontsize=16)
+    #plt.xticks(range(df.select_dtypes(['number']).shape[1]), df.select_dtypes(['number']).columns, fontsize=14, rotation=45)
+    #plt.yticks(range(df.select_dtypes(['number']).shape[1]), df.select_dtypes(['number']).columns, fontsize=14)
+    #cb = plt.colorbar()
+    #cb.ax.tick_params(labelsize=14)
+    #plt.title('Correlation Matrix', fontsize=16)
+    plt.tight_layout()
     plt.show()
 
 @transform_pandas(
