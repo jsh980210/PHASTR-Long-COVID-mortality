@@ -2272,7 +2272,7 @@ def corr_plot(analysis_1_cohort):
     df = df.rename(columns={"number_of_COVID_vaccine_doses": "vaccine_doses", "number_of_visits_per_month_before_index_date": "visits_per_month"})
     
     mat = df.corr()
-    plt.figure(figsize=(20, 20), dpi= 80, facecolor='w', edgecolor='k')
+    plt.figure(figsize=(18, 18), dpi= 80, facecolor='w', edgecolor='k')
     sns.set(font_scale=1)
     ax = plt.axes()
     mask = np.zeros_like(mat)
