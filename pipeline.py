@@ -2269,7 +2269,7 @@ def analysis_2b_xgboost_feature_importance(analysis_2b_xgboost):
 )
 def corr_plot(analysis_1_cohort):
     df = analysis_1_cohort[['CCI', 'morbid_obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses', 'number_of_visits_per_month_before_index_date', 'death']]
-    
+    df = df.rename(columns={"number_of_COVID_vaccine_doses": "vaccine_doses", "number_of_visits_per_month_before_index_date": "visits_per_month"})
     f = plt.figure(figsize=(30, 30))
     plt.matshow(df.corr(), fignum=f.number)
     plt.xticks(range(df.select_dtypes(['number']).shape[1]), df.select_dtypes(['number']).columns, fontsize=25, rotation=45)
