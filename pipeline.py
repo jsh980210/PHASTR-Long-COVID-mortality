@@ -1105,7 +1105,7 @@ def analysis_1_xgboost_cv(analysis_1_cohort):
 
     # 100 evenly spaced points from 0 to 1
     mean_fpr = np.linspace(0, 1, 100)
-    plt.close()
+    
     fig, ax = plt.subplots()
     plt.rcParams.update({'font.size': 10})
 
