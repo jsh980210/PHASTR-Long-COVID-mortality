@@ -951,7 +951,7 @@ def analysis_1_logistic_cv(analysis_1_cohort):
 def analysis_1_logistic_py(analysis_1_cohort):
     df = analysis_1_cohort
     random.seed(2023)
-    X = df[['CCI', 'obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses', 'number_of_visits_per_month_before_index_date']]
+    X = df[['CCI', 'morbid_obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses', 'number_of_visits_per_month_before_index_date']]
     y = df['death']
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state = 42)
