@@ -2275,7 +2275,7 @@ def corr_plot(analysis_1_cohort):
     plt.xticks(range(df.select_dtypes(['number']).shape[1]), df.select_dtypes(['number']).columns, fontsize=25, rotation=45)
     plt.yticks(range(df.select_dtypes(['number']).shape[1]), df.select_dtypes(['number']).columns, fontsize=25)
     cb = plt.colorbar()
-    cb.ax.tick_params()
+    cb.ax.tick_params(labelsize = 10)
     #plt.title('Correlation Matrix', fontsize=16)
     plt.tight_layout()
     plt.show()
