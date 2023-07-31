@@ -2264,6 +2264,18 @@ def analysis_2b_xgboost_feature_importance(analysis_2b_xgboost):
     
 
 @transform_pandas(
+    Output(rid="ri.vector.main.execute.257c88ec-a328-401d-920a-56f0c7d62bf4"),
+    analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f")
+)
+def corr_plot(analysis_1_cohort):
+    df = analysis_1_cohort[['CCI', 'morbid_obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses', 'number_of_visits_per_month_before_index_date', 'death']]
+    corr = data.corr()
+    ax = sns.heatmap(corr, vmin=-1, vmax=1, center=0, cmap=sns.diverging_palette(20, 220, n=200), square=True)
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, horizontalalignment='right')
+    plt.tight_layout()
+    plt.show()
+
+@transform_pandas(
     Output(rid="ri.foundry.main.dataset.2aee0060-1175-40bf-b9fe-8240d8822553"),
     analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f"),
     death=Input(rid="ri.foundry.main.dataset.d8cc2ad4-215e-4b5d-bc80-80ffb3454875")
@@ -2796,12 +2808,5 @@ def unnamed(analysis_1_cohort):
     df = analysis_1_cohort
     df = df.withColumn("log_value_visit_per_month", F.log(F.col("number_of_visits_per_month_before_index_date")))
     return df
-    
-
-@transform_pandas(
-    Output(rid="ri.vector.main.execute.257c88ec-a328-401d-920a-56f0c7d62bf4"),
-    analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f")
-)
-def unnamed_1(analysis_1_cohort):
     
 
