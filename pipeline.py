@@ -2270,26 +2270,25 @@ def analysis_2b_xgboost_feature_importance(analysis_2b_xgboost):
 def corr_plot(analysis_1_cohort):
     df = analysis_1_cohort[['CCI', 'morbid_obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses', 'number_of_visits_per_month_before_index_date', 'death']]
     df = df.rename(columns={"number_of_COVID_vaccine_doses": "vaccine_doses", "number_of_visits_per_month_before_index_date": "visits_per_month"})
-    mat = df.corr()
-    #test_data = pd.DataFrame(mat,columns=feature_set,index=feature_set)
-
-    plt.figure(figsize=(30, 30), dpi= 80, facecolor='w', edgecolor='k')
-    #sns.set(font_scale=0.8)
-    ax = plt.axes()
-    mask = np.zeros_like(mat)
-    mask[np.triu_indices_from(mask)] = True
-    sns.heatmap(mat, cmap = 'coolwarm', mask = mask, ax = ax, annot = True, fmt = '.0g', square = True)
-    ax.set_title('Correlation Matrix Heatmap')
-    plt.show()
-    #f = plt.figure(figsize=(30, 30))
-    #plt.matshow(df.corr(), fignum=f.number)
-    #plt.xticks(range(df.select_dtypes(['number']).shape[1]), df.select_dtypes(['number']).columns, fontsize=25, rotation=45)
-    #plt.yticks(range(df.select_dtypes(['number']).shape[1]), df.select_dtypes(['number']).columns, fontsize=25)
-    #plt.colorbar()
     
-    #plt.title('Correlation Matrix', fontsize=16)
-    #plt.tight_layout()
+    #mat = df.corr()
+    #plt.figure(figsize=(30, 30), dpi= 80, facecolor='w', edgecolor='k')
+    #sns.set(font_scale=0.8)
+    #ax = plt.axes()
+    #mask = np.zeros_like(mat)
+    #mask[np.triu_indices_from(mask)] = True
+    #sns.heatmap(mat, cmap = 'coolwarm', mask = mask, ax = ax, annot = True, fmt = '.0g', square = True)
+    #ax.set_title('Correlation Matrix Heatmap')
     #plt.show()
+    f = plt.figure(figsize=(30, 30))
+    plt.matshow(df.corr(), fignum=f.number)
+    plt.xticks(range(df.select_dtypes(['number']).shape[1]), df.select_dtypes(['number']).columns, fontsize=25, rotation=45)
+    plt.yticks(range(df.select_dtypes(['number']).shape[1]), df.select_dtypes(['number']).columns, fontsize=25)
+    plt.colorbar()
+    
+    plt.title('Correlation Matrix', fontsize=16)
+    plt.tight_layout()
+    plt.show()
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.2aee0060-1175-40bf-b9fe-8240d8822553"),
