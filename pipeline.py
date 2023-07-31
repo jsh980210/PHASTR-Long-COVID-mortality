@@ -2798,3 +2798,10 @@ def unnamed(analysis_1_cohort):
     return df
     
 
+@transform_pandas(
+    Output(rid="ri.vector.main.execute.257c88ec-a328-401d-920a-56f0c7d62bf4"),
+    analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f")
+)
+def unnamed_1(analysis_1_cohort):
+    
+
