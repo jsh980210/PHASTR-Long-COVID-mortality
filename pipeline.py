@@ -2274,7 +2274,7 @@ def corr_plot(analysis_1_cohort):
     #test_data = pd.DataFrame(mat,columns=feature_set,index=feature_set)
 
     plt.figure(figsize=(30, 30), dpi= 80, facecolor='w', edgecolor='k')
-    sns.set(font_scale=0.8)
+    #sns.set(font_scale=0.8)
     ax = plt.axes()
     mask = np.zeros_like(mat)
     mask[np.triu_indices_from(mask)] = True
