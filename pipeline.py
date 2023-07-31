@@ -1509,7 +1509,7 @@ def analysis_2a(analysis_2_PASC_case_cohort_2a, PHASTR_cci_COVID_positive):
     df = df.withColumn('Male', when((df.sex == 'MALE'), 1).otherwise(0))
 
     df = df.withColumn('number_of_visits_per_month_before_covid', 30 * F.col('number_of_visits_before_covid') / F.col('observation_period_before_covid'))
-    df = df.withColumn('delta_variant', when((df.COVID_first_poslab_or_diagnosis_date >= '2021-07-01') & (df.COVID_first_poslab_or_diagnosis_date <= '2021-11-30'), 1).otherwise(0))
+    #df = df.withColumn('delta_variant', when((df.COVID_first_poslab_or_diagnosis_date >= '2021-07-01') & (df.COVID_first_poslab_or_diagnosis_date <= '2021-11-30'), 1).otherwise(0))
 
     df = df.drop('COVID_first_poslab_or_diagnosis_date', 'race_ethnicity', 'sex', 'number_of_visits_before_covid', 'observation_period_before_covid')
     return df
