@@ -2272,12 +2272,14 @@ def corr_plot(analysis_1_cohort):
     df = df.rename(columns={"number_of_COVID_vaccine_doses": "vaccine_doses", "number_of_visits_per_month_before_index_date": "visits_per_month"})
     
     mat = df.corr()
-    plt.figure(figsize=(15, 15), dpi= 80, facecolor='w', edgecolor='k')
+    plt.figure(figsize=(18, 18), dpi= 80, facecolor='w', edgecolor='k')
     sns.set(font_scale=1)
     ax = plt.axes()
     mask = np.zeros_like(mat)
     mask[np.triu_indices_from(mask)] = True
     sns.heatmap(mat, cmap = 'coolwarm', mask = mask, ax = ax, annot = True, fmt = '.0g', square = True)
+    plt.xticks(range(df.select_dtypes(['number']).shape[1]), df.select_dtypes(['number']).columns, fontsize=25, rotation=45)
+    plt.yticks(range(df.select_dtypes(['number']).shape[1]), df.select_dtypes(['number']).columns, fontsize=25)
     ax.set_title('Correlation Matrix Heatmap')
     plt.show()
 
