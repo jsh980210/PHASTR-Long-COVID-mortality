@@ -2270,8 +2270,8 @@ def analysis_2b_xgboost_feature_importance(analysis_2b_xgboost):
 def corr_plot(analysis_1_cohort):
     df = analysis_1_cohort[['CCI', 'morbid_obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses', 'number_of_visits_per_month_before_index_date', 'death']]
     corr = df.corr()
-    ax = sns.heatmap(corr, vmin=-1, vmax=1, center=0, cmap=sns.diverging_palette(20, 220, n=200), square=True)
-    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, horizontalalignment='right')
+    ax = sns.heatmap(corr)
+    
     plt.tight_layout()
     plt.show()
 
