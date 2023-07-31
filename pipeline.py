@@ -810,8 +810,8 @@ def analysis_1_cohort(analysis_1_PASC_case_matched, Analysis_1_COVID_positive_co
     df3 = df3.withColumn('COVID_positive_control', F.lit(0)) # COVID negative subcohort 
     df3 = df3.withColumn('COVID_negative_control', F.lit(1)) # COVID negative subcohort 
 
-    df4 = PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype.select('person_id', 'OBESITY_before_or_day_of_covid_indicator', 'number_of_COVID_vaccine_doses_before_or_day_of_covid', 'COVID_patient_death_indicator', 'observation_period_before_covid', 'number_of_visits_before_covid').join(PHASTR_cci_COVID_positive, 'person_id', 'left')
-    df5 = PHASTR_Logic_Liaison_All_Patients_Summary_Facts_Table_LDS.select('person_id', 'OBESITY_indicator', 'total_number_of_COVID_vaccine_doses', 'patient_death_indicator').join(PHASTR_cci_all_patients, 'person_id', 'left')
+    df4 = PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype.select('person_id', 'MORBID_OBESITY_before_or_day_of_covid_indicator', 'number_of_COVID_vaccine_doses_before_or_day_of_covid', 'COVID_patient_death_indicator', 'observation_period_before_covid', 'number_of_visits_before_covid').join(PHASTR_cci_COVID_positive, 'person_id', 'left')
+    df5 = PHASTR_Logic_Liaison_All_Patients_Summary_Facts_Table_LDS.select('person_id', 'MORBID_OBESITY_before_latest_PCR_AG_Neg_date', 'total_number_of_COVID_vaccine_doses', 'patient_death_indicator').join(PHASTR_cci_all_patients, 'person_id', 'left')
 
     df6 = analysis_1_COVID_negative_control.select('person_id', 'observation_period_before_index_date', 'number_of_visits_before_index_date')
     df_COVID = (df1.select('person_id', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'index_date')).union(df2.select('person_id', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'index_date'))
@@ -823,7 +823,7 @@ def analysis_1_cohort(analysis_1_PASC_case_matched, Analysis_1_COVID_positive_co
 
     
     df_COVID = df_COVID.withColumnRenamed('CCI_score_up_through_index_date', 'CCI') \
-                .withColumnRenamed('OBESITY_before_or_day_of_covid_indicator', 'obesity') \
+                .withColumnRenamed('MORBID_OBESITY_before_or_day_of_covid_indicator', 'morbid_obesity') \
                 .withColumnRenamed('number_of_COVID_vaccine_doses_before_or_day_of_covid', 'number_of_COVID_vaccine_doses') \
                 .withColumnRenamed('COVID_patient_death_indicator', 'death') \
                 .withColumnRenamed('observation_period_before_covid', 'observation_period_before_index_date') \
@@ -832,17 +832,17 @@ def analysis_1_cohort(analysis_1_PASC_case_matched, Analysis_1_COVID_positive_co
     
 
     df_non_COVID = df_non_COVID.withColumnRenamed('CCI_score', 'CCI') \
-                .withColumnRenamed('OBESITY_indicator', 'obesity') \
+                .withColumnRenamed('MORBID_OBESITY_before_latest_PCR_AG_Neg_date', 'morbid_obesity') \
                 .withColumnRenamed('total_number_of_COVID_vaccine_doses', 'number_of_COVID_vaccine_doses') \
                 .withColumnRenamed('patient_death_indicator', 'death')
     test = (df_COVID.select('person_id')).join(df_non_COVID.select('person_id'), 'person_id', 'inner')
     print(test.count())
 
-    result = df_COVID.select('person_id', 'death', 'CCI', 'obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses', 'observation_period_before_index_date', 'number_of_visits_before_index_date', 'index_date').union(df_non_COVID.select('person_id', 'death', 'CCI', 'obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses', 'observation_period_before_index_date', 'number_of_visits_before_index_date', 'index_date'))
+    result = df_COVID.select('person_id', 'death', 'CCI', 'morbid_obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses', 'observation_period_before_index_date', 'number_of_visits_before_index_date', 'index_date').union(df_non_COVID.select('person_id', 'death', 'CCI', 'morbid_obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses', 'observation_period_before_index_date', 'number_of_visits_before_index_date', 'index_date'))
 
     result = result.withColumn('number_of_COVID_vaccine_doses', result.number_of_COVID_vaccine_doses.cast('int'))
     #avg_bmi = np.mean(result.toPandas()['BMI'])
-    result = result.fillna(0, subset = ['obesity'])
+    result = result.fillna(0, subset = ['morbid_obesity'])
     #result = result.fillna(avg_bmi, subset = ['BMI'])
     result = result.withColumn('number_of_visits_per_month_before_index_date', 30 * F.col('number_of_visits_before_index_date') / F.col('observation_period_before_index_date'))
     avg_number_of_visits_before_index_date = np.mean(result.toPandas()['number_of_visits_per_month_before_index_date'])
