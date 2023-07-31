@@ -2516,7 +2516,7 @@ def simplified_shap_plot_analysis_1_two_color(analysis_1_cohort):
 
     random.seed(2023)
     
-    X = df[['CCI', 'obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses']]
+    X = df[['CCI', 'morbid_obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses']]
     y = df['death']
 
     feature_list = X.columns
