@@ -2673,8 +2673,8 @@ def simplified_shap_plot_analysis_2a(analysis_2a):
     #ABS_SHAP(shap_values,X_test) 
 
     #return(X_test)
-    plt.rcParams.update({'font.size': 20})
-    shap.summary_plot(shap_values, X_test, plot_size=[40, 30])
+    plt.rcParams.update({'font.size': 15})
+    shap.summary_plot(shap_values, X_test, plot_size=[40, 25])
     plt.tight_layout()
     plt.show()
 
