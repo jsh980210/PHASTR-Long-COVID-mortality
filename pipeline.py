@@ -1938,6 +1938,7 @@ def analysis_2b_logistic_cv(analysis_2b):
     mean_fpr = np.linspace(0, 1, 100)
     #plt.close()
     fig, ax = plt.subplots()
+    plt.rcParams.update({'font.size': 10})
 
     # Plot the individual ROC curves from the split
     for i, (train, test) in enumerate(cv.split(X, y)):
