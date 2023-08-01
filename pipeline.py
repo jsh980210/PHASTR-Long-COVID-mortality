@@ -1600,7 +1600,7 @@ def analysis_2a_logistic_cv(analysis_2a):
 
     set_output_image_type('svg')
     plt.rcParams['svg.fonttype'] = 'none'
-    
+    plt.tight_layout()
     plt.show()
 
     return features_pd
