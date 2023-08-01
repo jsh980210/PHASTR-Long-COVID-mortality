@@ -2770,7 +2770,7 @@ def simplified_shap_plot_analysis_2b(analysis_2b):
 
     #return(X_test)
     plt.rcParams.update({'font.size': 20})
-    shap.summary_plot(shap_values, X_test, plot_size=[40, 30])
+    shap.summary_plot(shap_values, X_test, plot_size=[50, 30], max_display = 50)
     plt.tight_layout()
     plt.show()
     
