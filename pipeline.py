@@ -2514,6 +2514,8 @@ def coxph_python(coxph_prepare):
     plt.tight_layout()
     plt.show()
 
+    return cph.summary()
+
 @transform_pandas(
     Output(rid="ri.vector.main.execute.cc9f5b05-987a-485f-89ed-1f3f5a9780ab"),
     analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f"),
