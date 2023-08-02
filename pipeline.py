@@ -1778,8 +1778,8 @@ def analysis_2a_xgboost_cv(analysis_2a):
     mean_fpr = np.linspace(0, 1, 100)
     
     
-    fig, ax = plt.subplots()
-    plt.rcParams.update({'font.size': 10})
+    fig, ax = plt.subplots(ncols = 1)
+    #plt.rcParams.update({'font.size': 10})
     # Plot the individual ROC curves from the split
     for i, (train, test) in enumerate(cv.split(X, y)):
         classifier.fit(X[train], y[train])
@@ -1831,7 +1831,7 @@ def analysis_2a_xgboost_cv(analysis_2a):
 
     set_output_image_type('svg')
     plt.rcParams['svg.fonttype'] = 'none'
-    
+    plt.tight_layout()
     plt.show()
 
     return features_pd
