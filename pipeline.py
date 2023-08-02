@@ -2515,7 +2515,7 @@ def coxph_python(coxph_prepare):
     plt.show()
     df1 = cph.summary
     df1 = df1.rename(columns = {'exp(coef)': 'exp_coef', 'se(coef)': 'se_coef', '-log2(p)': '-log2p'})
-    return (cph.summary)
+    return df1
 
 @transform_pandas(
     Output(rid="ri.vector.main.execute.cc9f5b05-987a-485f-89ed-1f3f5a9780ab"),
