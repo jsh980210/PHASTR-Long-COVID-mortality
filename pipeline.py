@@ -2499,7 +2499,7 @@ def coxph_prepare(analysis_1_cohort, death):
     
 
 @transform_pandas(
-    Output(rid="ri.vector.main.execute.ef389890-3721-45f7-bcb0-ec2faecce2ae"),
+    Output(rid="ri.foundry.main.dataset.3c8b4acf-7713-45c5-8ed9-eddcb5f906ac"),
     coxph_prepare=Input(rid="ri.foundry.main.dataset.2aee0060-1175-40bf-b9fe-8240d8822553")
 )
 def coxph_python(coxph_prepare):
@@ -2514,7 +2514,7 @@ def coxph_python(coxph_prepare):
     plt.tight_layout()
     plt.show()
 
-    return pd.DataFrame(cph.print_summary())
+    return (cph.print_summary())
 
 @transform_pandas(
     Output(rid="ri.vector.main.execute.cc9f5b05-987a-485f-89ed-1f3f5a9780ab"),
