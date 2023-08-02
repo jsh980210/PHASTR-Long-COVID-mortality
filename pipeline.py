@@ -2513,7 +2513,8 @@ def coxph_python(coxph_prepare):
     cph.plot()
     plt.tight_layout()
     plt.show()
-
+    df1 = cph.summary
+    df1 = df1.rename(columns = {'exp(coef)': 'exp_coef', 'se(coef)': 'se_coef', '-log2(p)': '-log2p'})
     return (cph.summary)
 
 @transform_pandas(
