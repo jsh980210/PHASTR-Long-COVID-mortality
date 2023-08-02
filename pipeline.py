@@ -1350,7 +1350,7 @@ def analysis_2_PASC_case_cohort_2b(PHASTR_Logic_Liaison_Covid_19_Patient_Summary
     
     # COVID_first_poslab_or_diagnosis_date as index date
     df = PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype
-    df = df.filter((df.Long_COVID_diagnosis_post_covid_indicator == 1) | (df.Long_COVID_clinic_visit_post_covid_indicator == 1) | (df.LC_u09_computable_phenotype_threshold_75 == 1))
+    df = df.filter((df.Long_COVID_diagnosis_post_covid_indicator == 1) | (df.Long_COVID_clinic_visit_post_covid_indicator == 1) | (df.LC_u09_computable_phenotype_threshold_85 == 1))
 
     # Age >= 18
     df = df.filter(df.age_at_covid >= 18)
