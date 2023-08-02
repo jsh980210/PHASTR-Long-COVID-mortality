@@ -2514,7 +2514,7 @@ def coxph_python(coxph_prepare):
     plt.tight_layout()
     plt.show()
 
-    return (cph.print_summary())
+    return (cph.summary)
 
 @transform_pandas(
     Output(rid="ri.vector.main.execute.cc9f5b05-987a-485f-89ed-1f3f5a9780ab"),
