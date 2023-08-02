@@ -1777,9 +1777,9 @@ def analysis_2a_xgboost_cv(analysis_2a):
     # 100 evenly spaced points from 0 to 1
     mean_fpr = np.linspace(0, 1, 100)
     
-    
-    fig, ax = plt.subplots(ncols = 1)
-    #plt.rcParams.update({'font.size': 10})
+    plt.close()
+    fig, ax = plt.subplots()
+    plt.rcParams.update({'font.size': 10})
     # Plot the individual ROC curves from the split
     for i, (train, test) in enumerate(cv.split(X, y)):
         classifier.fit(X[train], y[train])
