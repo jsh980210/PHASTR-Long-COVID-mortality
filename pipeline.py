@@ -2514,7 +2514,7 @@ def coxph_python(coxph_prepare):
     plt.tight_layout()
     plt.show()
     df1 = cph.summary
-    df1 = df1.rename(columns = {'exp(coef)': 'exp_coef', 'se(coef)': 'se_coef', '-log2(p)': '-log2p'})
+    df1 = df1.rename(columns = {'exp(coef)': 'exp_coef', 'se(coef)': 'se_coef', '-log2(p)': '-log2p', 'lower 0.95': 'lower95_', 'upper 0.95': 'upper95_'})
     return df1
 
 @transform_pandas(
