@@ -113,6 +113,23 @@ analysis_2b_logistic <- function(analysis_2b) {
 }
 
 @transform_pandas(
+    Output(rid="ri.foundry.main.dataset.d1c6cfc2-33a9-4f22-99b1-5c1fa193c7bd"),
+    coxph_prepare=Input(rid="ri.foundry.main.dataset.2aee0060-1175-40bf-b9fe-8240d8822553")
+)
+coxph_regression <- function(coxph_prepare) {
+
+    library('survival')
+    library('survminer')
+
+    df <- coxph_prepare
+    res.cox <- coxph(Surv(duration, death) ~ PASC + COVID_positive_control + COVID_negative_control + number_of_COVID_vaccine_doses + obesity + CCI + number_of_visits_per_month_before_index_date, data = df)
+    print(summary(res.cox))
+    fit <- survfit(Surv(duration, death) ~ PASC + COVID_positive_control + COVID_negative_control + number_of_COVID_vaccine_doses + obesity + CCI + number_of_visits_per_month_before_index_date, data = df)
+    ggsurvplot(fit, data = df, color = "#2E9FDF", ggtheme = theme_minimal())
+    return (df)
+}
+
+@transform_pandas(
     Output(rid="ri.vector.main.execute.beb33798-6230-4fd5-9b8a-26761eba873a"),
     analysis_1_logistic=Input(rid="ri.foundry.main.dataset.5be15385-d4c0-4a6a-ba59-c12b29c0541e")
 )
