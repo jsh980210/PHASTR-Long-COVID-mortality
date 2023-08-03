@@ -2569,7 +2569,7 @@ def simplified_shap_plot_analysis_1_two_color(analysis_1_cohort):
         corr_df = pd.concat([pd.Series(feature_list),pd.Series(corr_list)],axis=1).fillna(0)
         # Make a data frame. Column 1 is the feature, and Column 2 is the correlation coefficient
         corr_df.columns  = ['Variable','Corr']
-        corr_df['Sign'] = np.where(corr_df['Corr']>0,'red','blue')
+        corr_df['Sign'] = np.where(corr_df['Corr']>0,'gold','green')
         
         # Plot it
         #shap.plots.waterfall(shap_v)
@@ -2582,7 +2582,7 @@ def simplified_shap_plot_analysis_1_two_color(analysis_1_cohort):
         plt.rcParams.update({'font.size': 25})
         ax = k2.plot.barh(x='Variable',y='SHAP_abs',color = colorlist, figsize=(30,30),legend=False) # , figsize=(30,30)
         
-        ax.set_xlabel("SHAP Value (Red = Positive Impact)")
+        ax.set_xlabel("SHAP Value (Gold = Positive Impact)")
         plt.tight_layout()
         plt.show()
         #return shap_v
