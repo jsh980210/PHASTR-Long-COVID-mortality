@@ -20,8 +20,8 @@ import matplotlib.pyplot as plt
 import math
 import shap
 
-#from lifelines import KaplanMeierFitter 
-#from lifelines import CoxPHFitter
+from lifelines import KaplanMeierFitter 
+from lifelines import CoxPHFitter
 
 @transform_pandas(
     Output(rid="ri.foundry.main.dataset.f77735ea-fa94-412c-9b5d-82c314be0418"),
