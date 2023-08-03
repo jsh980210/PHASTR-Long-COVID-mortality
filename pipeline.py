@@ -3127,7 +3127,7 @@ def simplified_shap_plot_analysis_2b_two_color(analysis_2b):
         plt.rcParams.update({'font.size': 25})
         ax = k2.plot.barh(x='Variable',y='SHAP_abs',color = colorlist, figsize=(30,30),legend=False) # , figsize=(30,30)
         
-        ax.set_xlabel("SHAP Value (Red = Positive Impact)")
+        ax.set_xlabel("SHAP Value (Gold = Positive Impact)")
         plt.tight_layout()
         plt.show()
         #return shap_v
