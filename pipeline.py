@@ -2785,8 +2785,8 @@ def simplified_shap_plot_analysis_2b_two_color(analysis_2b):
 
     random.seed(2023)
     
-    X = df[['CCI', 'morbid_obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses']]
-    y = df['death']
+    y = df['COVID_patient_death_indicator']
+    X = df.drop(columns = ['COVID_patient_death_indicator'])
 
     feature_list = X.columns
 
