@@ -2757,7 +2757,7 @@ def simplified_shap_plot_analysis_1_two_color(analysis_1_cohort):
         corr_df = pd.concat([pd.Series(feature_list),pd.Series(corr_list)],axis=1).fillna(0)
         # Make a data frame. Column 1 is the feature, and Column 2 is the correlation coefficient
         corr_df.columns  = ['Variable','Corr']
-        corr_df['Sign'] = np.where(corr_df['Corr']>0,'red','blue')
+        corr_df['Sign'] = np.where(corr_df['Corr']>0,'yellow','green')
         
         # Plot it
         #shap.plots.waterfall(shap_v)
