@@ -155,6 +155,7 @@ plot_odds_ratio_analysis_2a <- function(analysis_2a_logistic) {
     library(tidyverse)
     library(ggplot2)
     df <- analysis_2a_logistic
+    df <- df[df$conf_high <= 10, ]
     df <- df_clean_function(df)
     
     par(mfrow = c(1, 1))
