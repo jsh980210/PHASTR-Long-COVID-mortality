@@ -67,6 +67,29 @@ analysis_1_logistic <- function(analysis_1_cohort) {
 }
 
 @transform_pandas(
+    Output(rid="ri.vector.main.execute.bbf99a67-8010-4c4b-89ea-d35155ea1f46"),
+    analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f")
+)
+analysis_1_logistic_MO <- function(analysis_1_cohort) {
+    library(broom)
+    # seed 
+    set.seed(2023)
+    df <- analysis_1_cohort
+    #df$subcohort <- as.factor(df$subcohort)
+    #df$number_of_COVID_vaccine_doses <- as.factor(df$number_of_COVID_vaccine_doses)
+
+    lr <- glm(death ~ morbid_obesity, data = df, family = binomial)
+
+    print(summary(lr))
+    print(exp(coefficients(lr)))
+    mod_tbl <- broom::tidy(lr, conf.int = TRUE, exponentiate = TRUE)
+
+    return (mod_tbl)
+    # grid search on the threshold to max the recall
+    
+}
+
+@transform_pandas(
     Output(rid="ri.foundry.main.dataset.daf8e1f1-735d-49eb-a2ef-c864cb7fb0d9"),
     analysis_2a=Input(rid="ri.foundry.main.dataset.dfd52b0d-1b4b-49d1-a420-0f3df44e0f8d")
 )
@@ -216,28 +239,5 @@ df_clean_function <- function(df){
     
     return(df)
 
-}
-
-@transform_pandas(
-    Output(rid="ri.vector.main.execute.bbf99a67-8010-4c4b-89ea-d35155ea1f46"),
-    analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f")
-)
-analysis_1_logistic_1 <- function(analysis_1_cohort) {
-    library(broom)
-    # seed 
-    set.seed(2023)
-    df <- analysis_1_cohort
-    #df$subcohort <- as.factor(df$subcohort)
-    #df$number_of_COVID_vaccine_doses <- as.factor(df$number_of_COVID_vaccine_doses)
-
-    lr <- glm(death ~ PASC + COVID_positive_control + COVID_negative_control + number_of_COVID_vaccine_doses + morbid_obesity + CCI, data = df, family = binomial)
-
-    print(summary(lr))
-    print(exp(coefficients(lr)))
-    mod_tbl <- broom::tidy(lr, conf.int = TRUE, exponentiate = TRUE)
-
-    return (mod_tbl)
-    # grid search on the threshold to max the recall
-    
 }
 
