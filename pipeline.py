@@ -2379,7 +2379,7 @@ def km_curve_analysis_1_covid_negative_control(death, analysis_1_cohort):
     kmf.plot()
     plt.title("Kaplan-Meier curve COVID negative control")
     plt.ylabel('survival probability')
-    plt.xlim([0, 1500])
+    plt.xlim([0, 1200])
     plt.ylim([0.87, 1])
     
     plt.show()
