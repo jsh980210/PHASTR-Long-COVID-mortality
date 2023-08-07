@@ -2557,7 +2557,7 @@ def analysis_2b_xgboost_feature_importance(analysis_2b_xgboost):
 )
 def corr_plot(analysis_1_cohort):
     df = analysis_1_cohort
-    df = df.withColumn('cci0', F.when(F.col('CCI')== 0), 1).otherwise(0))
+    df = df.withColumn('cci0', F.when(df.CCI == 0, 1).otherwise(0))
     df = df.withColumn('cci1to3', F.when(F.col('CCI').between(1,3), 1).otherwise(0))
     df = df.withColumn('cci4+', F.when(F.col('CCI')>=4, 1).otherwise(0))
     df = df.toPandas()
