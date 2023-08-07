@@ -1199,7 +1199,7 @@ def analysis_1_xgboost_cv_1(analysis_1_cohort):
     mean_fpr = np.linspace(0, 1, 100)
     
     fig, ax = plt.subplots()
-    #plt.rcParams.update({'font.size': 10})
+    plt.rcParams.update({'font.size': 10})
 
     # Plot the individual ROC curves from the split
     for i, (train, test) in enumerate(cv.split(X, y)):
