@@ -3190,13 +3190,3 @@ def test_no_intersection_1(Analysis_1_COVID_positive_control_matched, analysis_1
     print(result3.count())
     
 
-@transform_pandas(
-    Output(rid="ri.foundry.main.dataset.29ebbd89-9fd0-470b-ac77-d3a1f37bca8c"),
-    analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f")
-)
-def unnamed(analysis_1_cohort):
-    df = analysis_1_cohort
-    df = df.withColumn("log_value_visit_per_month", F.log(F.col("number_of_visits_per_month_before_index_date")))
-    return df
-    
-
