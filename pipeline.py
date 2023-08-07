@@ -1187,7 +1187,7 @@ def analysis_1_xgboost_cv_1(analysis_1_cohort):
     X = X.to_numpy()
 
     #Mean AUC of 0.91 +/- 0.02:
-    classifier =  XGBClassifier(colsample_bytree=0.1, gamma=0.4, learning_rate=0.09, max_depth=8, min_child_weight=0, n_estimators=400, subsample=0.9, random_state=42)
+    classifier =  XGBClassifier(use_label_encoder=False, colsample_bytree=0.1, gamma=0.4, learning_rate=0.09, max_depth=8, min_child_weight=0, n_estimators=400, subsample=0.9, random_state=42)
 
     #cv = StratifiedKFold(n_splits=5)
     cv = RepeatedStratifiedKFold(n_splits = n_splits, n_repeats = n_repeats, random_state=42)
@@ -1199,7 +1199,7 @@ def analysis_1_xgboost_cv_1(analysis_1_cohort):
     mean_fpr = np.linspace(0, 1, 100)
     
     fig, ax = plt.subplots()
-    plt.rcParams.update({'font.size': 10})
+    #plt.rcParams.update({'font.size': 10})
 
     # Plot the individual ROC curves from the split
     for i, (train, test) in enumerate(cv.split(X, y)):
