@@ -1601,6 +1601,10 @@ def analysis_2a(analysis_2_PASC_case_cohort_2a, PHASTR_cci_COVID_positive):
     df = df.withColumn('Other_Non_Hispanic', when((df.race_ethnicity == 'Other Non-Hispanic') | (df.race_ethnicity == 'Native Hawaiian or Other Pacific Islander Non-Hispanic') | (df.race_ethnicity == 'American Indian or Alaska Native Non-Hispanic'), 1).otherwise(0))
     df = df.withColumn('Unknown_race', when(df.race_ethnicity == 'Unknown', 1).otherwise(0))
 
+    df = df.withColumn('age_under45_', F.when(F.col('age_at_covid').between(0,45), 1).otherwise(0))
+    df = df.withColumn('age_46to65_', F.when(F.col('age_at_covid').between(46,65), 1).otherwise(0))
+    df = df.withColumn('age_66plus', F.when(F.col('age_at_covid')>66, 1).otherwise(0))
+
     df = df.withColumn('Male', when((df.sex == 'MALE'), 1).otherwise(0))
 
     #df = df.withColumn('number_of_visits_per_month_before_covid', 30 * F.col('number_of_visits_before_covid') / F.col('observation_period_before_covid'))
