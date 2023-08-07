@@ -2556,7 +2556,12 @@ def analysis_2b_xgboost_feature_importance(analysis_2b_xgboost):
     analysis_1_cohort=Input(rid="ri.foundry.main.dataset.cd475047-2ef9-415c-8812-8336515c5c1f")
 )
 def corr_plot(analysis_1_cohort):
-    df = analysis_1_cohort[['CCI', 'morbid_obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses', 'death']]
+    df = analysis_1_cohort
+    df = df.withColumn('cci0', F.when(F.col('CCI')== 0), 1).otherwise(0))
+    df = df.withColumn('cci1to3', F.when(F.col('CCI').between(1,3), 1).otherwise(0))
+    df = df.withColumn('cci4+', F.when(F.col('CCI')>=4, 1).otherwise(0))
+    df = df.toPandas()
+    df = df[['cci0', 'cci1to3', 'cci4+', 'morbid_obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses', 'death']]
     df = df.rename(columns={"number_of_COVID_vaccine_doses": "vaccine_doses"})
     
     mat = df.corr()
