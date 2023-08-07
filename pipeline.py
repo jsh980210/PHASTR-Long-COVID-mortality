@@ -1082,7 +1082,7 @@ def analysis_1_xgboost_cv(analysis_1_cohort):
     df = analysis_1_cohort
     random.seed(2023)
     
-    X = df[['CCI', 'morbid_obesity', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses']]
+    X = df[['CCI', 'PASC', 'COVID_positive_control', 'COVID_negative_control', 'number_of_COVID_vaccine_doses']]
     y = df['death']
     n_splits = 5
     n_repeats = 5
