@@ -3004,3 +3004,37 @@ def test_no_intersection_1(Analysis_1_COVID_positive_control_matched, analysis_1
     print(result3.count())
     
 
+@transform_pandas(
+    Output(rid="ri.vector.main.execute.7d4fb754-baef-45cf-9af9-4194a9f52234"),
+    PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.d7394fbc-bc61-4bc7-953f-7b6c7b1c07ea"),
+    visit_occurrence=Input(rid="ri.foundry.main.dataset.911d0bb2-c56e-46bd-af4f-8d9611183bb7")
+)
+def analysis_1_PASC_case_1(PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype, visit_occurrence):
+    # COVID positive
+    # Now we only have threshold 0.75, and would change the threshold after sensitivity analysis
+    # COVID_first_poslab_or_diagnosis_date as index date
+    df = PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype
+    df1 = visit_occurrence
+    df1 = df1.groupBy('person_id').agg(F.max('visit_start_date').alias('latest_visit_date'))
+    df = df.join(df1, 'person_id', 'left')
+
+    
+    
+    df = df.withColumn('index_date', F.col('COVID_first_poslab_or_diagnosis_date'))
+    df = df.withColumn('2021oct_index_date', F.lit('2021-10-01'))
+    # Select those with at least one visit >= 45 days of index date
+    df = df.filter(F.datediff(F.col('latest_visit_date'), F.col('COVID_first_poslab_or_diagnosis_date')) >= 45)
+
+   
+    #Long COVID 
+    
+    df = df.filter((df.Long_COVID_diagnosis_post_covid_indicator == 1) | (df.Long_COVID_clinic_visit_post_covid_indicator == 1) | (df.LC_u09_computable_phenotype_threshold_85 == 1))
+    df = df.filter(df.age_at_covid >= 18)
+    # Long COVID case label
+    df = df.withColumn('long_covid', F.lit(1))
+    df = df.withColumn('number_of_visits_per_month_before_index_date', 30 * F.col('number_of_visits_before_covid') / F.col('observation_period_before_covid'))
+    df = df.withColumn('log_number_of_visits_per_month_before_index_date', F.log(F.col('number_of_visits_per_month_before_index_date')))
+    df = df.fillna(0, subset = 'log_number_of_visits_per_month_before_index_date')
+    return df
+    
+
