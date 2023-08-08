@@ -1393,6 +1393,25 @@ def analysis_2_PASC_case_cohort_2b(PHASTR_Logic_Liaison_Covid_19_Patient_Summary
     
 
 @transform_pandas(
+    Output(rid="ri.vector.main.execute.b9789e52-fa3d-419f-a5c2-2b93f9b1f6bf"),
+    PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.d7394fbc-bc61-4bc7-953f-7b6c7b1c07ea")
+)
+def analysis_2_PASC_case_cohort_2b_count(PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype):
+    
+    # COVID_first_poslab_or_diagnosis_date as index date
+    df = PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype
+    print(df.count())
+    # Age >= 18
+    df = df.filter(df.age_at_covid >= 18)
+    print(df.count())
+    df = df.filter((df.Long_COVID_diagnosis_post_covid_indicator == 1) | (df.Long_COVID_clinic_visit_post_covid_indicator == 1) | (df.LC_u09_computable_phenotype_threshold_85 == 1))
+    print(df.count())
+
+    
+    return df
+    
+
+@transform_pandas(
     Output(rid="ri.foundry.main.dataset.aee7e3b6-d9cc-437a-a9b1-e49d20f6d2a2"),
     analysis_2_PASC_case_cohort_2b=Input(rid="ri.foundry.main.dataset.e3640a26-eac1-43b7-b012-261f6dbbd2f3")
 )
@@ -3037,20 +3056,5 @@ def test_no_intersection_1(Analysis_1_COVID_positive_control_matched, analysis_1
     print(result1.count())
     print(result2.count())
     print(result3.count())
-    
-
-@transform_pandas(
-    Output(rid="ri.vector.main.execute.b9789e52-fa3d-419f-a5c2-2b93f9b1f6bf"),
-    PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype=Input(rid="ri.foundry.main.dataset.d7394fbc-bc61-4bc7-953f-7b6c7b1c07ea")
-)
-def analysis_2_PASC_case_cohort_2b_1(PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype):
-    
-    # COVID_first_poslab_or_diagnosis_date as index date
-    df = PHASTR_Logic_Liaison_Covid_19_Patient_Summary_Facts_Table_LDS_with_computable_phenotype
-    df = df.filter((df.Long_COVID_diagnosis_post_covid_indicator == 1) | (df.Long_COVID_clinic_visit_post_covid_indicator == 1) | (df.LC_u09_computable_phenotype_threshold_85 == 1))
-
-    # Age >= 18
-    df = df.filter(df.age_at_covid >= 18)
-    return df
     
 
